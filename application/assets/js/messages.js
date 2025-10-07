@@ -3,32 +3,39 @@ function testMessage(msg) {
 }
 
 class Message {
-    Message(text) {
+    constructor(text) {
         this.text = text;
-        // TODO
     }
-
-
 }
 
 class MessagesList {
-    MessagesList() {
+    constructor() {
         this.messages = [];
         this.messagesListId = 'messagesList';
     }
 
 
     addMessage(message) {
-        this.messages.add(message)
+        this.messages.push(message)
     }
 
     /**
      * @return dom element with the messages containing data
      */
     renderMessages() {
-        let messagesList =  document.createElement('div');
-        messagesList.setAttribute('id', this.messagesListId );
+        let messagesListElement =  document.createElement('div');
+        messagesListElement.setAttribute('id', this.messagesListId );
 
+        for ( let message of this.messages ) {
+            // console.log( 'message:', message )
+
+            let messageElement = document.createElement('div')
+            messageElement.appendChild( document.createTextNode(message.text ))
+
+            messagesListElement.appendChild(messageElement)
+        }
+
+        return messagesListElement;
     }
 
 }

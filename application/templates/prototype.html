@@ -5,7 +5,14 @@
     <script src="/assets/js/messages.js" > </script>
     <script type="application/javascript">
         // TODO
+        function initializeMessages() {
+            let messagesList = new MessagesList();
+            messagesList.addMessage( new Message("Prepare to commendant hour squad I") );
+            messagesList.addMessage( new Message("Prepare to commendant hour squad II") );
+            messagesList.addMessage( new Message("Prepare to commendant hour squad III") );
 
+            return messagesList;
+        }
     </script>
 </head>
 <body>
@@ -21,7 +28,8 @@ Prototype
 <script type="application/javascript">
     let appDiv = document.getElementById('app');
 
-
+    let messagesList = initializeMessages();
+    appDiv.appendChild( messagesList.renderMessages() );
 
 </script>
 </body>
