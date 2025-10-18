@@ -2,31 +2,26 @@
 <head>
     <title>Štabo konsolė</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <script src="/assets/js/messages.js" > </script>
+    <script src="/assets/js/tasks.js" > </script>
     <script type="application/javascript">
-        // TODO
-        function initializeMessages() {
-            let messagesList = new MessagesList();
-            messagesList.addMessage( new Message("Prepare to commendant hour squad I", 1, new Date()) );
-            messagesList.addMessage( new Message("Prepare to commendant hour squad II"), 2, new Date() );
-            messagesList.addMessage( new Message("Prepare to commendant hour squad III"), 3, new Date() );
+        function initializeTasks() {
+            let tasksList = new TasksList();
+            tasksList.addTask( new Task("Prepare to commendant hour squad I", 1, new Date()) );
+            tasksList.addTask( new Task("Prepare to commendant hour squad II", 2, new Date()) );
+            tasksList.addTask( new Task("Prepare to commendant hour squad III", 3, new Date()) );
 
-            return messagesList;
+            return tasksList;
         }
     </script>
 </head>
 <body>
 Prototype
 
-<button onclick="testMessage('testuojam')">
-    test
-</button>
-
 <div id="app">
-    <div id="messagesList">
+    <div id="tasksList">
 
     </div>
-    <div id="messageDetails">
+    <div id="taskDetails">
         <table>
             <tr><td>ID</td><td>111</td></tr>
             <tr>
@@ -83,11 +78,12 @@ Prototype
     </div>
 </div>
 <script type="application/javascript">
-    let messagesListDiv = document.getElementById('messagesList');
+    let tasksListDiv = document.getElementById('tasksList');
 
-    let messagesList = initializeMessages();
-    messagesListDiv.appendChild( messagesList.renderMessages() );
+    let tasksList = initializeTasks();
+    tasksListDiv.appendChild( tasksList.renderTasks() );
 
+    console.log('tasksList', tasksList)
 </script>
 </body>
 </html>
