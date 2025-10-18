@@ -7,9 +7,9 @@
         // TODO
         function initializeMessages() {
             let messagesList = new MessagesList();
-            messagesList.addMessage( new Message("Prepare to commendant hour squad I") );
-            messagesList.addMessage( new Message("Prepare to commendant hour squad II") );
-            messagesList.addMessage( new Message("Prepare to commendant hour squad III") );
+            messagesList.addMessage( new Message("Prepare to commendant hour squad I", 1, new Date()) );
+            messagesList.addMessage( new Message("Prepare to commendant hour squad II"), 2, new Date() );
+            messagesList.addMessage( new Message("Prepare to commendant hour squad III"), 3, new Date() );
 
             return messagesList;
         }
@@ -23,13 +23,70 @@ Prototype
 </button>
 
 <div id="app">
+    <div id="messagesList">
 
+    </div>
+    <div id="messageDetails">
+        <table>
+            <tr><td>ID</td><td>111</td></tr>
+            <tr>
+                <td><label for="message">Message</label></td>
+                <td><input type="text" name="message" id="message" /></td>
+            </tr>
+            <tr>
+                <td><label for="result">Result</label></td>
+                <td><input type="text" name="result" id="result" /></td>
+            </tr>
+            <tr>
+                <td><label for="status" >Status</label></td>
+                <td><select name="status" id="status">
+                    <option value="new">New</option>
+                    <option value="sent">Sent</option>
+                    <option value="received">Received</option>
+                    <option value="executing">Executing</option>
+                    <option value="finished">Finished</option>
+                    <option value="closed">Closed</option>
+                </select></td>
+            </tr>
+            <tr>
+                <td><label for="sender">Sender</label></td>
+                <td><select name="sender" id="sender">
+                    <option>Participant1</option>
+                    <option>Participant2</option>
+                    <option>Participant3</option>
+                </select>
+                </td>
+            </tr>
+            <tr>
+                <td><label for="receivers">Receivers</label></td>
+                <td><select multiple="multiple" id="receivers" name="receivers">
+                    <option>Participant1</option>
+                    <option>Participant2</option>
+                    <option>Participant3</option>
+                </select>
+                </td>
+            </tr>
+            <tr><td>Created at</td><td>2025-10-18 11:30</td></tr>
+            <tr><td>Sent at</td><td>2025-10-18 11:30</td></tr>
+            <tr><td>Received at</td><td>2025-10-18 11:30</td></tr>
+            <tr><td>Executing at</td><td>2025-10-18 11:30</td></tr>
+            <tr><td>Finished at</td><td>2025-10-18 11:30</td></tr>
+            <tr><td>Closed at</td><td>2025-10-18 11:30</td></tr>
+<!--            <tr>-->
+<!--                <td>Parent id</td><td>0</td>-->
+<!--            </tr>-->
+<!--            <tr>-->
+<!--                <td>Children ids</td><td>0</td>-->
+<!--            </tr>-->
+        </table>
+        <button>Save</button>
+    </div>
 </div>
 <script type="application/javascript">
-    let appDiv = document.getElementById('app');
+    let messagesListDiv = document.getElementById('messagesList');
 
     let messagesList = initializeMessages();
-    appDiv.appendChild( messagesList.renderMessages() );
+    messagesListDiv.appendChild( messagesList.renderMessages() );
 
 </script>
 </body>
