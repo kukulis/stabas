@@ -6,24 +6,81 @@ class Task {
     constructor(message, id, date) {
         this.message = message;
         this.id = id;
+        // deprecated
         this.date = date;
+        this.createdAt = date;
 
-        // TODO other fields
+        this.result = null;
+        this.status = null;
+        this.sender = null;
+        this.receivers = [];
+
+        this.sentAt = null;
+        this.receivedAt = null;
+        this.executingAt = null;
+        this.finishedAt = null;
+        this.closedAt = null;
+
     }
 
-    renderTask() {
+    renderTaskLine() {
         let taskElement = document.createElement('div')
         taskElement.appendChild( document.createTextNode(this.message ))
 
-        taskElement.addEventListener('click', (e) => this.displayMessageDetails(e))
+        taskElement.addEventListener('click', (e) => this.renderTaskDetails(e))
         taskElement.style.border  = "solid thin black";
 
         return taskElement;
     }
 
-    displayMessageDetails(event) {
+    renderTaskDetails(event) {
         // console.log('displayMessageDetails this', this)
-        alert('TODO displayMessageDetails, id='+this.id);
+        // alert('TODO displayMessageDetails, id='+this.id);
+        // will set to available tags first
+
+        let identifierTag = document.getElementById('identifier');
+        let messageTag = document.getElementById('message');
+        let createdAtTag = document.getElementById('createdAt');
+        let resultTag = document.getElementById('result');
+        let statusTag = document.getElementById('status');
+        let senderTag = document.getElementById('sender');
+        let receiversTag = document.getElementById('receivers');
+
+        let sentAtTag = document.getElementById('sentAt');
+        let receivedAtTag = document.getElementById('receivedAt');
+        let executingAtTag = document.getElementById('executingAt');
+        let finishedAtTag = document.getElementById('finishedAt');
+        let closedAtTag = document.getElementById('closedAt');
+
+        // put values
+        setTextNodeValueToTag(identifierTag, this.id);
+        messageTag.setAttribute('value', this.message);
+        resultTag.setAttribute('value', this.result);
+        // TODO select box assignment
+        statusTag.setAttribute('value', this.status);
+        senderTag.setAttribute('value', this.sender);
+        // TODO receivers display string
+        receiversTag.setAttribute('value', this.receivers)
+
+        setTextNodeValueToTag(createdAtTag, this.createdAt);
+        setTextNodeValueToTag(sentAtTag, this.sentAt);
+        setTextNodeValueToTag(receivedAtTag, this.receivedAt);
+        setTextNodeValueToTag(executingAtTag, this.executingAt);
+        setTextNodeValueToTag(finishedAtTag, this.finishedAt);
+        setTextNodeValueToTag(closedAtTag, this.closedAt);
+
+    }
+}
+
+function setTextNodeValueToTag(tag, value) {
+    clearTag(tag);
+
+    tag.appendChild(document.createTextNode(value));
+}
+
+function clearTag(tag) {
+    while(tag.firstChild){
+        tag.removeChild(tag.firstChild);
     }
 }
 
@@ -47,7 +104,7 @@ class TasksList {
 
         for ( let task of this.tasks ) {
             // console.log( 'message:', message )
-            tasksListElement.appendChild(task.renderTask())
+            tasksListElement.appendChild(task.renderTaskLine())
         }
 
         let addButton = document.createElement('button');
