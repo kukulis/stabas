@@ -57,7 +57,10 @@ class Task {
         messageTag.setAttribute('value', this.message);
         resultTag.setAttribute('value', this.result);
         // TODO select box assignment
-        statusTag.setAttribute('value', this.status);
+        // statusTag.setAttribute('value', this.status);
+        statusTag.value = this.status;
+
+
         senderTag.setAttribute('value', this.sender);
         // TODO receivers display string
         receiversTag.setAttribute('value', this.receivers)
@@ -70,6 +73,37 @@ class Task {
         setTextNodeValueToTag(closedAtTag, this.closedAt);
 
     }
+
+    setId(id) {
+        this.id = id;
+
+        return this;
+    }
+
+    setResult(result) {
+        this.result = result;
+
+        return this;
+    }
+
+    setStatus(status) {
+        this.status = status;
+
+        return this;
+    }
+
+    setSender(sender) {
+        this.sender = sender;
+
+        return this;
+    }
+
+    setReceivers(receivers) {
+        this.receivers = receivers;
+
+        return this;
+    }
+
 }
 
 function setTextNodeValueToTag(tag, value) {

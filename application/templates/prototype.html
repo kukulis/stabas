@@ -6,9 +6,18 @@
     <script type="application/javascript">
         function initializeTasks() {
             let tasksList = new TasksList();
-            tasksList.addTask( new Task("Prepare to commendant hour squad I", 1, new Date()) );
-            tasksList.addTask( new Task("Prepare to commendant hour squad II", 2, new Date()) );
-            tasksList.addTask( new Task("Prepare to commendant hour squad III", 3, new Date()) );
+            tasksList.addTask(
+                (new Task("Prepare to commendant hour squad I", 1, new Date()))
+                    .setStatus("new")
+            );
+            tasksList.addTask(
+                (new Task("Prepare to commendant hour squad II", 2, new Date()))
+                    .setStatus("sent")
+            );
+            tasksList.addTask(
+                (new Task("Prepare to commendant hour squad III", 3, new Date()))
+                .setStatus("received")
+            );
 
             return tasksList;
         }
