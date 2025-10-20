@@ -54,16 +54,15 @@ class Task {
 
         // put values
         setTextNodeValueToTag(identifierTag, this.id);
-        messageTag.setAttribute('value', this.message);
-        resultTag.setAttribute('value', this.result);
+        messageTag.value = this.message;
+        resultTag.value = this.result;
         // TODO select box assignment
         // statusTag.setAttribute('value', this.status);
         statusTag.value = this.status;
 
 
-        senderTag.setAttribute('value', this.sender);
-        // TODO receivers display string
-        receiversTag.setAttribute('value', this.receivers)
+        senderTag.value = this.sender;
+        this.setReceiversTag( receiversTag, this.receivers);
 
         setTextNodeValueToTag(createdAtTag, this.createdAt);
         setTextNodeValueToTag(sentAtTag, this.sentAt);
@@ -72,6 +71,16 @@ class Task {
         setTextNodeValueToTag(finishedAtTag, this.finishedAt);
         setTextNodeValueToTag(closedAtTag, this.closedAt);
 
+    }
+
+    setReceiversTag(receiversTag, receivers) {
+        let receiversSet = new Map();
+        for ( let receiver of receivers ) {
+            receiversSet.set( receiver.toString(), receiver);
+        }
+        Array.from(receiversTag.options).forEach(function (option) {
+            option.selected = receiversSet.has(option.value);
+        });
     }
 
     setId(id) {
