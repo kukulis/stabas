@@ -29,12 +29,13 @@ class Task {
         return this;
     }
 
+    // TODO details2Div parameter
     renderTaskLine() {
         let taskElement = document.createElement('div')
         taskElement.appendChild(document.createTextNode(this.message))
 
         taskElement.addEventListener('click', (e) => {
-            this.renderTaskDetails(e);
+            // this.renderTaskDetails(e);
             // TODO pass through parameters this.details2Div
             this.renderTaskDetailsFull(e, this.details2Div);
         });
@@ -100,6 +101,12 @@ class Task {
         this.renderStatus(tableDiv)
         this.renderSender(tableDiv)
         this.renderReceivers(tableDiv)
+        this.renderDates(tableDiv)
+
+        let saveButton = document.createElement('button')
+        saveButton.appendChild(document.createTextNode('save'))
+
+        parentDiv.appendChild(saveButton);
     }
 
     renderTrId(tableDiv) {
@@ -297,13 +304,29 @@ class Task {
         tableDiv.appendChild(tr)
     }
 
-    // TODO render createdAt
-    // TODO render sentAt
-    // TODO render receivedAt
-    // TODO render executingAt
-    // TODO render finishedAt
-    // TODO render closedAt
-    // TODO save button
+    renderTextTr( tableDiv, labelText, value ) {
+        let trId = document.createElement('tr');
+        let tdIdLabel = document.createElement('td');
+        tdIdLabel.appendChild(document.createTextNode(labelText));
+        let tdIdValue = document.createElement('td');
+        tdIdValue.appendChild(document.createTextNode(value));
+        trId.appendChild(tdIdLabel)
+        trId.appendChild(tdIdValue)
+
+        tableDiv.appendChild(trId)
+    }
+
+    renderDates(tableDiv) {
+        this.renderTextTr(tableDiv, 'Created at', this.createdAt)
+        this.renderTextTr(tableDiv, 'Sent at', this.sentAt)
+        this.renderTextTr(tableDiv, 'Received at', this.receivedAt)
+        this.renderTextTr(tableDiv, 'Executing at', this.executingAt)
+        this.renderTextTr(tableDiv, 'Finished at', this.finishedAt)
+        this.renderTextTr(tableDiv, 'Closed at', this.closedAt)
+    }
+
+
+
 
     setId(id) {
         this.id = id;
