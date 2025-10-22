@@ -23,11 +23,21 @@ class Task {
 
     }
 
+    setDetails2Div(details2Div) {
+        this.details2Div = details2Div;
+
+        return this;
+    }
+
     renderTaskLine() {
         let taskElement = document.createElement('div')
         taskElement.appendChild( document.createTextNode(this.message ))
 
-        taskElement.addEventListener('click', (e) => this.renderTaskDetails(e))
+        taskElement.addEventListener('click', (e) => {
+            this.renderTaskDetails(e);
+            // TODO pass through parameters this.details2Div
+            this.renderTaskDetailsFull(e, this.details2Div);
+        });
         taskElement.style.border  = "solid thin black";
 
         return taskElement;
@@ -81,6 +91,23 @@ class Task {
         Array.from(receiversTag.options).forEach(function (option) {
             option.selected = receiversSet.has(option.value);
         });
+    }
+
+    renderTaskDetailsFull( event, parentDiv ) {
+        clearTag(parentDiv);
+        let tableDiv = document.createElement('table');
+        parentDiv.appendChild(tableDiv);
+
+
+        let trId = document.createElement('tr');
+        tableDiv.appendChild(trId)
+
+        let tdIdLabel = document.createElement('td');
+        tdIdLabel.appendChild(document.createTextNode('ID'));
+        let tdIdValue = document.createElement('td');
+        tdIdValue.appendChild(document.createTextNode(this.id));
+        trId.appendChild(tdIdLabel)
+        trId.appendChild(tdIdValue)
     }
 
     setId(id) {
