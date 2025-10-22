@@ -297,6 +297,14 @@ class Task {
         tableDiv.appendChild(tr)
     }
 
+    // TODO render createdAt
+    // TODO render sentAt
+    // TODO render receivedAt
+    // TODO render executingAt
+    // TODO render finishedAt
+    // TODO render closedAt
+    // TODO save button
+
     setId(id) {
         this.id = id;
 
