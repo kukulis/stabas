@@ -1,7 +1,3 @@
-function testMessage(msg) {
-    alert(msg);
-}
-
 class Task {
     constructor(message, id, date) {
         this.message = message;
@@ -44,52 +40,16 @@ class Task {
         return taskElement;
     }
 
-    renderTaskDetails(event) {
-        let identifierTag = document.getElementById('identifier');
-        let messageTag = document.getElementById('message');
-        let createdAtTag = document.getElementById('createdAt');
-        let resultTag = document.getElementById('result');
-        let statusTag = document.getElementById('status');
-        let senderTag = document.getElementById('sender');
-        let receiversTag = document.getElementById('receivers');
-
-        let sentAtTag = document.getElementById('sentAt');
-        let receivedAtTag = document.getElementById('receivedAt');
-        let executingAtTag = document.getElementById('executingAt');
-        let finishedAtTag = document.getElementById('finishedAt');
-        let closedAtTag = document.getElementById('closedAt');
-
-        // put values
-        setTextNodeValueToTag(identifierTag, this.id);
-        messageTag.value = this.message;
-        resultTag.value = this.result;
-        // TODO select box assignment
-        // statusTag.setAttribute('value', this.status);
-        statusTag.value = this.status;
-
-
-        senderTag.value = this.sender;
-        this.setReceiversTag(receiversTag, this.receivers);
-
-        setTextNodeValueToTag(createdAtTag, this.createdAt);
-        setTextNodeValueToTag(sentAtTag, this.sentAt);
-        setTextNodeValueToTag(receivedAtTag, this.receivedAt);
-        setTextNodeValueToTag(executingAtTag, this.executingAt);
-        setTextNodeValueToTag(finishedAtTag, this.finishedAt);
-        setTextNodeValueToTag(closedAtTag, this.closedAt);
-
+    saveAction(event) {
+        alert('save button pressed')
+        console.log ( 'save button, event', event)
     }
 
-    setReceiversTag(receiversTag, receivers) {
-        let receiversSet = new Map();
-        for (let receiver of receivers) {
-            receiversSet.set(receiver.toString(), receiver);
-        }
-        Array.from(receiversTag.options).forEach(function (option) {
-            option.selected = receiversSet.has(option.value);
-        });
-    }
-
+    /*******************************************************************************
+     * renderTaskDetailsFull
+     *
+     *******************************************************************************
+     */
     renderTaskDetailsFull(event, parentDiv) {
         clearTag(parentDiv);
         let tableDiv = document.createElement('table');
@@ -105,6 +65,7 @@ class Task {
 
         let saveButton = document.createElement('button')
         saveButton.appendChild(document.createTextNode('save'))
+        saveButton.addEventListener('click', (e) => this.saveAction(e))
 
         parentDiv.appendChild(saveButton);
     }
@@ -325,9 +286,6 @@ class Task {
         this.renderTextTr(tableDiv, 'Closed at', this.closedAt)
     }
 
-
-
-
     setId(id) {
         this.id = id;
 
@@ -358,12 +316,6 @@ class Task {
         return this;
     }
 
-}
-
-function setTextNodeValueToTag(tag, value) {
-    clearTag(tag);
-
-    tag.appendChild(document.createTextNode(value));
 }
 
 function clearTag(tag) {
@@ -405,6 +357,7 @@ class TasksList {
     }
 
     addTaskPressed(event) {
+        console.log('addTaskPressed', event)
         alert('TODO add task');
     }
 }
