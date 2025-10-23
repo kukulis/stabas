@@ -34,6 +34,9 @@ class Task {
             // this.renderTaskDetails(e);
             // TODO pass through parameters this.details2Div
             this.renderTaskDetailsFull(e, this.details2Div);
+
+            // TODO mark which line is selected
+            // TODO unmark others
         });
         taskElement.style.border = "solid thin black";
 
@@ -41,8 +44,29 @@ class Task {
     }
 
     saveAction(event) {
-        alert('save button pressed')
+        // TODO unset 'modified' flag, which is set when any of the detail elements are modified
+        // alert('save button pressed')
         console.log ( 'save button, event', event)
+
+        let messageInput = document.getElementById('message');
+        this.message = messageInput.value;
+
+        let resultInput = document.getElementById('result');
+        this.result = resultInput.value;
+
+        let statusSelect = document.getElementById('status');
+        this.status = statusSelect.value;
+
+        let senderSelect = document.getElementById('sender');
+        this.sender = senderSelect.value;
+
+        let receiversSelect = document.getElementById('receivers');
+         // receiversSelect.children
+
+        this.receivers = Array.from(receiversSelect.selectedOptions).map((option)=>option.value);
+        //
+        // console.log('receivers after cycle', this.receivers);
+        // TODO other fields
     }
 
     /*******************************************************************************
