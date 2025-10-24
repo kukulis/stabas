@@ -43,89 +43,20 @@ Prototype
     <div id="tasksList">
 
     </div>
-
-    <!--
-    <div id="taskDetails">
-        <table>
-            <tr>
-                <td>ID</td>
-                <td id="identifier">111</td>
-            </tr>
-            <tr>
-                <td><label for="message">Message</label></td>
-                <td><input type="text" name="message" id="message" size="80"/></td>
-            </tr>
-            <tr>
-                <td><label for="result">Result</label></td>
-                <td><input type="text" name="result" id="result" size="80"/></td>
-            </tr>
-            <tr>
-                <td><label for="status">Status</label></td>
-                <td><select name="status" id="status">
-                    <option value="new">New</option>
-                    <option value="sent">Sent</option>
-                    <option value="received">Received</option>
-                    <option value="executing">Executing</option>
-                    <option value="finished">Finished</option>
-                    <option value="closed">Closed</option>
-                </select></td>
-            </tr>
-            <tr>
-                <td><label for="sender">Sender</label></td>
-                <td><select name="sender" id="sender">
-                    <option value="1">Participant1</option>
-                    <option value="2">Participant2</option>
-                    <option value="3">Participant3</option>
-                </select>
-                </td>
-            </tr>
-            <tr>
-                <td><label for="receivers">Receivers</label></td>
-                <td><select multiple="multiple" id="receivers" name="receivers">
-                    <option value="1">Participant1</option>
-                    <option value="2">Participant2</option>
-                    <option value="3">Participant3</option>
-                </select>
-                </td>
-            </tr>
-            <tr>
-                <td>Created at</td>
-                <td id="createdAt">2025-10-18 11:30</td>
-            </tr>
-            <tr>
-                <td>Sent at</td>
-                <td id="sentAt">2025-10-18 11:30</td>
-            </tr>
-            <tr>
-                <td>Received at</td>
-                <td id="receivedAt">2025-10-18 11:30</td>
-            </tr>
-            <tr>
-                <td>Executing at</td>
-                <td id="executingAt">2025-10-18 11:30</td>
-            </tr>
-            <tr>
-                <td>Finished at</td>
-                <td id="finishedAt">2025-10-18 11:30</td>
-            </tr>
-            <tr>
-                <td>Closed at</td>
-                <td id="closedAt">2025-10-18 11:30</td>
-            </tr>
-        </table>
-        <button>Save</button>
-    </div>
--->
     <div id="taskDetails2">
     </div>
 </div>
 <script type="application/javascript">
-    let tasksListDiv = document.getElementById('tasksList');
-
     let tasksList = initializeTasks();
-    tasksListDiv.appendChild(tasksList.renderTasks());
 
-    console.log('tasksList', tasksList)
+    let redrawTasksList = () => {
+        let tasksListDiv = document.getElementById('tasksList');
+        clearTag(tasksListDiv);
+        tasksListDiv.appendChild(tasksList.renderTasks());
+    }
+    redrawTasksList();
+
+    tasksList.setRedrawHook(redrawTasksList);
 </script>
 </body>
 </html>

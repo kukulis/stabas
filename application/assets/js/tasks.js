@@ -26,7 +26,7 @@ class Task {
     }
 
     // TODO details2Div parameter
-    renderTaskLine() {
+    renderTaskLine(deleteCallback) {
         let taskElement = document.createElement('div')
         taskElement.appendChild(document.createTextNode(this.message))
 
@@ -39,6 +39,12 @@ class Task {
             // TODO unmark others
         });
         taskElement.style.border = "solid thin black";
+
+        let deleteButton = document.createElement('button');
+        deleteButton.appendChild(document.createTextNode('-'));
+        deleteButton.addEventListener('click', deleteCallback);
+
+        taskElement.appendChild(deleteButton);
 
         return taskElement;
     }
@@ -92,6 +98,7 @@ class Task {
         saveButton.addEventListener('click', (e) => this.saveAction(e))
 
         parentDiv.appendChild(saveButton);
+
     }
 
     renderTrId(tableDiv) {
@@ -348,15 +355,27 @@ function clearTag(tag) {
     }
 }
 
+/***********************************************************************
+ *
+ * TaskList
+ *
+ ***********************************************************************/
 class TasksList {
     constructor() {
         this.tasks = [];
         // inner id for a generated dom element
         this.tasksListId = 'tasksList';
+        this.redrawHook = () => { alert('redrawHook is not implemented'); }
     }
 
     addTask(task) {
         this.tasks.push(task)
+    }
+
+    deleteTask(event, taskId) {
+        this.tasks = this.tasks.filter((task)=> (task.id !== taskId))
+        event.stopPropagation();
+        this.redrawHook();
     }
 
     /**
@@ -368,7 +387,7 @@ class TasksList {
 
         for (let task of this.tasks) {
             // console.log( 'message:', message )
-            tasksListElement.appendChild(task.renderTaskLine())
+            tasksListElement.appendChild(task.renderTaskLine((event)=>this.deleteTask(event, task.id)));
         }
 
         let addButton = document.createElement('button');
@@ -383,5 +402,9 @@ class TasksList {
     addTaskPressed(event) {
         console.log('addTaskPressed', event)
         alert('TODO add task');
+    }
+
+    setRedrawHook(redrawHook) {
+        this.redrawHook = redrawHook;
     }
 }
