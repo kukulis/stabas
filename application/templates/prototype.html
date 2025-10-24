@@ -7,14 +7,12 @@
     <script type="application/javascript">
         function initializeTasks(dispatcher) {
             let tasksList = new TasksList(dispatcher);
-            let details2Div = document.getElementById('taskDetails2');
             tasksList.addTask(
                 (new Task("Prepare to commendant hour squad I", 1, new Date()))
                     .setStatus("new")
                     .setSender(1)
                     .setReceivers([1, 2])
                     .setResult('aaa')
-                    .setDetails2Div(details2Div) // TODO refactor
                     .setDispatcher(dispatcher)
             );
             tasksList.addTask(
@@ -23,7 +21,6 @@
                     .setSender(2)
                     .setReceivers([2, 3])
                     .setResult('bbb')
-                    .setDetails2Div(details2Div) // TODO refactor
                     .setDispatcher(dispatcher)
             );
             tasksList.addTask(
@@ -32,7 +29,6 @@
                     .setSender(3)
                     .setReceivers([1, 3])
                     .setResult('ccc')
-                    .setDetails2Div(details2Div) // TODO refactor
                     .setDispatcher(dispatcher)
             );
 
@@ -77,6 +73,10 @@ Prototype
 
     dispatcher.addListener('deleteTaskPressed', ([e, taskId])=>tasksList.deleteTask(e, taskId ))
     dispatcher.addListener('onAddTask', () => {
+        redrawTasksList();
+    })
+
+    dispatcher.addListener('afterDeleteTask', (taskId) => {
         redrawTasksList();
     })
 

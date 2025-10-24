@@ -4,6 +4,8 @@ class Task {
      */
     dispatcher = null;
 
+    // TODO all fields as variables
+
 
     constructor(message, id, date) {
         this.message = message;
@@ -25,38 +27,21 @@ class Task {
 
     }
 
-
-    /**
-     * @deprecated
-     * @param details2Div {Element}
-     * @returns {Task}
-     */
-    setDetails2Div(details2Div) {
-        this.details2Div = details2Div;
-
-        return this;
-    }
-
-    // TODO details2Div parameter
-    // TODO remove deleteCallback
     renderTaskLine() {
         let taskElement = document.createElement('div')
         taskElement.appendChild(document.createTextNode(this.message))
 
         taskElement.addEventListener('click', (e) => {
-            // this.renderTaskDetails(e);
-            // TODO pass through parameters this.details2Div
-            let taskDetailsDiv = this.renderTaskDetailsFull(e, this.details2Div);
+            let taskDetailsDiv = this.renderTaskDetailsFull(e);
             this.dispathcer.dispatch('taskDetailsRendered', taskDetailsDiv)
-
-            // TODO mark which line is selected
-            // TODO unmark others
         });
         taskElement.style.border = "solid thin black";
 
         let deleteButton = document.createElement('button');
         deleteButton.appendChild(document.createTextNode('-'));
-        deleteButton.addEventListener('click', (event) => dispatcher.dispatch('deleteTaskPressed', [event, this.id]));
+        deleteButton.addEventListener('click', (event) =>
+            dispatcher.dispatch('deleteTaskPressed', [event, this.id])
+        );
 
         taskElement.appendChild(deleteButton);
 
@@ -88,7 +73,6 @@ class Task {
         // console.log('receivers after cycle', this.receivers);
         // TODO other fields ( dates ? )
 
-        // TODO call saveHook
         this.dispathcer.dispatch('taskSaved', this)
     }
 
@@ -396,23 +380,20 @@ class TasksList {
      */
     dispatcher = null;
 
+    /**
+     * @type {[Task]}
+     */
+    tasks = [];
+
     constructor(dispatcher) {
-        this.tasks = [];
-        // inner id for a generated dom element
-        // TODO make setter or a different implementation
-        this.detailsListId = 'taskDetails2';
-        this.tasksListId = 'tasksList';
-        this.redrawHook = () => {
-            alert('redrawHook is not implemented');
-        }
-        this.maxTaskId = 3;
         this.dispatcher = dispatcher;
+
+        // for debuging only
+        this.maxTaskId = 3;
     }
 
     addTask(task) {
         this.tasks.push(task)
-
-        // TODO add all required hooks to task
     }
 
     newTask() {
@@ -428,7 +409,7 @@ class TasksList {
     deleteTask(event, taskId) {
         this.tasks = this.tasks.filter((task) => (task.id !== taskId))
         event.stopPropagation();
-        this.redrawHook();
+        dispatcher.dispatch('afterDeleteTask', taskId);
     }
 
     /**
@@ -436,7 +417,6 @@ class TasksList {
      */
     renderTasks() {
         let tasksListElement = document.createElement('div');
-        tasksListElement.setAttribute('id', this.tasksListId);
 
         for (let task of this.tasks) {
             tasksListElement.appendChild(task.renderTaskLine());
