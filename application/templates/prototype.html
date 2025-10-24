@@ -3,9 +3,10 @@
     <title>Štabo konsolė</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <script src="/assets/js/tasks.js"></script>
+    <script src="/assets/js/dispatcher.js"></script>
     <script type="application/javascript">
-        function initializeTasks() {
-            let tasksList = new TasksList();
+        function initializeTasks(dispatcher) {
+            let tasksList = new TasksList(dispatcher);
             let details2Div = document.getElementById('taskDetails2');
             tasksList.addTask(
                 (new Task("Prepare to commendant hour squad I", 1, new Date()))
@@ -13,7 +14,8 @@
                     .setSender(1)
                     .setReceivers([1, 2])
                     .setResult('aaa')
-                    .setDetails2Div(details2Div)
+                    .setDetails2Div(details2Div) // TODO refactor
+                    .setDispatcher(dispatcher)
             );
             tasksList.addTask(
                 (new Task("Prepare to commendant hour squad II", 2, new Date()))
@@ -21,7 +23,8 @@
                     .setSender(2)
                     .setReceivers([2, 3])
                     .setResult('bbb')
-                    .setDetails2Div(details2Div)
+                    .setDetails2Div(details2Div) // TODO refactor
+                    .setDispatcher(dispatcher)
             );
             tasksList.addTask(
                 (new Task("Prepare to commendant hour squad III", 3, new Date()))
@@ -29,7 +32,8 @@
                     .setSender(3)
                     .setReceivers([1, 3])
                     .setResult('ccc')
-                    .setDetails2Div(details2Div)
+                    .setDetails2Div(details2Div) // TODO refactor
+                    .setDispatcher(dispatcher)
             );
 
             return tasksList;
@@ -47,16 +51,20 @@ Prototype
     </div>
 </div>
 <script type="application/javascript">
-    let tasksList = initializeTasks();
+    let dispatcher = new Dispatcher();
+
+    let tasksList = initializeTasks(dispatcher);
+
 
     let redrawTasksList = () => {
         let tasksListDiv = document.getElementById('tasksList');
         clearTag(tasksListDiv);
         tasksListDiv.appendChild(tasksList.renderTasks());
     }
+    tasksList.setRedrawHook(redrawTasksList);
+
     redrawTasksList();
 
-    tasksList.setRedrawHook(redrawTasksList);
 </script>
 </body>
 </html>

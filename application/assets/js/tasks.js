@@ -20,6 +20,9 @@ class Task {
     }
 
     setDetails2Div(details2Div) {
+
+        // TODO use displayHook instead
+
         this.details2Div = details2Div;
 
         return this;
@@ -73,6 +76,8 @@ class Task {
         //
         // console.log('receivers after cycle', this.receivers);
         // TODO other fields
+
+        // TODO call saveHook
     }
 
     /*******************************************************************************
@@ -347,6 +352,12 @@ class Task {
         return this;
     }
 
+    setDispatcher(dispatcher) {
+        this.dispathcer = dispatcher;
+
+        return this;
+    }
+
 }
 
 function clearTag(tag) {
@@ -361,15 +372,34 @@ function clearTag(tag) {
  *
  ***********************************************************************/
 class TasksList {
-    constructor() {
+    /**
+     *
+     * @param dispatcher  Dispatcher
+     */
+    constructor(dispatcher) {
         this.tasks = [];
         // inner id for a generated dom element
+        // TODO make setter or a different implementation
+        this.detailsListId = 'taskDetails2';
         this.tasksListId = 'tasksList';
         this.redrawHook = () => { alert('redrawHook is not implemented'); }
+        this.maxTaskId = 3;
+        this.dispatcher = dispatcher;
     }
 
     addTask(task) {
         this.tasks.push(task)
+
+        // TODO add all required hooks to task
+    }
+
+    newTask() {
+        // TODO with backend later
+        this.maxTaskId++;
+        let task = new Task("Task "+this.maxTaskId, this.maxTaskId, new Date())
+        this.tasks.push(task);
+
+        return task;
     }
 
     deleteTask(event, taskId) {
@@ -394,14 +424,16 @@ class TasksList {
         addButton.appendChild(document.createTextNode('+'));
         tasksListElement.appendChild(addButton);
 
-        addButton.addEventListener('click', this.addTaskPressed);
+        addButton.addEventListener('click', (event) => this.addTaskPressed(event));
 
         return tasksListElement;
     }
 
     addTaskPressed(event) {
-        console.log('addTaskPressed', event)
-        alert('TODO add task');
+        let task = this.newTask();
+        let detailsDiv = document.getElementById( this.detailsListId );
+        task.setDetails2Div(detailsDiv)
+        this.redrawHook();
     }
 
     setRedrawHook(redrawHook) {
