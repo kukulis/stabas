@@ -65,7 +65,15 @@ Prototype
 
     redrawTasksList();
 
+    const taskDetailsOuterDiv = document.getElementById('taskDetails2')
+    // =================== events initialization ===================================
     dispatcher.addListener('taskSaved', (task)=>console.log('Task saved '+task.id ))
+    dispatcher.addListener('taskDetailsRendered', (taskInnerDiv) => {
+        clearTag(taskDetailsOuterDiv)
+        taskDetailsOuterDiv.appendChild(taskInnerDiv)
+    } )
+
+    // =============================================================================
 
 </script>
 </body>

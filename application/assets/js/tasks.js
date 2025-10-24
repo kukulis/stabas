@@ -1,4 +1,10 @@
 class Task {
+    /**
+     * @type {Dispatcher}
+     */
+    dispatcher = null;
+
+
     constructor(message, id, date) {
         this.message = message;
         this.id = id;
@@ -19,16 +25,20 @@ class Task {
 
     }
 
+
+    /**
+     * @deprecated
+     * @param details2Div {Element}
+     * @returns {Task}
+     */
     setDetails2Div(details2Div) {
-
-        // TODO use displayHook instead
-
         this.details2Div = details2Div;
 
         return this;
     }
 
     // TODO details2Div parameter
+    // TODO remove deleteCallback
     renderTaskLine(deleteCallback) {
         let taskElement = document.createElement('div')
         taskElement.appendChild(document.createTextNode(this.message))
@@ -36,7 +46,8 @@ class Task {
         taskElement.addEventListener('click', (e) => {
             // this.renderTaskDetails(e);
             // TODO pass through parameters this.details2Div
-            this.renderTaskDetailsFull(e, this.details2Div);
+            let taskDetailsDiv = this.renderTaskDetailsFull(e, this.details2Div);
+            this.dispathcer.dispatch('taskDetailsRendered', taskDetailsDiv)
 
             // TODO mark which line is selected
             // TODO unmark others
@@ -75,7 +86,7 @@ class Task {
         this.receivers = Array.from(receiversSelect.selectedOptions).map((option)=>option.value);
         //
         // console.log('receivers after cycle', this.receivers);
-        // TODO other fields
+        // TODO other fields ( dates ? )
 
         // TODO call saveHook
         this.dispathcer.dispatch('taskSaved', this )
@@ -86,10 +97,12 @@ class Task {
      *
      *******************************************************************************
      */
-    renderTaskDetailsFull(event, parentDiv) {
-        clearTag(parentDiv);
+    renderTaskDetailsFull(event) {
+        let innerDetailsDiv = document.createElement('div')
+
+        // clearTag(parentDiv);
         let tableDiv = document.createElement('table');
-        parentDiv.appendChild(tableDiv);
+        // parentDiv.appendChild(tableDiv);
 
         this.renderTrId(tableDiv)
         this.renderTrMessage(tableDiv)
@@ -103,8 +116,12 @@ class Task {
         saveButton.appendChild(document.createTextNode('save'))
         saveButton.addEventListener('click', (e) => this.saveAction(e))
 
-        parentDiv.appendChild(saveButton);
+        // parentDiv.appendChild(saveButton);
 
+        innerDetailsDiv.appendChild(tableDiv)
+        innerDetailsDiv.appendChild(saveButton)
+
+        return innerDetailsDiv
     }
 
     renderTrId(tableDiv) {
