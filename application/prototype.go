@@ -11,6 +11,7 @@ func main() {
 
 	router.LoadHTMLFiles("templates/prototype.html")
 	router.GET("/prototype", func(c *gin.Context) {
+		fmt.Println("Prototype reloaded")
 		c.HTML(http.StatusOK, "prototype.html", gin.H{})
 	})
 

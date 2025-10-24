@@ -3,8 +3,8 @@ class Dispatcher {
         this.listeners = new Map();
     }
 
-    addListener(eventName, listener ) {
-        if ( !this.listeners.has(eventName)) {
+    addListener(eventName, listener) {
+        if (!this.listeners.has(eventName)) {
             this.listeners.set(eventName, []);
         }
 
@@ -15,14 +15,14 @@ class Dispatcher {
     }
 
     dispatch(eventName, parameters) {
-        if ( !this.listeners.has(eventName) ) {
+        if (!this.listeners.has(eventName)) {
             return 0;
         }
 
         let count = 0;
-        for ( let listener in this.listeners.get(eventName) ) {
-            if ( listener(parameters) ) {
-                count ++;
+        for (let listener of this.listeners.get(eventName)) {
+            if (listener(parameters)) {
+                count++;
             }
         }
 

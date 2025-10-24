@@ -78,6 +78,7 @@ class Task {
         // TODO other fields
 
         // TODO call saveHook
+        this.dispathcer.dispatch('taskSaved', this )
     }
 
     /*******************************************************************************

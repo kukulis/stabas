@@ -65,6 +65,8 @@ Prototype
 
     redrawTasksList();
 
+    dispatcher.addListener('taskSaved', (task)=>console.log('Task saved '+task.id ))
+
 </script>
 </body>
 </html>
