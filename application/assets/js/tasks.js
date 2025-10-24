@@ -39,7 +39,7 @@ class Task {
 
     // TODO details2Div parameter
     // TODO remove deleteCallback
-    renderTaskLine(deleteCallback) {
+    renderTaskLine() {
         let taskElement = document.createElement('div')
         taskElement.appendChild(document.createTextNode(this.message))
 
@@ -56,7 +56,7 @@ class Task {
 
         let deleteButton = document.createElement('button');
         deleteButton.appendChild(document.createTextNode('-'));
-        deleteButton.addEventListener('click', deleteCallback);
+        deleteButton.addEventListener('click', (event) => dispatcher.dispatch('deleteTaskPressed', [event, this.id]));
 
         taskElement.appendChild(deleteButton);
 
@@ -66,7 +66,7 @@ class Task {
     saveAction(event) {
         // TODO unset 'modified' flag, which is set when any of the detail elements are modified
         // alert('save button pressed')
-        console.log ( 'save button, event', event)
+        console.log('save button, event', event)
 
         let messageInput = document.getElementById('message');
         this.message = messageInput.value;
@@ -81,15 +81,15 @@ class Task {
         this.sender = senderSelect.value;
 
         let receiversSelect = document.getElementById('receivers');
-         // receiversSelect.children
+        // receiversSelect.children
 
-        this.receivers = Array.from(receiversSelect.selectedOptions).map((option)=>option.value);
+        this.receivers = Array.from(receiversSelect.selectedOptions).map((option) => option.value);
         //
         // console.log('receivers after cycle', this.receivers);
         // TODO other fields ( dates ? )
 
         // TODO call saveHook
-        this.dispathcer.dispatch('taskSaved', this )
+        this.dispathcer.dispatch('taskSaved', this)
     }
 
     /*******************************************************************************
@@ -319,7 +319,7 @@ class Task {
         tableDiv.appendChild(tr)
     }
 
-    renderTextTr( tableDiv, labelText, value ) {
+    renderTextTr(tableDiv, labelText, value) {
         let trId = document.createElement('tr');
         let tdIdLabel = document.createElement('td');
         tdIdLabel.appendChild(document.createTextNode(labelText));
@@ -390,17 +390,21 @@ function clearTag(tag) {
  *
  ***********************************************************************/
 class TasksList {
+
     /**
-     *
-     * @param dispatcher  Dispatcher
+     * @type {Dispatcher}
      */
+    dispatcher = null;
+
     constructor(dispatcher) {
         this.tasks = [];
         // inner id for a generated dom element
         // TODO make setter or a different implementation
         this.detailsListId = 'taskDetails2';
         this.tasksListId = 'tasksList';
-        this.redrawHook = () => { alert('redrawHook is not implemented'); }
+        this.redrawHook = () => {
+            alert('redrawHook is not implemented');
+        }
         this.maxTaskId = 3;
         this.dispatcher = dispatcher;
     }
@@ -414,14 +418,15 @@ class TasksList {
     newTask() {
         // TODO with backend later
         this.maxTaskId++;
-        let task = new Task("Task "+this.maxTaskId, this.maxTaskId, new Date())
+        let task = new Task("Task " + this.maxTaskId, this.maxTaskId, new Date())
+        task.setDispatcher(this.dispatcher)
         this.tasks.push(task);
 
         return task;
     }
 
     deleteTask(event, taskId) {
-        this.tasks = this.tasks.filter((task)=> (task.id !== taskId))
+        this.tasks = this.tasks.filter((task) => (task.id !== taskId))
         event.stopPropagation();
         this.redrawHook();
     }
@@ -434,27 +439,18 @@ class TasksList {
         tasksListElement.setAttribute('id', this.tasksListId);
 
         for (let task of this.tasks) {
-            // console.log( 'message:', message )
-            tasksListElement.appendChild(task.renderTaskLine((event)=>this.deleteTask(event, task.id)));
+            tasksListElement.appendChild(task.renderTaskLine());
         }
 
         let addButton = document.createElement('button');
         addButton.appendChild(document.createTextNode('+'));
         tasksListElement.appendChild(addButton);
 
-        addButton.addEventListener('click', (event) => this.addTaskPressed(event));
+        addButton.addEventListener('click', () => {
+            let task = this.newTask();
+            this.dispatcher.dispatch('onAddTask', task)
+        });
 
         return tasksListElement;
-    }
-
-    addTaskPressed(event) {
-        let task = this.newTask();
-        let detailsDiv = document.getElementById( this.detailsListId );
-        task.setDetails2Div(detailsDiv)
-        this.redrawHook();
-    }
-
-    setRedrawHook(redrawHook) {
-        this.redrawHook = redrawHook;
     }
 }

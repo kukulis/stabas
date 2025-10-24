@@ -61,17 +61,24 @@ Prototype
         clearTag(tasksListDiv);
         tasksListDiv.appendChild(tasksList.renderTasks());
     }
-    tasksList.setRedrawHook(redrawTasksList);
 
     redrawTasksList();
 
-    const taskDetailsOuterDiv = document.getElementById('taskDetails2')
     // =================== events initialization ===================================
+    // TODO vėliau perkelsim į atskirą funkciją
+
+    const taskDetailsOuterDiv = document.getElementById('taskDetails2')
+    // TODO use constants for event names
     dispatcher.addListener('taskSaved', (task)=>console.log('Task saved '+task.id ))
     dispatcher.addListener('taskDetailsRendered', (taskInnerDiv) => {
         clearTag(taskDetailsOuterDiv)
         taskDetailsOuterDiv.appendChild(taskInnerDiv)
     } )
+
+    dispatcher.addListener('deleteTaskPressed', ([e, taskId])=>tasksList.deleteTask(e, taskId ))
+    dispatcher.addListener('onAddTask', () => {
+        redrawTasksList();
+    })
 
     // =============================================================================
 
