@@ -27,11 +27,13 @@ class Task {
 
     }
 
+    // TODO participants parameter
     renderTaskLine() {
         let taskElement = document.createElement('div')
         taskElement.appendChild(document.createTextNode(this.message))
 
         taskElement.addEventListener('click', (e) => {
+            // TODO participants list
             let taskDetailsDiv = this.renderTaskDetailsFull(e);
             this.dispathcer.dispatch('taskDetailsRendered', taskDetailsDiv)
         });
@@ -82,6 +84,7 @@ class Task {
      *******************************************************************************
      */
     renderTaskDetailsFull(event) {
+        // TODO participants list
         let innerDetailsDiv = document.createElement('div')
 
         // clearTag(parentDiv);
@@ -372,6 +375,8 @@ function clearTag(tag) {
  *
  * TaskList
  *
+ * TODO rename as TaskListComponent and move to a separate file
+ *
  ***********************************************************************/
 class TasksList {
 
@@ -384,6 +389,8 @@ class TasksList {
      * @type {[Task]}
      */
     tasks = [];
+
+    // TODO participants list
 
     constructor(dispatcher) {
         this.dispatcher = dispatcher;
@@ -419,6 +426,7 @@ class TasksList {
         let tasksListElement = document.createElement('div');
 
         for (let task of this.tasks) {
+            // TODO participants list
             tasksListElement.appendChild(task.renderTaskLine());
         }
 
@@ -432,5 +440,14 @@ class TasksList {
         });
 
         return tasksListElement;
+    }
+
+    loadParticipants() {
+        // TODO from backend
+
+        // TODO remove after backend
+
+        // --
+
     }
 }
