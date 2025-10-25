@@ -1,0 +1,34 @@
+package main
+
+import (
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"net/http"
+)
+
+func main() {
+	router := gin.Default()
+
+	router.LoadHTMLFiles(
+		"templates/index.html",
+		"templates/tasks.html",
+		"templates/participants.html",
+	)
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", gin.H{})
+	})
+	router.GET("/tasks", func(c *gin.Context) {
+		fmt.Println("Tasks reloaded")
+		c.HTML(http.StatusOK, "tasks.html", gin.H{})
+	})
+	router.GET("/participants", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "participants.html", gin.H{})
+	})
+
+	router.StaticFile("/favicon.ico", "./assets/favicon.ico")
+	router.Static("/assets/js", "./assets/js")
+
+	err := router.Run(":8088")
+
+	fmt.Println(err)
+}
