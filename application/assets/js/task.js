@@ -1,4 +1,9 @@
+const TASK_SAVE_BUTTON = 'task_save_button';
+
+
 class Task {
+
+
     /**
      * @type {Dispatcher}
      */
@@ -44,6 +49,9 @@ class Task {
      * @returns {HTMLDivElement}
      */
     renderTaskLine(participantLoader) {
+
+        // TODO more details : status, sender, receivers, current status date
+
         let taskElement = document.createElement('div')
         taskElement.style.border = "solid thin black";
 
@@ -121,7 +129,7 @@ class Task {
         let saveButton = document.createElement('button')
         saveButton.appendChild(document.createTextNode('save'))
         saveButton.addEventListener('click', (e) => this.saveAction(e))
-        saveButton.setAttribute('id', 'task_save_button')
+        saveButton.setAttribute('id', TASK_SAVE_BUTTON)
         saveButton.disabled = true;
 
         innerDetailsDiv.appendChild(tableDiv)

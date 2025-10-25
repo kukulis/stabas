@@ -13,6 +13,7 @@ func main() {
 		"templates/index.html",
 		"templates/tasks.html",
 		"templates/participants.html",
+		"templates/settings.html",
 	)
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", gin.H{})

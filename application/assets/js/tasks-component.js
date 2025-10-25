@@ -128,12 +128,12 @@ class TasksComponent {
         return tasksComponent;
     }
     enableSaveButton() {
-        let saveButton = document.getElementById('task_save_button' );
+        let saveButton = document.getElementById(TASK_SAVE_BUTTON );
         saveButton.disabled = false;
     }
 
     disableSaveButton() {
-        let saveButton = document.getElementById('task_save_button' );
+        let saveButton = document.getElementById(TASK_SAVE_BUTTON );
         saveButton.disabled = true;
     }
 }
