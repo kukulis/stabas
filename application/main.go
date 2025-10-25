@@ -1,6 +1,7 @@
 package main
 
 import (
+	"darbelis.eu/stabas/api"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -25,6 +26,8 @@ func main() {
 	router.GET("/participants", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "participants.html", gin.H{})
 	})
+
+	router.GET("/api/tasks", func(c *gin.Context) { api.TaskControllerInstance.GetAllTasks(c) })
 
 	router.StaticFile("/favicon.ico", "./assets/favicon.ico")
 	router.Static("/assets/js", "./assets/js")
