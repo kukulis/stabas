@@ -4,27 +4,39 @@ class Task {
      */
     dispatcher = null;
 
-    // TODO all fields as variables
+    /** @type {int} */
+    id = 0;
+    /** @type {String} */
+    message = "";
+    /** @type {String} */
+    result = null;
+    /** @type {int} */
+    status = 0;
+    /** @type {int} */
+    sender = 0;
+    /** @type {[int]} */
+    receivers = [];
 
+    /** @type {Date} */
+    createdAt = null;
+    /** @type {Date} */
+    sentAt = null;
+    /** @type {Date} */
+    receivedAt = null;
+    /** @type {Date} */
+    executingAt = null;
+    /** @type {Date} */
+    finishedAt = null;
+    /** @type {Date} */
+    closedAt = null;
+
+    /** @type {boolean} */
+    modified = false;
 
     constructor(message, id, date) {
         this.message = message;
         this.id = id;
-        // deprecated
-        this.date = date;
         this.createdAt = date;
-
-        this.result = null;
-        this.status = null;
-        this.sender = null;
-        this.receivers = [];
-
-        this.sentAt = null;
-        this.receivedAt = null;
-        this.executingAt = null;
-        this.finishedAt = null;
-        this.closedAt = null;
-
     }
 
     /**
@@ -33,19 +45,25 @@ class Task {
      */
     renderTaskLine(participantLoader) {
         let taskElement = document.createElement('div')
-        taskElement.appendChild(document.createTextNode(this.message))
-
-        taskElement.addEventListener('click', (e) => {
-            // TODO participants list
-            let taskDetailsDiv = this.renderTaskDetailsFull(e, participantLoader);
-            this.dispathcer.dispatch('taskDetailsRendered', taskDetailsDiv)
-        });
         taskElement.style.border = "solid thin black";
+
+        let messageDiv = document.createElement('div')
+        messageDiv.appendChild(document.createTextNode(this.message))
+
+        taskElement.appendChild(messageDiv);
+
+        messageDiv.addEventListener('click', (e) => {
+            let taskDetailsDiv = this.renderTaskDetailsFull(e, participantLoader);
+            this.dispatcher.dispatch('taskDetailsRendered', taskDetailsDiv)
+        });
 
         let deleteButton = document.createElement('button');
         deleteButton.appendChild(document.createTextNode('-'));
-        deleteButton.addEventListener('click', (event) =>
-            dispatcher.dispatch('deleteTaskPressed', [event, this.id])
+        const thisTask = this;
+        deleteButton.addEventListener('click', (event) => {
+                console.log('deleteButton click event, thisTask: ', thisTask)
+                thisTask.dispatcher.dispatch('deleteTaskPressed', [event, this.id])
+            }
         );
 
         taskElement.appendChild(deleteButton);
@@ -54,9 +72,9 @@ class Task {
     }
 
     saveAction(event) {
-        // TODO unset 'modified' flag, which is set when any of the detail elements are modified
-        // alert('save button pressed')
         console.log('save button, event', event)
+
+        this.modified = false;
 
         let messageInput = document.getElementById('message');
         this.message = messageInput.value;
@@ -72,12 +90,12 @@ class Task {
 
         let receiversSelect = document.getElementById('receivers');
         this.receivers = Array.from(receiversSelect.selectedOptions).map((option) => parseInt(option.value));
-        
+
         //
         // console.log('receivers after cycle', this.receivers);
         // TODO other fields ( dates ? )
 
-        this.dispathcer.dispatch('taskSaved', this)
+        this.dispatcher.dispatch('taskSaved', this)
     }
 
     /*******************************************************************************
@@ -86,7 +104,6 @@ class Task {
      *******************************************************************************
      */
     renderTaskDetailsFull(event, participantsLoader) {
-        // TODO participants list
         let innerDetailsDiv = document.createElement('div')
 
         // clearTag(parentDiv);
@@ -104,8 +121,8 @@ class Task {
         let saveButton = document.createElement('button')
         saveButton.appendChild(document.createTextNode('save'))
         saveButton.addEventListener('click', (e) => this.saveAction(e))
-
-        // parentDiv.appendChild(saveButton);
+        saveButton.setAttribute('id', 'task_save_button')
+        saveButton.disabled = true;
 
         innerDetailsDiv.appendChild(tableDiv)
         innerDetailsDiv.appendChild(saveButton)
@@ -118,7 +135,7 @@ class Task {
         let tdIdLabel = document.createElement('td');
         tdIdLabel.appendChild(document.createTextNode('ID'));
         let tdIdValue = document.createElement('td');
-        tdIdValue.appendChild(document.createTextNode(this.id));
+        tdIdValue.appendChild(document.createTextNode(this.id.toString()));
         trId.appendChild(tdIdLabel)
         trId.appendChild(tdIdValue)
 
@@ -143,6 +160,8 @@ class Task {
         inputField.setAttribute('size', '80');
         inputField.value = this.message;
 
+        inputField.addEventListener('input', (e) => dispatcher.dispatch('inputMessage', [e, this.id]))
+
         tr.appendChild(tdLabel)
         tr.appendChild(tdValue)
 
@@ -166,6 +185,8 @@ class Task {
         inputField.setAttribute('id', 'result');
         inputField.setAttribute('size', '80');
         inputField.value = this.result;
+
+        inputField.addEventListener('input', (e) => dispatcher.dispatch('inputResult', [e, this.id]))
 
         tr.appendChild(tdLabel)
         tr.appendChild(tdValue)
@@ -204,12 +225,13 @@ class Task {
             optionTag.setAttribute('value', key)
             optionTag.appendChild(document.createTextNode(value))
 
-            if (key === this.status) {
+            if (parseInt(key) === this.status) {
                 optionTag.setAttribute('selected', 'selected')
             }
 
             selectField.appendChild(optionTag)
         }
+        selectField.addEventListener('input', (e) => dispatcher.dispatch('inputStatus', [e, this.id]))
 
         tr.appendChild(tdLabel)
         tr.appendChild(tdValue)
@@ -250,6 +272,8 @@ class Task {
             selectField.appendChild(optionTag)
         }
 
+        selectField.addEventListener('input', (e) => dispatcher.dispatch('inputSender', [e, this.id]))
+
         tr.appendChild(tdLabel)
         tr.appendChild(tdValue)
 
@@ -271,7 +295,7 @@ class Task {
         selectField.setAttribute('multiple', 'multiple');
         selectField.setAttribute('name', 'receivers');
         selectField.setAttribute('id', 'receivers');
-        selectField.value = this.receivers;
+        // selectField.value = this.receivers;
 
         /**
          * @type {[Participant]}
@@ -294,6 +318,8 @@ class Task {
 
             selectField.appendChild(optionTag)
         }
+
+        selectField.addEventListener('input', (e) => dispatcher.dispatch('inputReceivers', [e, this.id]))
 
         tr.appendChild(tdLabel)
         tr.appendChild(tdValue)
@@ -322,12 +348,6 @@ class Task {
         this.renderTextTr(tableDiv, 'Closed at', this.closedAt)
     }
 
-    setId(id) {
-        this.id = id;
-
-        return this;
-    }
-
     setResult(result) {
         this.result = result;
 
@@ -353,10 +373,11 @@ class Task {
     }
 
     setDispatcher(dispatcher) {
-        this.dispathcer = dispatcher;
+        this.dispatcher = dispatcher;
 
         return this;
     }
+
 
 }
 

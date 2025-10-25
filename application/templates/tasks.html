@@ -38,6 +38,7 @@ Prototype
     dispatcher.addListener('taskSaved', (task) => {
         console.log('Task saved ' + task.id)
         redrawTasksList()
+        tasksComponent.disableSaveButton();
     })
     dispatcher.addListener('taskDetailsRendered', (taskInnerDiv) => {
         clearTag(taskDetailsOuterDiv)
@@ -51,6 +52,31 @@ Prototype
 
     dispatcher.addListener('afterDeleteTask', (taskId) => {
         redrawTasksList();
+    })
+
+    dispatcher.addListener('inputReceivers', ([e, taskId]) => {
+        console.log('task ' + taskId + ' receivers input', e)
+        tasksComponent.enableSaveButton()
+    })
+
+    dispatcher.addListener('inputSender', ([e, taskId]) => {
+        console.log('task ' + taskId + ' sender input', e)
+        tasksComponent.enableSaveButton()
+    })
+
+    dispatcher.addListener('inputStatus', ([e, taskId]) => {
+        console.log('task ' + taskId + ' status input', e)
+        tasksComponent.enableSaveButton()
+    })
+
+    dispatcher.addListener('inputMessage', ([e, taskId]) => {
+        console.log('task ' + taskId + ' message input', e)
+        tasksComponent.enableSaveButton()
+    })
+
+    dispatcher.addListener('inputResult', ([e, taskId]) => {
+        console.log('task ' + taskId + ' result input', e)
+        tasksComponent.enableSaveButton()
     })
 
     // =============================================================================

@@ -52,7 +52,7 @@ class TasksComponent {
         }
 
         this.tasks = this.tasks.filter((task) => (task.id !== taskId))
-        dispatcher.dispatch('afterDeleteTask', taskId);
+        this.dispatcher.dispatch('afterDeleteTask', taskId);
     }
 
     /**
@@ -98,7 +98,7 @@ class TasksComponent {
                 .setSender(1)
                 .setReceivers([1, 2])
                 .setResult('aaa')
-                .setDispatcher(dispatcher)
+                .setDispatcher(this.dispatcher)
         );
         this.addTask(
             (new Task("Prepare to commendant hour squad II", 2, new Date()))
@@ -106,7 +106,7 @@ class TasksComponent {
                 .setSender(2)
                 .setReceivers([2, 3])
                 .setResult('bbb')
-                .setDispatcher(dispatcher)
+                .setDispatcher(this.dispatcher)
         );
         this.addTask(
             (new Task("Prepare to commendant hour squad III", 3, new Date()))
@@ -114,7 +114,7 @@ class TasksComponent {
                 .setSender(3)
                 .setReceivers([1, 3])
                 .setResult('ccc')
-                .setDispatcher(dispatcher)
+                .setDispatcher(this.dispatcher)
         );
         // --
     }
@@ -126,5 +126,14 @@ class TasksComponent {
         tasksComponent.loadTasks();
 
         return tasksComponent;
+    }
+    enableSaveButton() {
+        let saveButton = document.getElementById('task_save_button' );
+        saveButton.disabled = false;
+    }
+
+    disableSaveButton() {
+        let saveButton = document.getElementById('task_save_button' );
+        saveButton.disabled = true;
     }
 }
