@@ -6,39 +6,6 @@
     <script src="/assets/js/tasks-component.js"></script>
     <script src="/assets/js/dispatcher.js"></script>
     <script src="/assets/js/participant.js"></script>
-    <script type="application/javascript">
-
-        // TODO move to the tasks list component
-        function initializeTasks(dispatcher) {
-            let tasksComponent = new TasksComponent(dispatcher);
-            tasksComponent.addTask(
-                (new Task("Prepare to commendant hour squad I", 1, new Date()))
-                    .setStatus("new")
-                    .setSender(1)
-                    .setReceivers([1, 2])
-                    .setResult('aaa')
-                    .setDispatcher(dispatcher)
-            );
-            tasksComponent.addTask(
-                (new Task("Prepare to commendant hour squad II", 2, new Date()))
-                    .setStatus("sent")
-                    .setSender(2)
-                    .setReceivers([2, 3])
-                    .setResult('bbb')
-                    .setDispatcher(dispatcher)
-            );
-            tasksComponent.addTask(
-                (new Task("Prepare to commendant hour squad III", 3, new Date()))
-                    .setStatus("received")
-                    .setSender(3)
-                    .setReceivers([1, 3])
-                    .setResult('ccc')
-                    .setDispatcher(dispatcher)
-            );
-
-            return tasksComponent;
-        }
-    </script>
 </head>
 <body>
 Prototype
@@ -53,8 +20,7 @@ Prototype
 <script type="application/javascript">
     let dispatcher = new Dispatcher();
 
-    let tasksComponent = initializeTasks(dispatcher);
-
+    let tasksComponent = TasksComponent.initialize(dispatcher);
 
     let redrawTasksList = () => {
         let tasksListDiv = document.getElementById('tasksList');

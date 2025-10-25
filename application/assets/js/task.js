@@ -27,14 +27,17 @@ class Task {
 
     }
 
-    // TODO participants parameter
-    renderTaskLine() {
+    /**
+     *
+     * @returns {HTMLDivElement}
+     */
+    renderTaskLine(participantLoader) {
         let taskElement = document.createElement('div')
         taskElement.appendChild(document.createTextNode(this.message))
 
         taskElement.addEventListener('click', (e) => {
             // TODO participants list
-            let taskDetailsDiv = this.renderTaskDetailsFull(e);
+            let taskDetailsDiv = this.renderTaskDetailsFull(e, participantLoader);
             this.dispathcer.dispatch('taskDetailsRendered', taskDetailsDiv)
         });
         taskElement.style.border = "solid thin black";
@@ -65,12 +68,11 @@ class Task {
         this.status = statusSelect.value;
 
         let senderSelect = document.getElementById('sender');
-        this.sender = senderSelect.value;
+        this.sender = parseInt(senderSelect.value);
 
         let receiversSelect = document.getElementById('receivers');
-        // receiversSelect.children
-
-        this.receivers = Array.from(receiversSelect.selectedOptions).map((option) => option.value);
+        this.receivers = Array.from(receiversSelect.selectedOptions).map((option) => parseInt(option.value));
+        
         //
         // console.log('receivers after cycle', this.receivers);
         // TODO other fields ( dates ? )
@@ -83,7 +85,7 @@ class Task {
      *
      *******************************************************************************
      */
-    renderTaskDetailsFull(event) {
+    renderTaskDetailsFull(event, participantsLoader) {
         // TODO participants list
         let innerDetailsDiv = document.createElement('div')
 
@@ -95,8 +97,8 @@ class Task {
         this.renderTrMessage(tableDiv)
         this.renderTrResult(tableDiv)
         this.renderStatus(tableDiv)
-        this.renderSender(tableDiv)
-        this.renderReceivers(tableDiv)
+        this.renderSender(tableDiv, participantsLoader)
+        this.renderReceivers(tableDiv, participantsLoader)
         this.renderDates(tableDiv)
 
         let saveButton = document.createElement('button')
@@ -215,8 +217,7 @@ class Task {
         tableDiv.appendChild(tr)
     }
 
-    // TODO all possible participants should be passed through parameters
-    renderSender(tableDiv) {
+    renderSender(tableDiv, participantsLoader) {
         let tr = document.createElement('tr');
         let tdLabel = document.createElement('td');
 
@@ -232,19 +233,17 @@ class Task {
         selectField.setAttribute('id', 'sender');
         selectField.value = this.sender;
 
-        // TODO take values from parameters
-        let options = {
-            "1": "Participant1",
-            "2": "Participant2",
-            "3": "Participant3",
-        }
+        /**
+         * @type {[Participant]}
+         */
+        let participants = participantsLoader();
 
-        for (const [key, value] of Object.entries(options)) {
+        for (let participant of participants) {
             let optionTag = document.createElement('option');
-            optionTag.setAttribute('value', key)
-            optionTag.appendChild(document.createTextNode(value))
+            optionTag.setAttribute('value', participant.id.toString())
+            optionTag.appendChild(document.createTextNode(participant.name))
 
-            if (key === ('' + this.sender)) {
+            if (participant.id === this.sender) {
                 optionTag.setAttribute('selected', 'selected')
             }
 
@@ -257,8 +256,7 @@ class Task {
         tableDiv.appendChild(tr)
     }
 
-    // TODO pass available participants through parameters
-    renderReceivers(tableDiv) {
+    renderReceivers(tableDiv, participantsLoader) {
         let tr = document.createElement('tr');
         let tdLabel = document.createElement('td');
 
@@ -275,25 +273,22 @@ class Task {
         selectField.setAttribute('id', 'receivers');
         selectField.value = this.receivers;
 
-        // TODO take values from parameters
-        let options = {
-            "1": "participant1",
-            "2": "participant2",
-            "3": "participant3",
-        }
+        /**
+         * @type {[Participant]}
+         */
+        let participants = participantsLoader();
 
         let receiversMap = new Map();
         for (let receiver of this.receivers) {
-            receiversMap.set(receiver.toString(), receiver)
+            receiversMap.set(receiver, receiver)
         }
 
-
-        for (const [key, value] of Object.entries(options)) {
+        for (let participant of participants) {
             let optionTag = document.createElement('option');
-            optionTag.setAttribute('value', key)
-            optionTag.appendChild(document.createTextNode(value))
+            optionTag.setAttribute('value', '' + participant.id)
+            optionTag.appendChild(document.createTextNode(participant.name))
 
-            if (receiversMap.has(key)) {
+            if (receiversMap.has(participant.id)) {
                 optionTag.setAttribute('selected', 'selected')
             }
 

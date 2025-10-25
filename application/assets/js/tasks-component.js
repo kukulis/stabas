@@ -16,7 +16,10 @@ class TasksComponent {
      */
     tasks = [];
 
-    // TODO participants list
+    /**
+     * @type {[Participant]}
+     */
+    participants = [];
 
     constructor(dispatcher) {
         this.dispatcher = dispatcher;
@@ -40,8 +43,15 @@ class TasksComponent {
     }
 
     deleteTask(event, taskId) {
-        this.tasks = this.tasks.filter((task) => (task.id !== taskId))
         event.stopPropagation();
+
+        let confirmDelete = confirm("Delete task "+taskId+" ?")
+
+        if ( !confirmDelete ) {
+            return;
+        }
+
+        this.tasks = this.tasks.filter((task) => (task.id !== taskId))
         dispatcher.dispatch('afterDeleteTask', taskId);
     }
 
@@ -52,8 +62,7 @@ class TasksComponent {
         let tasksListElement = document.createElement('div');
 
         for (let task of this.tasks) {
-            // TODO participants list
-            tasksListElement.appendChild(task.renderTaskLine());
+            tasksListElement.appendChild(task.renderTaskLine(()=>this.participants));
         }
 
         let addButton = document.createElement('button');
@@ -72,8 +81,50 @@ class TasksComponent {
         // TODO from backend
 
         // TODO remove after backend
-
+        this.participants.push( new Participant(1, "loaded Participant 1"))
+        this.participants.push( new Participant(2, "loaded Participant 2"))
+        this.participants.push( new Participant(3, "L Participant 3"))
         // --
 
+    }
+
+    loadTasks() {
+        // TODO from backend
+
+        // TODO remove after backend
+        this.addTask(
+            (new Task("Prepare to commendant hour squad I", 1, new Date()))
+                .setStatus("new")
+                .setSender(1)
+                .setReceivers([1, 2])
+                .setResult('aaa')
+                .setDispatcher(dispatcher)
+        );
+        this.addTask(
+            (new Task("Prepare to commendant hour squad II", 2, new Date()))
+                .setStatus("sent")
+                .setSender(2)
+                .setReceivers([2, 3])
+                .setResult('bbb')
+                .setDispatcher(dispatcher)
+        );
+        this.addTask(
+            (new Task("Prepare to commendant hour squad III", 3, new Date()))
+                .setStatus("received")
+                .setSender(3)
+                .setReceivers([1, 3])
+                .setResult('ccc')
+                .setDispatcher(dispatcher)
+        );
+        // --
+    }
+
+    static initialize(dispatcher) {
+        let tasksComponent = new TasksComponent(dispatcher);
+
+        tasksComponent.loadParticipants();
+        tasksComponent.loadTasks();
+
+        return tasksComponent;
     }
 }
