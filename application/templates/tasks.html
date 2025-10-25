@@ -1,17 +1,17 @@
 <html lang="lt">
 <head>
-    <!-- TODO move to tasks.html -->
-    <title>Štabo konsolė</title>
+    <title>Štabo konsolė: užduotys</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <script src="/assets/js/tasks.js"></script>
+    <script src="/assets/js/task.js"></script>
+    <script src="/assets/js/tasks-component.js"></script>
     <script src="/assets/js/dispatcher.js"></script>
     <script src="/assets/js/participant.js"></script>
     <script type="application/javascript">
 
         // TODO move to the tasks list component
         function initializeTasks(dispatcher) {
-            let tasksList = new TasksList(dispatcher);
-            tasksList.addTask(
+            let tasksComponent = new TasksComponent(dispatcher);
+            tasksComponent.addTask(
                 (new Task("Prepare to commendant hour squad I", 1, new Date()))
                     .setStatus("new")
                     .setSender(1)
@@ -19,7 +19,7 @@
                     .setResult('aaa')
                     .setDispatcher(dispatcher)
             );
-            tasksList.addTask(
+            tasksComponent.addTask(
                 (new Task("Prepare to commendant hour squad II", 2, new Date()))
                     .setStatus("sent")
                     .setSender(2)
@@ -27,7 +27,7 @@
                     .setResult('bbb')
                     .setDispatcher(dispatcher)
             );
-            tasksList.addTask(
+            tasksComponent.addTask(
                 (new Task("Prepare to commendant hour squad III", 3, new Date()))
                     .setStatus("received")
                     .setSender(3)
@@ -36,7 +36,7 @@
                     .setDispatcher(dispatcher)
             );
 
-            return tasksList;
+            return tasksComponent;
         }
     </script>
 </head>
@@ -53,20 +53,20 @@ Prototype
 <script type="application/javascript">
     let dispatcher = new Dispatcher();
 
-    let tasksList = initializeTasks(dispatcher);
+    let tasksComponent = initializeTasks(dispatcher);
 
 
     let redrawTasksList = () => {
         let tasksListDiv = document.getElementById('tasksList');
         clearTag(tasksListDiv);
-        tasksListDiv.appendChild(tasksList.renderTasks());
+        tasksListDiv.appendChild(tasksComponent.renderTasks());
     }
 
     redrawTasksList();
 
     // =================== events initialization ===================================
     // TODO vėliau perkelsim į atskirą funkciją
-    // TODO use constants for event names
+    // TODO use constants for event names ?
 
     const taskDetailsOuterDiv = document.getElementById('taskDetails2')
     dispatcher.addListener('taskSaved', (task) => {
@@ -78,7 +78,7 @@ Prototype
         taskDetailsOuterDiv.appendChild(taskInnerDiv)
     })
 
-    dispatcher.addListener('deleteTaskPressed', ([e, taskId]) => tasksList.deleteTask(e, taskId))
+    dispatcher.addListener('deleteTaskPressed', ([e, taskId]) => tasksComponent.deleteTask(e, taskId))
     dispatcher.addListener('onAddTask', () => {
         redrawTasksList();
     })
