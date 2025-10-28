@@ -41,4 +41,13 @@ func (controller *TaskController) AddTask(c *gin.Context) {
 	c.JSON(http.StatusOK, task.Id)
 }
 
+func (controller *TaskController) ChangeStatus(c *gin.Context) {
+	id := c.Param("id")
+	status := c.Query("status")
+
+	// TODO
+
+	c.JSON(http.StatusOK, "TODO change status of task "+id+" to "+status)
+}
+
 var TaskControllerInstance = TaskController{tasks: make([]*entities.Task, 0), maxId: 0}

@@ -29,6 +29,7 @@ func main() {
 
 	router.GET("/api/tasks", func(c *gin.Context) { api.TaskControllerInstance.GetAllTasks(c) })
 	router.PUT("/api/tasks", func(c *gin.Context) { api.TaskControllerInstance.AddTask(c) })
+	router.POST("/api/task/:id/change-status", func(c *gin.Context) { api.TaskControllerInstance.ChangeStatus(c) })
 
 	router.StaticFile("/favicon.ico", "./assets/favicon.ico")
 	router.Static("/assets/js", "./assets/js")
