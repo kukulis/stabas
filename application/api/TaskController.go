@@ -1,6 +1,7 @@
 package api
 
 import (
+	"darbelis.eu/stabas/dto"
 	"darbelis.eu/stabas/entities"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/codec/json"
@@ -8,14 +9,11 @@ import (
 )
 
 type TaskController struct {
-	// temporary
-	// later DB will be used
-	tasks []*entities.Task
-	maxId int
+	tasksRepository *dto.TasksRepository
 }
 
 func (controller *TaskController) GetAllTasks(c *gin.Context) {
-	c.JSON(http.StatusOK, controller.tasks)
+	c.JSON(http.StatusOK, controller.tasksRepository.FindAll())
 }
 
 func (controller *TaskController) AddTask(c *gin.Context) {
@@ -33,10 +31,7 @@ func (controller *TaskController) AddTask(c *gin.Context) {
 		return
 	}
 
-	controller.maxId++
-	task.Id = controller.maxId
-
-	controller.tasks = append(controller.tasks, task)
+	controller.tasksRepository.AddTask(task)
 
 	c.JSON(http.StatusOK, task.Id)
 }
@@ -50,4 +45,4 @@ func (controller *TaskController) ChangeStatus(c *gin.Context) {
 	c.JSON(http.StatusOK, "TODO change status of task "+id+" to "+status)
 }
 
-var TaskControllerInstance = TaskController{tasks: make([]*entities.Task, 0), maxId: 0}
+var TaskControllerInstance = TaskController{tasksRepository: dto.NewTasksRepository()}
