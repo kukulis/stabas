@@ -15,6 +15,7 @@ type Task struct {
 	ExecutingAt *time.Time `json:"executing_at"`
 	FinishedAt  *time.Time `json:"finished_at"`
 	ClosedAt    *time.Time `json:"closed_at"`
+	Deleted     bool       `json:"deleted"`
 }
 
 func NewTask() *Task {

@@ -28,8 +28,11 @@ func main() {
 	})
 
 	router.GET("/api/tasks", func(c *gin.Context) { api.TaskControllerInstance.GetAllTasks(c) })
+	router.GET("/api/tasks/:id", func(c *gin.Context) { api.TaskControllerInstance.GetTask(c) })
 	router.PUT("/api/tasks", func(c *gin.Context) { api.TaskControllerInstance.AddTask(c) })
-	router.POST("/api/task/:id/change-status", func(c *gin.Context) { api.TaskControllerInstance.ChangeStatus(c) })
+	router.POST("/api/tasks/:id/change-status", func(c *gin.Context) { api.TaskControllerInstance.ChangeStatus(c) })
+	router.POST("/api/tasks/:id", func(c *gin.Context) { api.TaskControllerInstance.UpdateTask(c) })
+	router.DELETE("/api/tasks/:id", func(c *gin.Context) { api.TaskControllerInstance.DeleteTask(c) })
 
 	router.StaticFile("/favicon.ico", "./assets/favicon.ico")
 	router.Static("/assets/js", "./assets/js")
