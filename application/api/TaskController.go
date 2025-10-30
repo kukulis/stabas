@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/codec/json"
 	"net/http"
+	"strconv"
 )
 
 type TaskController struct {
@@ -37,12 +38,33 @@ func (controller *TaskController) AddTask(c *gin.Context) {
 }
 
 func (controller *TaskController) ChangeStatus(c *gin.Context) {
-	id := c.Param("id")
-	status := c.Query("status")
+	idStr := c.Param("id")
+	statusStr := c.Query("status")
 
-	// TODO
+	id, err := strconv.Atoi(idStr)
 
-	c.JSON(http.StatusOK, "TODO change status of task "+id+" to "+status)
+	if err != nil {
+		c.JSON(http.StatusOK, "Id must be numeric "+err.Error())
+	}
+
+	status, err := strconv.Atoi(statusStr)
+
+	if err != nil {
+		c.JSON(http.StatusOK, "Status must be numeric "+err.Error())
+	}
+
+	err = entities.ValidateStatus(status)
+	if err != nil {
+		c.JSON(http.StatusOK, "Wrong status "+err.Error())
+	}
+
+	task := controller.tasksRepository.FindById(id)
+
+	// TODO validate status transition
+
+	task.Status = status
+
+	c.JSON(http.StatusOK, "Changed status of task "+idStr+" to "+statusStr)
 }
 
 var TaskControllerInstance = TaskController{tasksRepository: dto.NewTasksRepository()}
