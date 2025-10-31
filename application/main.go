@@ -15,6 +15,7 @@ func main() {
 		"templates/tasks.html",
 		"templates/participants.html",
 		"templates/settings.html",
+		"templates/test.html",
 	)
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", gin.H{})
@@ -25,6 +26,9 @@ func main() {
 	})
 	router.GET("/participants", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "participants.html", gin.H{})
+	})
+	router.GET("/test", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "test.html", gin.H{})
 	})
 
 	router.GET("/api/tasks", func(c *gin.Context) { api.TaskControllerInstance.GetAllTasks(c) })

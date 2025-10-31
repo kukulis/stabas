@@ -1,4 +1,3 @@
-
 /***********************************************************************
  *
  * TaskList
@@ -25,6 +24,9 @@ class TasksComponent {
         this.dispatcher = dispatcher;
 
         // for debuging only
+        /**
+         * @deprecated
+         */
         this.maxTaskId = 3;
     }
 
@@ -32,10 +34,39 @@ class TasksComponent {
         this.tasks.push(task)
     }
 
-    newTask() {
-        // TODO with backend later
+    /**
+     * @returns {Promise<Task|null>}
+     */
+    async newTask() {
+        // TODO select max id from already existing tasks
         this.maxTaskId++;
-        let task = new Task("Task " + this.maxTaskId, this.maxTaskId, new Date())
+        let response = await fetch('/api/tasks', {
+            method: 'PUT',
+            body: JSON.stringify({
+                message: 'Task ' + this.maxTaskId,
+                sender: 1,
+                receivers: [],
+            })
+        }).catch((error) => console.log('backend error creating task ', error));
+
+        if (response === undefined) {
+            return null;
+        }
+
+        // TODO better to return the new created task
+        let taskId = await response.json()
+
+        let taskResponse = await fetch('/api/tasks/' + taskId,
+            {method: 'GET'}
+        ).catch((error) => console.log('error getting task by id ' + taskId, error));
+
+        if (taskResponse === undefined) {
+            return null;
+        }
+
+        let taskDto = await taskResponse.json();
+
+        let task = new Task(taskDto.message, taskDto.id, taskDto.createdAt)
         task.setDispatcher(this.dispatcher)
         this.tasks.push(task);
 
@@ -45,9 +76,9 @@ class TasksComponent {
     deleteTask(event, taskId) {
         event.stopPropagation();
 
-        let confirmDelete = confirm("Delete task "+taskId+" ?")
+        let confirmDelete = confirm("Delete task " + taskId + " ?")
 
-        if ( !confirmDelete ) {
+        if (!confirmDelete) {
             return;
         }
 
@@ -62,7 +93,7 @@ class TasksComponent {
         let tasksListElement = document.createElement('div');
 
         for (let task of this.tasks) {
-            tasksListElement.appendChild(task.renderTaskLine(()=>this.participants));
+            tasksListElement.appendChild(task.renderTaskLine(() => this.participants));
         }
 
         let addButton = document.createElement('button');
@@ -70,70 +101,72 @@ class TasksComponent {
         tasksListElement.appendChild(addButton);
 
         addButton.addEventListener('click', () => {
-            let task = this.newTask();
-            this.dispatcher.dispatch('onAddTask', task)
+            this.newTask()
+                .then((task) => this.dispatcher.dispatch('onAddTask', task));
         });
 
         return tasksListElement;
     }
 
-    loadParticipants() {
-        // TODO from backend
+    async loadParticipants() {
+        let response = await fetch("/api/participants", {
+            method: "GET",
+        });
 
-        // TODO remove after backend
-        this.participants.push( new Participant(1, "loaded Participant 1"))
-        this.participants.push( new Participant(2, "loaded Participant 2"))
-        this.participants.push( new Participant(3, "L Participant 3"))
-        // --
+        let participantsDTO = await response.json();
 
+        for (let p of participantsDTO) {
+            this.participants.push(new Participant(p.id, p.name))
+        }
     }
 
-    loadTasks() {
-        // TODO from backend
+    async loadTasks() {
+        let response = await fetch("/api/tasks", {
+            method: "GET",
+        })
+            .catch((error) => {
+                console.log('error fetching tasks', error)
+            });
 
-        // TODO remove after backend
-        this.addTask(
-            (new Task("Prepare to commendant hour squad I", 1, new Date()))
-                .setStatus("new")
-                .setSender(1)
-                .setReceivers([1, 2])
-                .setResult('aaa')
-                .setDispatcher(this.dispatcher)
-        );
-        this.addTask(
-            (new Task("Prepare to commendant hour squad II", 2, new Date()))
-                .setStatus("sent")
-                .setSender(2)
-                .setReceivers([2, 3])
-                .setResult('bbb')
-                .setDispatcher(this.dispatcher)
-        );
-        this.addTask(
-            (new Task("Prepare to commendant hour squad III", 3, new Date()))
-                .setStatus("received")
-                .setSender(3)
-                .setReceivers([1, 3])
-                .setResult('ccc')
-                .setDispatcher(this.dispatcher)
-        );
-        // --
+        if (response === undefined) {
+            console.log('loadTasks response is undefined')
+            return;
+        }
+
+        let tasksDto = await response.json();
+        // console.log('tasksDto', tasksDto)
+
+
+        for (let taskDto of tasksDto) {
+            // console.log('loadTasks: adding task from backend ', taskDto)
+            this.addTask(
+                (new Task(taskDto.message, taskDto.id, taskDto.createdAt))
+                    // TODO map status id to status name
+                    .setStatus("received")
+                    .setSender(taskDto.sender)
+                    .setReceivers(taskDto.receivers)
+                    .setResult(taskDto.result)
+                    .setDispatcher(this.dispatcher)
+            );
+        }
     }
 
-    static initialize(dispatcher) {
+    static async initialize(dispatcher) {
         let tasksComponent = new TasksComponent(dispatcher);
 
-        tasksComponent.loadParticipants();
-        tasksComponent.loadTasks();
+        await tasksComponent.loadParticipants();
+        await tasksComponent.loadTasks();
 
         return tasksComponent;
     }
+
     enableSaveButton() {
-        let saveButton = document.getElementById(TASK_SAVE_BUTTON );
+        let saveButton = document.getElementById(TASK_SAVE_BUTTON);
         saveButton.disabled = false;
     }
 
     disableSaveButton() {
-        let saveButton = document.getElementById(TASK_SAVE_BUTTON );
+        let saveButton = document.getElementById(TASK_SAVE_BUTTON);
         saveButton.disabled = true;
     }
 }

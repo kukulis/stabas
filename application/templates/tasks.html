@@ -8,8 +8,6 @@
     <script src="/assets/js/participant.js"></script>
 </head>
 <body>
-Prototype
-
 <div id="app">
     <div id="tasksList">
 
@@ -19,63 +17,70 @@ Prototype
 </div>
 <script type="application/javascript">
     let dispatcher = new Dispatcher();
+    let redrawTasksList = null;
+    let tasksComponent = null;
 
-    let tasksComponent = TasksComponent.initialize(dispatcher);
-
-    let redrawTasksList = () => {
-        let tasksListDiv = document.getElementById('tasksList');
-        clearTag(tasksListDiv);
-        tasksListDiv.appendChild(tasksComponent.renderTasks());
-    }
-
-    redrawTasksList();
+    TasksComponent.initialize(dispatcher).then(
+        (tc) => {
+            tasksComponent = tc;
+            // console.log('tasks.html[28], tasks amount', tasksComponent.tasks.length )
+            redrawTasksList = () => {
+                let tasksListDiv = document.getElementById('tasksList');
+                clearTag(tasksListDiv);
+                tasksListDiv.appendChild(tasksComponent.renderTasks());
+            }
+            redrawTasksList();
+            initializeListeners(tasksComponent)
+        }
+    );
 
     // =================== events initialization ===================================
+    function initializeListeners(tasksComponent) {
+        const taskDetailsOuterDiv = document.getElementById('taskDetails2')
+        dispatcher.addListener('taskSaved', (task) => {
+            console.log('Task saved ' + task.id)
+            redrawTasksList()
+            tasksComponent.disableSaveButton();
+        })
+        dispatcher.addListener('taskDetailsRendered', (taskInnerDiv) => {
+            clearTag(taskDetailsOuterDiv)
+            taskDetailsOuterDiv.appendChild(taskInnerDiv)
+        })
 
-    const taskDetailsOuterDiv = document.getElementById('taskDetails2')
-    dispatcher.addListener('taskSaved', (task) => {
-        console.log('Task saved ' + task.id)
-        redrawTasksList()
-        tasksComponent.disableSaveButton();
-    })
-    dispatcher.addListener('taskDetailsRendered', (taskInnerDiv) => {
-        clearTag(taskDetailsOuterDiv)
-        taskDetailsOuterDiv.appendChild(taskInnerDiv)
-    })
+        dispatcher.addListener('deleteTaskPressed', ([e, taskId]) => tasksComponent.deleteTask(e, taskId))
+        dispatcher.addListener('onAddTask', () => {
+            redrawTasksList();
+        })
 
-    dispatcher.addListener('deleteTaskPressed', ([e, taskId]) => tasksComponent.deleteTask(e, taskId))
-    dispatcher.addListener('onAddTask', () => {
-        redrawTasksList();
-    })
+        dispatcher.addListener('afterDeleteTask', (taskId) => {
+            redrawTasksList();
+        })
 
-    dispatcher.addListener('afterDeleteTask', (taskId) => {
-        redrawTasksList();
-    })
+        dispatcher.addListener('inputReceivers', ([e, taskId]) => {
+            console.log('task ' + taskId + ' receivers input', e)
+            tasksComponent.enableSaveButton()
+        })
 
-    dispatcher.addListener('inputReceivers', ([e, taskId]) => {
-        console.log('task ' + taskId + ' receivers input', e)
-        tasksComponent.enableSaveButton()
-    })
+        dispatcher.addListener('inputSender', ([e, taskId]) => {
+            console.log('task ' + taskId + ' sender input', e)
+            tasksComponent.enableSaveButton()
+        })
 
-    dispatcher.addListener('inputSender', ([e, taskId]) => {
-        console.log('task ' + taskId + ' sender input', e)
-        tasksComponent.enableSaveButton()
-    })
+        dispatcher.addListener('inputStatus', ([e, taskId]) => {
+            console.log('task ' + taskId + ' status input', e)
+            tasksComponent.enableSaveButton()
+        })
 
-    dispatcher.addListener('inputStatus', ([e, taskId]) => {
-        console.log('task ' + taskId + ' status input', e)
-        tasksComponent.enableSaveButton()
-    })
+        dispatcher.addListener('inputMessage', ([e, taskId]) => {
+            console.log('task ' + taskId + ' message input', e)
+            tasksComponent.enableSaveButton()
+        })
 
-    dispatcher.addListener('inputMessage', ([e, taskId]) => {
-        console.log('task ' + taskId + ' message input', e)
-        tasksComponent.enableSaveButton()
-    })
-
-    dispatcher.addListener('inputResult', ([e, taskId]) => {
-        console.log('task ' + taskId + ' result input', e)
-        tasksComponent.enableSaveButton()
-    })
+        dispatcher.addListener('inputResult', ([e, taskId]) => {
+            console.log('task ' + taskId + ' result input', e)
+            tasksComponent.enableSaveButton()
+        });
+    }
 
     // =============================================================================
 
