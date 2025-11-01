@@ -97,7 +97,8 @@ func (controller *TaskController) UpdateTask(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, task.Id)
+	// return full task
+	c.JSON(http.StatusOK, task)
 }
 
 // DeleteTask Deletes task

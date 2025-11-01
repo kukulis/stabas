@@ -58,17 +58,26 @@ class Task {
      */
     static createFromDto(taskDTO) {
         let task = new Task(taskDTO.message, taskDTO.id, parseDate(taskDTO.created_at))
-        task.setStatus(taskDTO.status)
-        task.setSender(taskDTO.sender)
-        task.setReceivers(taskDTO.receivers)
-        task.setResult(taskDTO.result)
-        task.sentAt = parseDate(taskDTO.sent_at)
-        task.receivedAt = parseDate(taskDTO.received_at)
-        task.executingAt = parseDate(taskDTO.executing_at)
-        task.finishedAt = parseDate(taskDTO.finished_at)
-        task.closedAt = parseDate(taskDTO.closed_at)
 
-        return task;
+        return task.updateFromDTO(taskDTO)
+    }
+
+    /**
+     * @param taskDTO
+     * @returns {Task}
+     */
+    updateFromDTO(taskDTO) {
+        this.setStatus(taskDTO.status)
+        this.setSender(taskDTO.sender)
+        this.setReceivers(taskDTO.receivers)
+        this.setResult(taskDTO.result)
+        this.sentAt = parseDate(taskDTO.sent_at)
+        this.receivedAt = parseDate(taskDTO.received_at)
+        this.executingAt = parseDate(taskDTO.executing_at)
+        this.finishedAt = parseDate(taskDTO.finished_at)
+        this.closedAt = parseDate(taskDTO.closed_at)
+
+        return this;
     }
 
     /**
@@ -83,12 +92,12 @@ class Task {
         taskElement.style.border = "solid thin black";
 
         let messageDiv = document.createElement('div')
-        messageDiv.appendChild(document.createTextNode('' + this.id +': '+ this.message))
+        messageDiv.appendChild(document.createTextNode('' + this.id + ': ' + this.message))
 
         taskElement.appendChild(messageDiv);
 
         let statusDiv = document.createElement('div')
-        statusDiv.appendChild(document.createTextNode('['+this.status+': '+ statusesI2A.get(this.status)+']'))
+        statusDiv.appendChild(document.createTextNode('[' + this.status + ': ' + statusesI2A.get(this.status) + ']'))
 
         taskElement.appendChild(statusDiv)
 
@@ -113,6 +122,8 @@ class Task {
         // TODO display next status name instead of 'change status'
         changeStatusButton.appendChild(document.createTextNode('change status'))
         // TODO add listener to call a function which will send change status request to backend
+
+        taskElement.appendChild(changeStatusButton)
 
         return taskElement;
     }
@@ -148,12 +159,17 @@ class Task {
         let receiversSelect = document.getElementById('receivers');
         this.receivers = Array.from(receiversSelect.selectedOptions).map((option) => parseInt(option.value));
 
-        fetch('/api/tasks/'+this.id, {
+        fetch('/api/tasks/' + this.id, {
             method: 'POST',
             body: JSON.stringify(this.buildObjectForJson())
         })
             .catch((error) => console.log('error updating task to backend', error))
-            .then((response) => this.dispatcher.dispatch('taskSaved', this))
+            .then((taskResponse) => {
+                taskResponse.json().then((taskDTO) => {
+                    this.updateFromDTO(taskDTO)
+                    this.dispatcher.dispatch('taskSaved', this)
+                })
+            })
     }
 
     /*******************************************************************************
@@ -270,7 +286,7 @@ class Task {
         selectField.value = this.status;
 
         // console.log('task.js[255]: statusesI2A', statusesI2A)
-        statusesI2A.forEach((value, key)=>{
+        statusesI2A.forEach((value, key) => {
             let optionTag = document.createElement('option');
             optionTag.setAttribute('value', key)
             optionTag.appendChild(document.createTextNode(value))
@@ -441,9 +457,9 @@ function clearTag(tag) {
  *
  * @type map {Map}
  */
-function flipMap( map ) {
+function flipMap(map) {
     let resultMap = new Map();
-    map.forEach((key, value)=>{
+    map.forEach((key, value) => {
         resultMap.set(value, key)
     });
 
@@ -455,7 +471,7 @@ function flipMap( map ) {
  * @param dateStr {Date|null}
  */
 function parseDate(dateStr) {
-    if ( dateStr === null ) {
+    if (dateStr === null) {
         return null;
     }
 
@@ -468,7 +484,7 @@ function parseDate(dateStr) {
  * @param date {Date|null}
  */
 function formatDate(date) {
-    if ( date === null ) {
+    if (date === null) {
         return '';
     }
 
