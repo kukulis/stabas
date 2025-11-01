@@ -1,5 +1,14 @@
 const TASK_SAVE_BUTTON = 'task_save_button';
 
+let statusesI2A = new Map();
+statusesI2A.set(1, 'new')
+statusesI2A.set(2, 'sent')
+statusesI2A.set(3, 'received')
+statusesI2A.set(4, 'executing')
+statusesI2A.set(5, 'finished')
+statusesI2A.set(6, 'closed')
+
+let statusesA2I = flipMap(statusesI2A)
 
 class Task {
 
@@ -56,9 +65,14 @@ class Task {
         taskElement.style.border = "solid thin black";
 
         let messageDiv = document.createElement('div')
-        messageDiv.appendChild(document.createTextNode(this.message))
+        messageDiv.appendChild(document.createTextNode('' + this.id +': '+ this.message))
 
         taskElement.appendChild(messageDiv);
+
+        let statusDiv = document.createElement('div')
+        statusDiv.appendChild(document.createTextNode('['+this.status+': '+ statusesI2A.get(this.status)+']'))
+
+        taskElement.appendChild(statusDiv)
 
         messageDiv.addEventListener('click', (e) => {
             let taskDetailsDiv = this.renderTaskDetailsFull(e, participantLoader);
@@ -69,7 +83,7 @@ class Task {
         deleteButton.appendChild(document.createTextNode('-'));
         const thisTask = this;
         deleteButton.addEventListener('click', (event) => {
-                console.log('deleteButton click event, thisTask: ', thisTask)
+                // console.log('deleteButton click event, thisTask: ', thisTask)
                 thisTask.dispatcher.dispatch('deleteTaskPressed', [event, this.id])
             }
         );
@@ -77,6 +91,17 @@ class Task {
         taskElement.appendChild(deleteButton);
 
         return taskElement;
+    }
+
+    buildObjectForJson() {
+        return {
+            id: this.id,
+            message: this.message,
+            result: this.result,
+            status: this.status,
+            sender: this.sender,
+            receivers: this.receivers,
+        }
     }
 
     saveAction(event) {
@@ -91,7 +116,7 @@ class Task {
         this.result = resultInput.value;
 
         let statusSelect = document.getElementById('status');
-        this.status = statusSelect.value;
+        this.status = parseInt(statusSelect.value);
 
         let senderSelect = document.getElementById('sender');
         this.sender = parseInt(senderSelect.value);
@@ -99,11 +124,12 @@ class Task {
         let receiversSelect = document.getElementById('receivers');
         this.receivers = Array.from(receiversSelect.selectedOptions).map((option) => parseInt(option.value));
 
-        //
-        // console.log('receivers after cycle', this.receivers);
-        // TODO other fields ( dates ? )
-
-        this.dispatcher.dispatch('taskSaved', this)
+        fetch('/api/tasks/'+this.id, {
+            method: 'POST',
+            body: JSON.stringify(this.buildObjectForJson())
+        })
+            .catch((error) => console.log('error updating task to backend', error))
+            .then((response) => this.dispatcher.dispatch('taskSaved', this))
     }
 
     /*******************************************************************************
@@ -219,26 +245,38 @@ class Task {
         selectField.setAttribute('id', 'status');
         selectField.value = this.status;
 
-        let options = {
-            new: "New",
-            sent: "Sent",
-            received: "Received",
-            executing: "Executing",
-            finished: "Finished",
-            closed: "Closed",
-        }
+        // let options = {
+        //     new: "New",
+        //     sent: "Sent",
+        //     received: "Received",
+        //     executing: "Executing",
+        //     finished: "Finished",
+        //     closed: "Closed",
+        // }
 
-        for (const [key, value] of Object.entries(options)) {
+        // for (const [key, value] of Object.entries(options)) {
+        //     let optionTag = document.createElement('option');
+        //     optionTag.setAttribute('value', key)
+        //     optionTag.appendChild(document.createTextNode(value))
+        //
+        //     if (parseInt(key) === this.status) {
+        //         optionTag.setAttribute('selected', 'selected')
+        //     }
+        //
+        //     selectField.appendChild(optionTag)
+        // }
+
+        // console.log('task.js[255]: statusesI2A', statusesI2A)
+        statusesI2A.forEach((value, key)=>{
             let optionTag = document.createElement('option');
             optionTag.setAttribute('value', key)
             optionTag.appendChild(document.createTextNode(value))
-
             if (parseInt(key) === this.status) {
                 optionTag.setAttribute('selected', 'selected')
             }
-
             selectField.appendChild(optionTag)
-        }
+        })
+
         selectField.addEventListener('input', (e) => dispatcher.dispatch('inputStatus', [e, this.id]))
 
         tr.appendChild(tdLabel)
@@ -394,3 +432,19 @@ function clearTag(tag) {
         tag.removeChild(tag.firstChild);
     }
 }
+
+/**
+ * @type map {Map}
+ */
+function flipMap( map ) {
+    let resultMap = new Map();
+    map.forEach((key, value)=>{
+        resultMap.set(value, key)
+    });
+
+    return resultMap;
+}
+
+
+
+

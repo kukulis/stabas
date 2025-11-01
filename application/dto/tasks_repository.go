@@ -49,6 +49,7 @@ func (repo *TasksRepository) UpdateTask(task *entities.Task) error {
 	t.Result = task.Result
 	t.Sender = task.Sender
 	t.Receivers = task.Receivers
+	t.Status = task.Status
 	t.CreatedAt = task.CreatedAt
 	t.SentAt = task.SentAt
 	t.ReceivedAt = task.ReceivedAt

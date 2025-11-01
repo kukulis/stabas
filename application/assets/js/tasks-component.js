@@ -138,17 +138,18 @@ class TasksComponent {
 
 
         for (let taskDto of tasksDto) {
-            // console.log('loadTasks: adding task from backend ', taskDto)
+            // console.log('loadTasks: adding task from backend, status ', taskDto.status)
             this.addTask(
                 (new Task(taskDto.message, taskDto.id, taskDto.createdAt))
-                    // TODO map status id to status name
-                    .setStatus("received")
+                    .setStatus(taskDto.status)
                     .setSender(taskDto.sender)
                     .setReceivers(taskDto.receivers)
                     .setResult(taskDto.result)
                     .setDispatcher(this.dispatcher)
             );
         }
+
+        // console.log ('tasks after loadTasks ',  this.tasks );
     }
 
     static async initialize(dispatcher) {
