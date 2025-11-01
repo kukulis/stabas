@@ -8,7 +8,7 @@ statusesI2A.set(4, 'executing')
 statusesI2A.set(5, 'finished')
 statusesI2A.set(6, 'closed')
 
-let statusesA2I = flipMap(statusesI2A)
+// let statusesA2I = flipMap(statusesI2A)
 
 class Task {
 
@@ -51,6 +51,24 @@ class Task {
         this.message = message;
         this.id = id;
         this.createdAt = date;
+    }
+
+    /**
+     * @returns {Task}
+     */
+    static createFromDto(taskDTO) {
+        let task = new Task(taskDTO.message, taskDTO.id, taskDTO.createdAt)
+        task.setStatus(taskDTO.status)
+        task.setSender(taskDTO.sender)
+        task.setReceivers(taskDTO.receivers)
+        task.setResult(taskDTO.result)
+        task.sentAt = taskDTO.sentAt
+        task.receivedAt = taskDTO.receivedAt
+        task.executingAt = taskDTO.executingAt
+        task.finishedAt = taskDTO.finishedAt
+        task.closedAt = taskDTO.closedAt
+
+        return task;
     }
 
     /**
@@ -434,6 +452,8 @@ function clearTag(tag) {
 }
 
 /**
+ * TODO move to utils
+ *
  * @type map {Map}
  */
 function flipMap( map ) {

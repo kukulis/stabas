@@ -22,12 +22,6 @@ class TasksComponent {
 
     constructor(dispatcher) {
         this.dispatcher = dispatcher;
-
-        // for debuging only
-        /**
-         * @deprecated
-         */
-        this.maxTaskId = 3;
     }
 
     addTask(task) {
@@ -38,12 +32,15 @@ class TasksComponent {
      * @returns {Promise<Task|null>}
      */
     async newTask() {
-        // TODO select max id from already existing tasks
-        this.maxTaskId++;
+        let maxId = this.tasks.reduce((prev, curr) => {
+            return Math.max(prev, curr.id);
+        }, 0)
+
+        console.log('newTask, maxId', maxId)
         let response = await fetch('/api/tasks', {
             method: 'PUT',
             body: JSON.stringify({
-                message: 'Task ' + this.maxTaskId,
+                message: 'Task ' + (maxId + 1),
                 sender: 1,
                 receivers: [],
             })
@@ -66,8 +63,8 @@ class TasksComponent {
 
         let taskDto = await taskResponse.json();
 
-        let task = new Task(taskDto.message, taskDto.id, taskDto.createdAt)
-        task.setDispatcher(this.dispatcher)
+        let task = Task.createFromDto(taskDto).setDispatcher(this.dispatcher)
+
         this.tasks.push(task);
 
         return task;
@@ -140,12 +137,7 @@ class TasksComponent {
         for (let taskDto of tasksDto) {
             // console.log('loadTasks: adding task from backend, status ', taskDto.status)
             this.addTask(
-                (new Task(taskDto.message, taskDto.id, taskDto.createdAt))
-                    .setStatus(taskDto.status)
-                    .setSender(taskDto.sender)
-                    .setReceivers(taskDto.receivers)
-                    .setResult(taskDto.result)
-                    .setDispatcher(this.dispatcher)
+                Task.createFromDto(taskDto).setDispatcher(this.dispatcher)
             );
         }
 
