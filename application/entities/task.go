@@ -1,6 +1,10 @@
 package entities
 
-import "time"
+import (
+	"errors"
+	"strconv"
+	"time"
+)
 
 type Task struct {
 	Id          int        `json:"id"`
@@ -30,4 +34,87 @@ func NewTask() *Task {
 		FinishedAt:  nil,
 		ClosedAt:    nil,
 	}
+}
+
+func (task *Task) SetStatusDate(date time.Time) error {
+	if task.Status == STATUS_NEW {
+		task.CreatedAt = &date
+		return nil
+	}
+
+	if task.Status == STATUS_SENT {
+		task.SentAt = &date
+		return nil
+	}
+
+	if task.Status == STATUS_RECEIVED {
+		task.ReceivedAt = &date
+		return nil
+	}
+
+	if task.Status == STATUS_EXECUTING {
+		task.ExecutingAt = &date
+		return nil
+	}
+
+	if task.Status == STATUS_FINISHED {
+		task.FinishedAt = &date
+		return nil
+	}
+
+	if task.Status == STATUS_CLOSED {
+		task.ClosedAt = &date
+		return nil
+	}
+
+	return errors.New("invalid status " + strconv.Itoa(task.Status))
+
+}
+
+// SetStatusDateIfNil sets status date in case it is not set yet
+func (task *Task) SetStatusDateIfNil(date time.Time) error {
+	if task.Status == STATUS_NEW {
+		if task.CreatedAt == nil {
+			task.CreatedAt = &date
+		}
+		return nil
+	}
+
+	if task.Status == STATUS_SENT {
+		if task.SentAt == nil {
+			task.SentAt = &date
+		}
+		return nil
+	}
+
+	if task.Status == STATUS_RECEIVED {
+		if task.ReceivedAt == nil {
+			task.ReceivedAt = &date
+		}
+		return nil
+	}
+
+	if task.Status == STATUS_EXECUTING {
+		if task.ExecutingAt == nil {
+			task.ExecutingAt = &date
+		}
+		return nil
+	}
+
+	if task.Status == STATUS_FINISHED {
+		if task.FinishedAt == nil {
+			task.FinishedAt = &date
+		}
+		return nil
+	}
+
+	if task.Status == STATUS_CLOSED {
+		if task.ClosedAt == nil {
+			task.ClosedAt = &date
+		}
+		return nil
+	}
+
+	return errors.New("invalid status " + strconv.Itoa(task.Status))
+
 }

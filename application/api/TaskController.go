@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin/codec/json"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 type TaskController struct {
@@ -52,6 +53,10 @@ func (controller *TaskController) AddTask(c *gin.Context) {
 		return
 	}
 
+	// set current date to the task
+	now := time.Now()
+	task.CreatedAt = &now
+
 	controller.tasksRepository.AddTask(task)
 
 	c.JSON(http.StatusOK, task.Id)
@@ -83,6 +88,8 @@ func (controller *TaskController) UpdateTask(c *gin.Context) {
 	}
 
 	task.Id = id
+
+	_ = task.SetStatusDateIfNil(time.Now())
 
 	err = controller.tasksRepository.UpdateTask(task)
 	if err != nil {
@@ -120,26 +127,46 @@ func (controller *TaskController) ChangeStatus(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{"error": "Id must be numeric " + err.Error()})
+		return
 	}
 
 	status, err := strconv.Atoi(statusStr)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{"error": "Status must be numeric " + err.Error()})
+		return
 	}
 
 	err = entities.ValidateStatus(status)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{"error": "Wrong status " + err.Error()})
+		return
 	}
 
 	task, err := controller.tasksRepository.FindById(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return
+	}
 
-	// TODO validate status transition
+	if task == nil {
+		c.JSON(http.StatusBadRequest, map[string]string{"error": "Task not found by " + idStr})
+		return
+	}
+
+	// validate status transition
+	if status != task.Status+1 {
+		c.JSON(http.StatusBadRequest, map[string]string{"error": "Cant change status from " + strconv.Itoa(task.Status) + " to " + strconv.Itoa(status)})
+	}
 
 	task.Status = status
 
-	c.JSON(http.StatusOK, map[string]string{"error": "Changed status of task " + idStr + " to " + statusStr})
+	err = task.SetStatusDate(time.Now())
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]string{"error": "Changing status " + err.Error()})
+	}
+
+	c.JSON(http.StatusOK, map[string]string{"success": "Changed status of task " + idStr + " to " + statusStr})
 }
 
 // TaskControllerInstance singleton

@@ -57,16 +57,16 @@ class Task {
      * @returns {Task}
      */
     static createFromDto(taskDTO) {
-        let task = new Task(taskDTO.message, taskDTO.id, taskDTO.createdAt)
+        let task = new Task(taskDTO.message, taskDTO.id, parseDate(taskDTO.created_at))
         task.setStatus(taskDTO.status)
         task.setSender(taskDTO.sender)
         task.setReceivers(taskDTO.receivers)
         task.setResult(taskDTO.result)
-        task.sentAt = taskDTO.sentAt
-        task.receivedAt = taskDTO.receivedAt
-        task.executingAt = taskDTO.executingAt
-        task.finishedAt = taskDTO.finishedAt
-        task.closedAt = taskDTO.closedAt
+        task.sentAt = parseDate(taskDTO.sent_at)
+        task.receivedAt = parseDate(taskDTO.received_at)
+        task.executingAt = parseDate(taskDTO.executing_at)
+        task.finishedAt = parseDate(taskDTO.finished_at)
+        task.closedAt = parseDate(taskDTO.closed_at)
 
         return task;
     }
@@ -107,6 +107,12 @@ class Task {
         );
 
         taskElement.appendChild(deleteButton);
+
+        // TODO button to change status
+        let changeStatusButton = document.createElement('button')
+        // TODO display next status name instead of 'change status'
+        changeStatusButton.appendChild(document.createTextNode('change status'))
+        // TODO add listener to call a function which will send change status request to backend
 
         return taskElement;
     }
@@ -263,27 +269,6 @@ class Task {
         selectField.setAttribute('id', 'status');
         selectField.value = this.status;
 
-        // let options = {
-        //     new: "New",
-        //     sent: "Sent",
-        //     received: "Received",
-        //     executing: "Executing",
-        //     finished: "Finished",
-        //     closed: "Closed",
-        // }
-
-        // for (const [key, value] of Object.entries(options)) {
-        //     let optionTag = document.createElement('option');
-        //     optionTag.setAttribute('value', key)
-        //     optionTag.appendChild(document.createTextNode(value))
-        //
-        //     if (parseInt(key) === this.status) {
-        //         optionTag.setAttribute('selected', 'selected')
-        //     }
-        //
-        //     selectField.appendChild(optionTag)
-        // }
-
         // console.log('task.js[255]: statusesI2A', statusesI2A)
         statusesI2A.forEach((value, key)=>{
             let optionTag = document.createElement('option');
@@ -404,12 +389,12 @@ class Task {
     }
 
     renderDates(tableDiv) {
-        this.renderTextTr(tableDiv, 'Created at', this.createdAt)
-        this.renderTextTr(tableDiv, 'Sent at', this.sentAt)
-        this.renderTextTr(tableDiv, 'Received at', this.receivedAt)
-        this.renderTextTr(tableDiv, 'Executing at', this.executingAt)
-        this.renderTextTr(tableDiv, 'Finished at', this.finishedAt)
-        this.renderTextTr(tableDiv, 'Closed at', this.closedAt)
+        this.renderTextTr(tableDiv, 'Created at', formatDate(this.createdAt))
+        this.renderTextTr(tableDiv, 'Sent at', formatDate(this.sentAt))
+        this.renderTextTr(tableDiv, 'Received at', formatDate(this.receivedAt))
+        this.renderTextTr(tableDiv, 'Executing at', formatDate(this.executingAt))
+        this.renderTextTr(tableDiv, 'Finished at', formatDate(this.finishedAt))
+        this.renderTextTr(tableDiv, 'Closed at', formatDate(this.closedAt))
     }
 
     setResult(result) {
@@ -465,6 +450,29 @@ function flipMap( map ) {
     return resultMap;
 }
 
+/**
+ *
+ * @param dateStr {Date|null}
+ */
+function parseDate(dateStr) {
+    if ( dateStr === null ) {
+        return null;
+    }
 
+    return new Date(dateStr)
+}
+
+
+/**
+ *
+ * @param date {Date|null}
+ */
+function formatDate(date) {
+    if ( date === null ) {
+        return '';
+    }
+
+    return date.toISOString()
+}
 
 
