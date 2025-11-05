@@ -158,6 +158,7 @@ func (controller *TaskController) ChangeStatus(c *gin.Context) {
 	// validate status transition
 	if status != task.Status+1 {
 		c.JSON(http.StatusBadRequest, map[string]string{"error": "Cant change status from " + strconv.Itoa(task.Status) + " to " + strconv.Itoa(status)})
+		return
 	}
 
 	task.Status = status

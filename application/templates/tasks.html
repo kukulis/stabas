@@ -82,6 +82,10 @@
             // console.log('task ' + taskId + ' result input', e)
             tasksComponent.enableSaveButton()
         });
+        dispatcher.addListener('afterChangeStatus', ([e, taskId]) => {
+            console.log('afterChangeStatus event received')
+            redrawTasksList();
+        });
     }
 
     // =============================================================================

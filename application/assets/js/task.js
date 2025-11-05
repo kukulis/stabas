@@ -118,12 +118,12 @@ class Task {
         taskElement.appendChild(deleteButton);
 
 
-        if ( this.status < 6 ) {
+        if (this.status < 6) {
 
             let newStatus = getNextStatus(this.status);
             let newStatusName = statusesI2A.get(newStatus);
             let changeStatusButton = document.createElement('button')
-            changeStatusButton.appendChild(document.createTextNode('change to '+newStatusName))
+            changeStatusButton.appendChild(document.createTextNode('change to ' + newStatusName))
             changeStatusButton.addEventListener('click', (e) => this.changeTaskStatus(e, this, newStatus));
 
             taskElement.appendChild(changeStatusButton)
@@ -132,9 +132,20 @@ class Task {
         return taskElement;
     }
 
-    changeTaskStatus(event, task, newStatus ) {
-        alert('TODO change task status '+task.id);
-        // TODO make API call
+    changeTaskStatus(event, task, newStatus) {
+        fetch('/api/tasks/' + task.id + '/change-status?status=' + newStatus, {
+            method: 'POST',
+        }).then((response) => {
+            console.log('response received after changing status ', response)
+            response.text().then((text) => {
+                if (response.status === 200) {
+                    task.status = newStatus;
+                    this.dispatcher.dispatch('afterChangeStatus', [event, task.id]);
+                    return;
+                }
+                alert(text)
+            }).catch((error) => console.log('error getting response after changing status', error))
+        }).catch((error) => console.log('error changing status', error))
     }
 
     buildObjectForJson() {
@@ -501,11 +512,11 @@ function formatDate(date) {
 }
 
 function getNextStatus(status) {
-    if ( status === 6 ) {
+    if (status === 6) {
         return status;
     }
 
-    return status+1;
+    return status + 1;
 }
 
 
