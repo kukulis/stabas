@@ -95,6 +95,7 @@ class TasksComponent {
 
         let addButton = document.createElement('button');
         addButton.appendChild(document.createTextNode('+'));
+        addButton.setAttribute('class', 'add-task')
         tasksListElement.appendChild(addButton);
 
         addButton.addEventListener('click', () => {

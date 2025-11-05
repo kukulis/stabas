@@ -8,8 +8,6 @@ statusesI2A.set(4, 'executing')
 statusesI2A.set(5, 'finished')
 statusesI2A.set(6, 'closed')
 
-// let statusesA2I = flipMap(statusesI2A)
-
 class Task {
 
 
@@ -86,17 +84,20 @@ class Task {
      */
     renderTaskLine(participantLoader) {
 
-        // TODO more details : status, sender, receivers, current status date
+        // TODO more details : sender, receivers, current status date
 
         let taskElement = document.createElement('div')
+        taskElement.setAttribute('class', 'task-line')
         taskElement.style.border = "solid thin black";
 
         let messageDiv = document.createElement('div')
+        messageDiv.setAttribute('class', 'message')
         messageDiv.appendChild(document.createTextNode('' + this.id + ': ' + this.message))
 
         taskElement.appendChild(messageDiv);
 
         let statusDiv = document.createElement('div')
+        statusDiv.setAttribute('class', 'status')
         statusDiv.appendChild(document.createTextNode('[' + this.status + ': ' + statusesI2A.get(this.status) + ']'))
 
         taskElement.appendChild(statusDiv)
@@ -110,10 +111,10 @@ class Task {
         deleteButton.appendChild(document.createTextNode('-'));
         const thisTask = this;
         deleteButton.addEventListener('click', (event) => {
-                // console.log('deleteButton click event, thisTask: ', thisTask)
                 thisTask.dispatcher.dispatch('deleteTaskPressed', [event, this.id])
             }
         );
+        deleteButton.setAttribute('class', 'delete-button')
 
         taskElement.appendChild(deleteButton);
 
@@ -125,6 +126,7 @@ class Task {
             let changeStatusButton = document.createElement('button')
             changeStatusButton.appendChild(document.createTextNode('change to ' + newStatusName))
             changeStatusButton.addEventListener('click', (e) => this.changeTaskStatus(e, this, newStatus));
+            changeStatusButton.setAttribute('class', 'change-status-button')
 
             taskElement.appendChild(changeStatusButton)
         }
@@ -498,7 +500,6 @@ function parseDate(dateStr) {
     return new Date(dateStr)
 }
 
-
 /**
  *
  * @param date {Date|null}
@@ -518,5 +519,3 @@ function getNextStatus(status) {
 
     return status + 1;
 }
-
-
