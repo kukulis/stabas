@@ -1,10 +1,42 @@
 <html lang="en">
 <head>
     <title>Participants</title>
+
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script src="/assets/js/task.js"></script>
+    <script src="/assets/js/participants-component.js"></script>
+    <script src="/assets/js/dispatcher.js"></script>
+    <script src="/assets/js/participant.js"></script>
 </head>
 <body>
 {{ .menu}}
-TODO participants
-</body>
 
+<div class="participants-container" id="participant-app">
+
+</div>
+
+<script type="application/javascript">
+    let dispatcher = new Dispatcher();
+    let participantsComponent = null
+    let redrawParticipantsList = null
+
+    ParticipantsComponent.initialize(dispatcher).then(
+        (pc) => {
+            participantsComponent = pc
+
+            console.log('participantsComponent', participantsComponent)
+
+
+            redrawParticipantsList = () => {
+                let tasksListDiv = document.getElementById('participant-app');
+                clearTag(tasksListDiv);
+                tasksListDiv.appendChild(participantsComponent.renderParticipants());
+            }
+
+            redrawParticipantsList();
+        }
+    )
+</script>
+
+</body>
 </html>

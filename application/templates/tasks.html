@@ -25,6 +25,8 @@
     TasksComponent.initialize(dispatcher).then(
         (tc) => {
             tasksComponent = tc;
+
+
             // console.log('tasks.html[28], tasks amount', tasksComponent.tasks.length )
             redrawTasksList = () => {
                 let tasksListDiv = document.getElementById('tasksList');
