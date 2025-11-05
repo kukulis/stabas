@@ -117,15 +117,24 @@ class Task {
 
         taskElement.appendChild(deleteButton);
 
-        // TODO button to change status
-        let changeStatusButton = document.createElement('button')
-        // TODO display next status name instead of 'change status'
-        changeStatusButton.appendChild(document.createTextNode('change status'))
-        // TODO add listener to call a function which will send change status request to backend
 
-        taskElement.appendChild(changeStatusButton)
+        if ( this.status < 6 ) {
+
+            let newStatus = getNextStatus(this.status);
+            let newStatusName = statusesI2A.get(newStatus);
+            let changeStatusButton = document.createElement('button')
+            changeStatusButton.appendChild(document.createTextNode('change to '+newStatusName))
+            changeStatusButton.addEventListener('click', (e) => this.changeTaskStatus(e, this, newStatus));
+
+            taskElement.appendChild(changeStatusButton)
+        }
 
         return taskElement;
+    }
+
+    changeTaskStatus(event, task, newStatus ) {
+        alert('TODO change task status '+task.id);
+        // TODO make API call
     }
 
     buildObjectForJson() {
@@ -489,6 +498,14 @@ function formatDate(date) {
     }
 
     return date.toISOString()
+}
+
+function getNextStatus(status) {
+    if ( status === 6 ) {
+        return status;
+    }
+
+    return status+1;
 }
 
 
