@@ -23,13 +23,17 @@ class Participant {
         this.dispatcher.dispatch('onDeleteParticipant', [event, this])
     }
 
+    getLineElementId() {
+        return 'participant-id-' + this.id
+    }
+
     /**
      *
      * @returns {HTMLDivElement}
      */
     renderLine() {
         let lineDiv = document.createElement('div');
-        lineDiv.setAttribute('id', 'participant-id-' + this.id);
+        lineDiv.setAttribute('id',  this.getLineElementId( this.getLineElementId()));
         lineDiv.style['border'] = "solid thin black"
 
         this.renderLineInside(lineDiv)
@@ -39,8 +43,9 @@ class Participant {
 
     /**
      * @param {HTMLDivElement} lineDiv
+     * @param {boolean} withEditor
      */
-    renderLineInside(lineDiv) {
+    renderLineInside(lineDiv, withEditor=false) {
         clearTag(lineDiv);
 
         let deleteDiv = document.createElement('button');
@@ -48,13 +53,42 @@ class Participant {
         deleteDiv.addEventListener('click', (e)=>this.deleteLineCalled(e))
         lineDiv.appendChild(deleteDiv)
 
-
         let idDiv = document.createElement('div');
         idDiv.appendChild(document.createTextNode(this.id.toString()));
         lineDiv.appendChild(idDiv)
 
-        let nameDiv = document.createElement('div');
-        nameDiv.appendChild(document.createTextNode(this.name));
-        lineDiv.appendChild(nameDiv)
+        if ( withEditor ) {
+            let nameInput = document.createElement('input');
+            nameInput.value = this.name
+
+            nameInput.addEventListener('keyup', (e)=> {
+                console.log('key code : ', e.code )
+                if ( e.code === "Enter" ) {
+                    this.initiateFinishEditParticipant(e)
+                }
+            })
+
+            nameInput.addEventListener('focusout', (e)=> {
+                this.initiateFinishEditParticipant(e)
+            })
+
+            lineDiv.appendChild(nameInput)
+        } else {
+            let nameDiv = document.createElement('div');
+            nameDiv.appendChild(document.createTextNode(this.name));
+            nameDiv.addEventListener('click', (e) => this.initiateEditParticipant(e))
+            lineDiv.appendChild(nameDiv)
+        }
+    }
+
+    initiateEditParticipant(event) {
+        let lineDiv = document.getElementById(this.getLineElementId())
+        this.renderLineInside(lineDiv, true )
+    }
+
+    initiateFinishEditParticipant(event) {
+        this.name = event.target.value
+        let lineDiv = document.getElementById(this.getLineElementId())
+        this.renderLineInside(lineDiv, false )
     }
 }

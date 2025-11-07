@@ -464,8 +464,6 @@ class Task {
 
         return this;
     }
-
-
 }
 
 
