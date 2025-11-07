@@ -3,6 +3,7 @@
     <title>Participants</title>
 
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <script src="/assets/js/util.js"></script>
     <script src="/assets/js/task.js"></script>
     <script src="/assets/js/participants-component.js"></script>
     <script src="/assets/js/dispatcher.js"></script>
@@ -36,6 +37,11 @@
             redrawParticipantsList();
         }
     )
+
+    dispatcher.addListener('afterAddParticipant', ([e, participant])=> {
+        console.log('afterAddParticipant listener for '+participant.id, e );
+        redrawParticipantsList();
+    })
 </script>
 
 </body>

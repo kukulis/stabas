@@ -25,6 +25,20 @@ class ParticipantsComponent {
         let participantsDiv = document.createElement('div');
         participantsDiv.appendChild(document.createTextNode('TODO participants div'))
 
+        for (let participant of this.participants) {
+            participantsDiv.appendChild(participant.renderLine());
+        }
+
+        let addParticipantButton = document.createElement('button')
+        addParticipantButton.appendChild(document.createTextNode('+'))
+
+        addParticipantButton.addEventListener('click', (e) => {
+            this.participants.push((new Participant(100, 'Participant 100', this.dispatcher)))
+            this.dispatcher.dispatch('afterAddParticipant', [e, this])
+        })
+
+        participantsDiv.appendChild(addParticipantButton)
+
         return participantsDiv;
     }
 
