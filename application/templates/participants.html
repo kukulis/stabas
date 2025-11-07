@@ -38,8 +38,12 @@
         }
     )
 
-    dispatcher.addListener('afterAddParticipant', ([e, participant])=> {
-        console.log('afterAddParticipant listener for '+participant.id, e );
+    dispatcher.addListener('afterAddParticipant', ([e, participant]) => {
+        redrawParticipantsList();
+    })
+
+    dispatcher.addListener('onDeleteParticipant', ([e, participant]) => {
+        participantsComponent.removeParticipant(participant.id)
         redrawParticipantsList();
     })
 </script>

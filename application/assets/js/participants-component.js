@@ -21,9 +21,20 @@ class ParticipantsComponent {
         console.log('TODO loadParticipants')
     }
 
+    addParticipantCalled(e) {
+        let maxId = this.participants.reduce(
+            (previousId, participant) => Math.max(previousId, participant.id), 0
+        );
+
+        let newId = maxId + 1;
+
+        let newParticipant = new Participant(newId, 'Participant ' + newId, this.dispatcher);
+        this.participants.push(newParticipant)
+        this.dispatcher.dispatch('afterAddParticipant', [e, newParticipant])
+    }
+
     renderParticipants() {
         let participantsDiv = document.createElement('div');
-        participantsDiv.appendChild(document.createTextNode('TODO participants div'))
 
         for (let participant of this.participants) {
             participantsDiv.appendChild(participant.renderLine());
@@ -31,12 +42,7 @@ class ParticipantsComponent {
 
         let addParticipantButton = document.createElement('button')
         addParticipantButton.appendChild(document.createTextNode('+'))
-
-        addParticipantButton.addEventListener('click', (e) => {
-            this.participants.push((new Participant(100, 'Participant 100', this.dispatcher)))
-            this.dispatcher.dispatch('afterAddParticipant', [e, this])
-        })
-
+        addParticipantButton.addEventListener('click', (e) => this.addParticipantCalled(e))
         participantsDiv.appendChild(addParticipantButton)
 
         return participantsDiv;
@@ -47,5 +53,9 @@ class ParticipantsComponent {
         participantsComponent.loadParticipants();
 
         return participantsComponent
+    }
+
+    removeParticipant(id) {
+        this.participants = this.participants.filter((participant) => participant.id !== id)
     }
 }
