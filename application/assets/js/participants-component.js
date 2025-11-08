@@ -17,8 +17,13 @@ class ParticipantsComponent {
         this.dispatcher = dispatcher;
     }
 
-    loadParticipants() {
-        console.log('TODO loadParticipants')
+    async loadParticipants() {
+        let response = await fetch('/api/participants')
+        let participantsDto = await response.json()
+        for (let participantDto of participantsDto) {
+            this.participants.push(new Participant(participantDto.id, participantDto.name, dispatcher))
+            dispatcher.dispatch('afterLoadParticipants')
+        }
     }
 
     addParticipantCalled(e) {
@@ -48,9 +53,10 @@ class ParticipantsComponent {
         return participantsDiv;
     }
 
-    static async initialize(dispatcher) {
+    static
+    async initialize(dispatcher) {
         let participantsComponent = new ParticipantsComponent(dispatcher)
-        participantsComponent.loadParticipants();
+        await participantsComponent.loadParticipants();
 
         return participantsComponent
     }
