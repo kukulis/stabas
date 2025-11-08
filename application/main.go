@@ -55,6 +55,8 @@ func main() {
 
 	router.GET("/api/participants", func(c *gin.Context) { api.ParticipantsControllerInstance.GetParticipants(c) })
 	router.POST("/api/participants/:id", func(c *gin.Context) { api.ParticipantsControllerInstance.UpdateParticipant(c) })
+	router.PUT("/api/participants", func(c *gin.Context) { api.ParticipantsControllerInstance.AddParticipant(c) })
+	router.DELETE("/api/participants/:id", func(c *gin.Context) { api.ParticipantsControllerInstance.DeleteParticipant(c) })
 
 	router.StaticFile("/favicon.ico", "./assets/favicon.ico")
 	router.Static("/assets/js", "./assets/js")

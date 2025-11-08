@@ -90,7 +90,7 @@ class Participant {
         this.name = event.target.value
 
         let dataToUpdate = {
-            id: this.id,
+            id: Number.parseInt( this.id ),
             name: this.name,
         }
 

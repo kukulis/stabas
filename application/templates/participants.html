@@ -44,8 +44,13 @@
 
     dispatcher.addListener('onDeleteParticipant', ([e, participant]) => {
         participantsComponent.removeParticipant(participant.id)
+    })
+    dispatcher.addListener('afterDeletingParticipant', () => {
+        // console.log('afterDeletingParticipant listener called')
         redrawParticipantsList();
     })
+
+
 </script>
 
 </body>

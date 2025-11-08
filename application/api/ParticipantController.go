@@ -17,6 +17,24 @@ func (controller *ParticipantController) GetParticipants(c *gin.Context) {
 	c.JSON(http.StatusOK, controller.participantsRepository.GetParticipants())
 }
 
+func (controller *ParticipantController) GetParticipant(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]string{"error": "Id must be numeric " + err.Error()})
+		return
+	}
+
+	participant, err := controller.participantsRepository.FindParticipant(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, participant)
+}
+
 func (controller *ParticipantController) UpdateParticipant(c *gin.Context) {
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
