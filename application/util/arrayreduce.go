@@ -1,10 +1,10 @@
 package util
 
-func ArrayReduce[T any](data []T, initialValue T, reductor func(a T, b T) T) T {
+func ArrayReduce[T any, L any](data []T, initialValue L, reduce func(a L, b T) L) L {
 	result := initialValue
 
 	for _, d := range data {
-		result = reductor(result, d)
+		result = reduce(result, d)
 	}
 
 	return result
