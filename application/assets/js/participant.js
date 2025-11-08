@@ -33,7 +33,7 @@ class Participant {
      */
     renderLine() {
         let lineDiv = document.createElement('div');
-        lineDiv.setAttribute('id',  this.getLineElementId( this.getLineElementId()));
+        lineDiv.setAttribute('id', this.getLineElementId(this.getLineElementId()));
         lineDiv.style['border'] = "solid thin black"
 
         this.renderLineInside(lineDiv)
@@ -45,30 +45,30 @@ class Participant {
      * @param {HTMLDivElement} lineDiv
      * @param {boolean} withEditor
      */
-    renderLineInside(lineDiv, withEditor=false) {
+    renderLineInside(lineDiv, withEditor = false) {
         clearTag(lineDiv);
 
         let deleteDiv = document.createElement('button');
         deleteDiv.appendChild(document.createTextNode('-'))
-        deleteDiv.addEventListener('click', (e)=>this.deleteLineCalled(e))
+        deleteDiv.addEventListener('click', (e) => this.deleteLineCalled(e))
         lineDiv.appendChild(deleteDiv)
 
         let idDiv = document.createElement('div');
         idDiv.appendChild(document.createTextNode(this.id.toString()));
         lineDiv.appendChild(idDiv)
 
-        if ( withEditor ) {
+        if (withEditor) {
             let nameInput = document.createElement('input');
             nameInput.value = this.name
 
-            nameInput.addEventListener('keyup', (e)=> {
-                console.log('key code : ', e.code )
-                if ( e.code === "Enter" ) {
+            nameInput.addEventListener('keyup', (e) => {
+                // console.log('key code : ', e.code )
+                if (e.code === "Enter") {
                     this.initiateFinishEditParticipant(e)
                 }
             })
 
-            nameInput.addEventListener('focusout', (e)=> {
+            nameInput.addEventListener('focusout', (e) => {
                 this.initiateFinishEditParticipant(e)
             })
 
@@ -83,12 +83,36 @@ class Participant {
 
     initiateEditParticipant(event) {
         let lineDiv = document.getElementById(this.getLineElementId())
-        this.renderLineInside(lineDiv, true )
+        this.renderLineInside(lineDiv, true)
     }
 
     initiateFinishEditParticipant(event) {
         this.name = event.target.value
+
+        let dataToUpdate = {
+            id: this.id,
+            name: this.name,
+        }
+
+        fetch('/api/participants/' + this.id, {
+            method: 'POST',
+            body: JSON.stringify(dataToUpdate),
+        })
+            .then((response) => {
+                if (response.status !== 200) {
+                    console.log('updating participant api returned status ' + response.status)
+                    response.text().then((text) => console.log('failed update participant response text ' + text))
+                    return
+                }
+                response.json()
+                    .then((data) =>
+                        this.dispatcher.dispatch('afterUpdateParticipant', data)
+                    )
+                    .catch((jsonError) => console.log('updating participant json error', jsonError))
+            })
+            .catch((updateError) => console.log('updating participant api error', updateError))
+
         let lineDiv = document.getElementById(this.getLineElementId())
-        this.renderLineInside(lineDiv, false )
+        this.renderLineInside(lineDiv, false)
     }
 }
