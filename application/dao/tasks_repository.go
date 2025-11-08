@@ -1,4 +1,4 @@
-package dto
+package dao
 
 import (
 	"darbelis.eu/stabas/entities"

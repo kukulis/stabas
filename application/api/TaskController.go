@@ -1,7 +1,7 @@
 package api
 
 import (
-	"darbelis.eu/stabas/dto"
+	"darbelis.eu/stabas/dao"
 	"darbelis.eu/stabas/entities"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/codec/json"
@@ -11,7 +11,7 @@ import (
 )
 
 type TaskController struct {
-	tasksRepository *dto.TasksRepository
+	tasksRepository *dao.TasksRepository
 }
 
 func (controller *TaskController) GetAllTasks(c *gin.Context) {
@@ -172,4 +172,4 @@ func (controller *TaskController) ChangeStatus(c *gin.Context) {
 }
 
 // TaskControllerInstance singleton
-var TaskControllerInstance = TaskController{tasksRepository: dto.NewTasksRepository()}
+var TaskControllerInstance = TaskController{tasksRepository: dao.NewTasksRepository()}

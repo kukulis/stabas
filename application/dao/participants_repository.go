@@ -1,4 +1,4 @@
-package dto
+package dao
 
 import (
 	"darbelis.eu/stabas/entities"
@@ -44,7 +44,7 @@ func (rep *ParticipantsRepository) AddParticipant(participant *entities.Particip
 }
 
 func (rep *ParticipantsRepository) RemoveParticipant(id int) error {
-	rep.participants = util.ArrayFilter(rep.participants, func(participant *entities.Participant) bool { return participant.Id == id })
+	rep.participants = util.ArrayFilter(rep.participants, func(participant *entities.Participant) bool { return participant.Id != id })
 
 	return nil
 }
