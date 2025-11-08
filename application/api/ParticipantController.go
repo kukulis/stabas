@@ -92,3 +92,5 @@ func (controller *ParticipantController) DeleteParticipant(c *gin.Context) {
 
 	c.JSON(http.StatusOK, strconv.Itoa(id))
 }
+
+var ParticipantsControllerInstance = ParticipantController{&dao.ParticipantsRepository{}}
