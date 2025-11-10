@@ -60,6 +60,7 @@ func main() {
 
 	router.StaticFile("/favicon.ico", "./assets/favicon.ico")
 	router.Static("/assets/js", "./assets/js")
+	router.Static("/assets/css", "./assets/css")
 
 	err := router.Run(":8088")
 

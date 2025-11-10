@@ -88,7 +88,7 @@ class Task {
 
         let taskElement = document.createElement('div')
         taskElement.setAttribute('class', 'task-line')
-        taskElement.style.border = "solid thin black";
+        // taskElement.style.border = "solid thin black";
 
         let messageDiv = document.createElement('div')
         messageDiv.setAttribute('class', 'message')
