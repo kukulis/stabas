@@ -15,6 +15,8 @@ type TaskController struct {
 }
 
 func (controller *TaskController) GetAllTasks(c *gin.Context) {
+
+	// TODO order by statuses and dates
 	c.JSON(http.StatusOK, controller.tasksRepository.FindAll())
 }
 

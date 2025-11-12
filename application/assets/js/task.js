@@ -1,12 +1,27 @@
 const TASK_SAVE_BUTTON = 'task_save_button';
 
+const STATUS_NEW = 1
+const STATUS_SENT = 2
+const STATUS_RECEIVED = 3
+const STATUS_EXECUTING = 4
+const STATUS_FINISHED = 5
+const STATUS_CLOSED = 6
+
 let statusesI2A = new Map();
-statusesI2A.set(1, 'new')
-statusesI2A.set(2, 'sent')
-statusesI2A.set(3, 'received')
-statusesI2A.set(4, 'executing')
-statusesI2A.set(5, 'finished')
-statusesI2A.set(6, 'closed')
+statusesI2A.set(STATUS_NEW, 'new')
+statusesI2A.set(STATUS_SENT, 'sent')
+statusesI2A.set(STATUS_RECEIVED, 'received')
+statusesI2A.set(STATUS_EXECUTING, 'executing')
+statusesI2A.set(STATUS_FINISHED, 'finished')
+statusesI2A.set(STATUS_CLOSED, 'closed')
+
+
+function getStatusClass(statusId) {
+    if (!statusesI2A.has(statusId)) {
+        return '';
+    }
+    return 'status-' + statusesI2A.get(statusId);
+}
 
 class Task {
 
@@ -84,9 +99,10 @@ class Task {
      */
     renderTaskLine(participantLoader) {
 
-        // TODO more details : sender, receivers, current status date
         let taskElement = document.createElement('div')
-        taskElement.setAttribute('class', 'task-line')
+        // taskElement.setAttribute('class', 'task-line')
+        taskElement.classList.add('task-line')
+        taskElement.classList.add(getStatusClass(this.status))
 
         let deleteButton = document.createElement('button');
         deleteButton.appendChild(document.createTextNode('-'));
@@ -112,11 +128,14 @@ class Task {
 
         if (this.status < 6) {
             let newStatus = getNextStatus(this.status);
+            let newStatusClass = getStatusClass(newStatus);
             let newStatusName = statusesI2A.get(newStatus);
             let changeStatusButton = document.createElement('button')
             changeStatusButton.appendChild(document.createTextNode('change to ' + newStatusName))
             changeStatusButton.addEventListener('click', (e) => this.changeTaskStatus(e, this, newStatus));
-            changeStatusButton.setAttribute('class', 'change-status-button')
+            changeStatusButton.classList.add('change-status-button')
+            changeStatusButton.classList.add(newStatusClass)
+            // changeStatusButton.setAttribute('class', 'change-status-button')
 
             taskElement.appendChild(changeStatusButton)
         }
@@ -126,6 +145,10 @@ class Task {
         statusDiv.appendChild(document.createTextNode('[' + this.status + ': ' + statusesI2A.get(this.status) + ']'))
 
         taskElement.appendChild(statusDiv)
+
+
+        // TODO date and timer
+
 
         let clearDiv = document.createElement('div')
         clearDiv.setAttribute('class', 'clear')

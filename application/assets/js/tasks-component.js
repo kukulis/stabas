@@ -73,14 +73,23 @@ class TasksComponent {
     deleteTask(event, taskId) {
         event.stopPropagation();
 
-        let confirmDelete = confirm("Delete task " + taskId + " ?")
+        let foundTask = this.tasks.find((task) => task.id === taskId)
+
+        let confirmDelete = true;
+        if (foundTask.status !== STATUS_CLOSED) {
+            confirmDelete = confirm("Delete task " + taskId + " ?")
+        }
 
         if (!confirmDelete) {
             return;
         }
 
-        this.tasks = this.tasks.filter((task) => (task.id !== taskId))
-        this.dispatcher.dispatch('afterDeleteTask', taskId);
+        fetch('/api/tasks/' + taskId, {method: 'DELETE'}).then(
+            (response) => {
+                this.tasks = this.tasks.filter((task) => (task.id !== taskId))
+                this.dispatcher.dispatch('afterDeleteTask', taskId);
+            })
+            .catch((error) => console.log('error deleting task ' + taskId, error))
     }
 
     /**
@@ -89,19 +98,19 @@ class TasksComponent {
     renderTasks() {
         let tasksListElement = document.createElement('div');
 
-        for (let task of this.tasks) {
-            tasksListElement.appendChild(task.renderTaskLine(() => this.participants));
-        }
-
         let addButton = document.createElement('button');
         addButton.appendChild(document.createTextNode('+'));
         addButton.setAttribute('class', 'add-task')
-        tasksListElement.appendChild(addButton);
-
         addButton.addEventListener('click', () => {
             this.newTask()
                 .then((task) => this.dispatcher.dispatch('onAddTask', task));
         });
+
+        tasksListElement.appendChild(addButton);
+
+        for (let task of this.tasks) {
+            tasksListElement.appendChild(task.renderTaskLine(() => this.participants));
+        }
 
         return tasksListElement;
     }
