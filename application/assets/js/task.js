@@ -85,27 +85,8 @@ class Task {
     renderTaskLine(participantLoader) {
 
         // TODO more details : sender, receivers, current status date
-
         let taskElement = document.createElement('div')
         taskElement.setAttribute('class', 'task-line')
-        // taskElement.style.border = "solid thin black";
-
-        let messageDiv = document.createElement('div')
-        messageDiv.setAttribute('class', 'message')
-        messageDiv.appendChild(document.createTextNode('' + this.id + ': ' + this.message))
-
-        taskElement.appendChild(messageDiv);
-
-        let statusDiv = document.createElement('div')
-        statusDiv.setAttribute('class', 'status')
-        statusDiv.appendChild(document.createTextNode('[' + this.status + ': ' + statusesI2A.get(this.status) + ']'))
-
-        taskElement.appendChild(statusDiv)
-
-        messageDiv.addEventListener('click', (e) => {
-            let taskDetailsDiv = this.renderTaskDetailsFull(e, participantLoader);
-            this.dispatcher.dispatch('taskDetailsRendered', taskDetailsDiv)
-        });
 
         let deleteButton = document.createElement('button');
         deleteButton.appendChild(document.createTextNode('-'));
@@ -118,9 +99,18 @@ class Task {
 
         taskElement.appendChild(deleteButton);
 
+        let messageDiv = document.createElement('div')
+        messageDiv.setAttribute('class', 'message')
+        messageDiv.appendChild(document.createTextNode('' + this.id + ': ' + this.message))
+        messageDiv.addEventListener('click', (e) => {
+            let taskDetailsDiv = this.renderTaskDetailsFull(e, participantLoader);
+            this.dispatcher.dispatch('taskDetailsRendered', taskDetailsDiv)
+        });
+
+        taskElement.appendChild(messageDiv);
+
 
         if (this.status < 6) {
-
             let newStatus = getNextStatus(this.status);
             let newStatusName = statusesI2A.get(newStatus);
             let changeStatusButton = document.createElement('button')
@@ -130,6 +120,17 @@ class Task {
 
             taskElement.appendChild(changeStatusButton)
         }
+
+        let statusDiv = document.createElement('div')
+        statusDiv.setAttribute('class', 'status')
+        statusDiv.appendChild(document.createTextNode('[' + this.status + ': ' + statusesI2A.get(this.status) + ']'))
+
+        taskElement.appendChild(statusDiv)
+
+        let clearDiv = document.createElement('div')
+        clearDiv.setAttribute('class', 'clear')
+
+        taskElement.appendChild(clearDiv)
 
         return taskElement;
     }

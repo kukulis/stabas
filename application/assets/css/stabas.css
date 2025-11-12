@@ -1,3 +1,46 @@
 .task-line {
     border: solid thin blue;
 }
+
+.menu {
+
+}
+
+.tasks-list {
+
+}
+
+.task-line {
+    padding: 1pt 1pt 3pt 0.5pt;
+}
+
+.task-details {
+
+}
+
+.task-line .message {
+    /*border: solid thin red;*/
+    width: 60%;
+    float: left;
+}
+
+.task-line .status {
+    /*border: solid thin green;*/
+    width: 10%;
+    float: left;
+}
+
+.task-line .delete-button {
+    /*border: solid thin yellow;*/
+    width: 20pt;
+    float: left;
+}
+
+.task-line .change-status-button {
+    /*border: solid thin violet;*/
+    float: left;
+}
+
+.clear {
+    clear: both;
+}
