@@ -12,8 +12,8 @@
 <body>
 {{ .menu}}
 
-<div id="app" class="tasks-list">
-    <div id="tasksList">
+<div id="app" >
+    <div id="tasksList" class="tasks-list">
 
     </div>
     <div id="taskDetails2" class="task-details">
@@ -51,6 +51,7 @@
         dispatcher.addListener('taskDetailsRendered', (taskInnerDiv) => {
             clearTag(taskDetailsOuterDiv)
             taskDetailsOuterDiv.appendChild(taskInnerDiv)
+            taskDetailsOuterDiv.style.display = 'block';
         })
 
         dispatcher.addListener('deleteTaskPressed', ([e, taskId]) => tasksComponent.deleteTask(e, taskId))
@@ -91,6 +92,10 @@
         dispatcher.addListener('afterChangeStatus', ([e, taskId]) => {
             console.log('afterChangeStatus event received')
             redrawTasksList();
+        });
+
+        dispatcher.addListener('hideDetailsPressed', (e) => {
+            taskDetailsOuterDiv.style.display = 'none'
         });
     }
 

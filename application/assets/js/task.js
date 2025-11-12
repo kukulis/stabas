@@ -186,7 +186,7 @@ class Task {
     }
 
     saveAction(event) {
-        console.log('save button, event', event)
+        // console.log('save button, event', event)
 
         this.modified = false;
 
@@ -244,8 +244,13 @@ class Task {
         saveButton.setAttribute('id', TASK_SAVE_BUTTON)
         saveButton.disabled = true;
 
+        let hideButton = document.createElement('button')
+        hideButton.appendChild(document.createTextNode('hide'))
+        hideButton.addEventListener('click', (event)=>dispatcher.dispatch('hideDetailsPressed', event))
+
         innerDetailsDiv.appendChild(tableDiv)
         innerDetailsDiv.appendChild(saveButton)
+        innerDetailsDiv.appendChild(hideButton)
 
         return innerDetailsDiv
     }
