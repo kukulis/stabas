@@ -93,6 +93,10 @@ class Task {
         return this;
     }
 
+    getTimerDivId() {
+        return 'task-timer-'+this.id.toString();
+    }
+
     /**
      *
      * @returns {HTMLDivElement}
@@ -147,8 +151,16 @@ class Task {
         taskElement.appendChild(statusDiv)
 
 
-        // TODO date and timer
+        let dateDiv = document.createElement('div')
+        dateDiv.classList.add('task-date')
+        dateDiv.appendChild(document.createTextNode(formatTimer(this.getCurrentStatusDate())))
+        taskElement.appendChild(dateDiv)
 
+        let timerDiv = document.createElement('div')
+        timerDiv.classList.add('task-timer')
+        timerDiv.appendChild(document.createTextNode('todo'))
+        timerDiv.setAttribute('id', this.getTimerDivId())
+        taskElement.appendChild(timerDiv)
 
         let clearDiv = document.createElement('div')
         clearDiv.setAttribute('class', 'clear')
@@ -156,6 +168,12 @@ class Task {
         taskElement.appendChild(clearDiv)
 
         return taskElement;
+    }
+
+    setTimer(now) {
+        let timerDiv = document.getElementById(this.getTimerDivId())
+        clearTag(timerDiv)
+        timerDiv.appendChild(document.createTextNode('modified'))
     }
 
     changeTaskStatus(event, task, newStatus) {
@@ -246,7 +264,7 @@ class Task {
 
         let hideButton = document.createElement('button')
         hideButton.appendChild(document.createTextNode('hide'))
-        hideButton.addEventListener('click', (event)=>dispatcher.dispatch('hideDetailsPressed', event))
+        hideButton.addEventListener('click', (event) => dispatcher.dispatch('hideDetailsPressed', event))
 
         innerDetailsDiv.appendChild(tableDiv)
         innerDetailsDiv.appendChild(saveButton)
@@ -493,6 +511,27 @@ class Task {
 
         return this;
     }
+
+    getCurrentStatusDate() {
+        if (this.status === STATUS_NEW) {
+            return this.createdAt
+        }
+        if (this.status === STATUS_SENT) {
+            return this.sentAt
+        }
+        if (this.status === STATUS_RECEIVED) {
+            return this.receivedAt
+        }
+        if (this.status === STATUS_EXECUTING) {
+            return this.executingAt
+        }
+        if (this.status === STATUS_FINISHED) {
+            return this.finishedAt
+        }
+        if (this.status === STATUS_CLOSED) {
+            return this.closedAt
+        }
+    }
 }
 
 
@@ -502,4 +541,12 @@ function getNextStatus(status) {
     }
 
     return status + 1;
+}
+
+/**
+ *
+ * @param date {Date}
+ */
+function formatTimer(date) {
+    return date.getHours().toString() + ':' + date.getMinutes().toString() + ':' + date.getSeconds().toString()
 }

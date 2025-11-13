@@ -97,6 +97,11 @@
         dispatcher.addListener('hideDetailsPressed', (e) => {
             taskDetailsOuterDiv.style.display = 'none'
         });
+
+        dispatcher.addListener('timerTick', ()=> {
+            console.log('timerTick called')
+            tasksComponent.setTimers(new Date())
+        })
     }
 
     // =============================================================================

@@ -160,6 +160,8 @@ class TasksComponent {
         await tasksComponent.loadParticipants();
         await tasksComponent.loadTasks();
 
+        tasksComponent.startTimer();
+
         return tasksComponent;
     }
 
@@ -171,5 +173,18 @@ class TasksComponent {
     disableSaveButton() {
         let saveButton = document.getElementById(TASK_SAVE_BUTTON);
         saveButton.disabled = true;
+    }
+
+    startTimer() {
+        var intervalId = setInterval(()=> {
+            this.dispatcher.dispatch('timerTick')
+            // clearInterval(intervalId)
+        }, 1000)
+    }
+
+    setTimers(now) {
+        for(let task of this.tasks) {
+            task.setTimer(now)
+        }
     }
 }
