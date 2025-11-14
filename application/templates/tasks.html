@@ -7,6 +7,7 @@
     <script src="/assets/js/tasks-component.js"></script>
     <script src="/assets/js/dispatcher.js"></script>
     <script src="/assets/js/participant.js"></script>
+    <script src="/assets/js/api.js"></script>
     <link rel="stylesheet" type="text/css" href="/assets/css/stabas.css" />
 </head>
 <body>
@@ -23,8 +24,9 @@
     let dispatcher = new Dispatcher();
     let redrawTasksList = null;
     let tasksComponent = null;
+    let apiClient = new ApiClient();
 
-    TasksComponent.initialize(dispatcher).then(
+    TasksComponent.initialize(dispatcher, apiClient).then(
         (tc) => {
             tasksComponent = tc;
 
@@ -100,7 +102,8 @@
 
         dispatcher.addListener('timerTick', ()=> {
             console.log('timerTick called')
-            tasksComponent.setTimers(new Date())
+            // tasksComponent.setTimers(new Date())
+            // TODO reloadTasks
         })
     }
 

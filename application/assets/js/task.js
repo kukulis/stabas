@@ -170,6 +170,10 @@ class Task {
         return taskElement;
     }
 
+    /**
+     * @deprecated reload whole page instead
+     * @param now
+     */
     setTimer(now) {
         let timerDiv = document.getElementById(this.getTimerDivId())
         clearTag(timerDiv)

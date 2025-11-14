@@ -1,6 +1,6 @@
 /***********************************************************************
  *
- * TaskList
+ * TasksComponent
  *
  ***********************************************************************/
 class TasksComponent {
@@ -20,8 +20,19 @@ class TasksComponent {
      */
     participants = [];
 
-    constructor(dispatcher) {
+    /**
+     * @type {ApiClient}
+     */
+    apiClient = null;
+
+    /**
+     *
+     * @param dispatcher {Dispatcher}
+     * @param apiClient {ApiClient}
+     */
+    constructor(dispatcher, apiClient) {
         this.dispatcher = dispatcher;
+        this.apiClient = apiClient;
     }
 
     addTask(task) {
@@ -29,6 +40,7 @@ class TasksComponent {
     }
 
     /**
+     * Called when 'add task' button is pressed (currently with '+' label )
      * @returns {Promise<Task|null>}
      */
     async newTask() {
@@ -37,6 +49,7 @@ class TasksComponent {
         }, 0)
 
         console.log('newTask, maxId', maxId)
+        // TODO use ApiClient
         let response = await fetch('/api/tasks', {
             method: 'PUT',
             body: JSON.stringify({
@@ -84,6 +97,7 @@ class TasksComponent {
             return;
         }
 
+        // TODO use ApiClient
         fetch('/api/tasks/' + taskId, {method: 'DELETE'}).then(
             (response) => {
                 this.tasks = this.tasks.filter((task) => (task.id !== taskId))
@@ -116,9 +130,11 @@ class TasksComponent {
     }
 
     async loadParticipants() {
+        // TODO use ApiClient
         let response = await fetch("/api/participants", {
             method: "GET",
         });
+        // TODO handle errors
 
         let participantsDTO = await response.json();
 
@@ -128,6 +144,7 @@ class TasksComponent {
     }
 
     async loadTasks() {
+        // TODO use Api client
         let response = await fetch("/api/tasks", {
             method: "GET",
         })
@@ -154,8 +171,13 @@ class TasksComponent {
         // console.log ('tasks after loadTasks ',  this.tasks );
     }
 
-    static async initialize(dispatcher) {
-        let tasksComponent = new TasksComponent(dispatcher);
+    /**
+     * @param dispatcher {Dispatcher}
+     * @param apiClient {ApiClient}
+     * @returns {Promise<TasksComponent>}
+     */
+    static async initialize(dispatcher, apiClient) {
+        let tasksComponent = new TasksComponent(dispatcher, apiClient);
 
         await tasksComponent.loadParticipants();
         await tasksComponent.loadTasks();
@@ -179,9 +201,35 @@ class TasksComponent {
         var intervalId = setInterval(()=> {
             this.dispatcher.dispatch('timerTick')
             // clearInterval(intervalId)
-        }, 1000)
+        }, 5000)
     }
 
+    async reloadTasks() {
+        //
+        //
+        // this.tasks = [];
+        // this.participants = [];
+        //
+        // await this.loadParticipants()
+        // await this.loadTasks()
+
+        // TODO do not destroy tasks and participants list
+        // TODO set data from API into the existing tasks and participants list
+        // TODO after loading, filter out missing tasks and participants with the new order, received from API
+
+        let tasksDto = await this.apiClient.loadTasks()
+
+        // TODO put available tasks to a map
+        // TODO set values for each task from DTO list
+        // TODO  put filled and filtered tasks by the order of the received DTO list
+        //
+
+    }
+
+    /**
+     * @deprecated will reload whole page instead
+     * @param now
+     */
     setTimers(now) {
         for(let task of this.tasks) {
             task.setTimer(now)
