@@ -197,6 +197,7 @@ class TasksComponent {
         saveButton.disabled = true;
     }
 
+    // TODO make possibility to start and stop timer
     startTimer() {
         var intervalId = setInterval(()=> {
             this.dispatcher.dispatch('timerTick')
@@ -205,29 +206,39 @@ class TasksComponent {
     }
 
     async reloadTasks() {
-        //
-        //
-        // this.tasks = [];
-        // this.participants = [];
-        //
-        // await this.loadParticipants()
-        // await this.loadTasks()
-
-        // TODO do not destroy tasks and participants list
-        // TODO set data from API into the existing tasks and participants list
-        // TODO after loading, filter out missing tasks and participants with the new order, received from API
-
         let tasksDto = await this.apiClient.loadTasks()
 
-        // TODO put available tasks to a map
-        // TODO set values for each task from DTO list
-        // TODO  put filled and filtered tasks by the order of the received DTO list
-        //
+        let tasksMap = new Map();
 
+        for ( let task of  this.tasks ) {
+             tasksMap.set(task.id, task)
+        }
+
+        /**
+         * @type {Task[]}
+         */
+        let newTasksList = [];
+
+        for ( let taskDto of tasksDto ) {
+            let taskId = taskDto.id;
+            let task = null;
+            if ( tasksMap.has(taskId)) {
+                task = tasksMap.get(taskId)
+                task.updateFromDTO(taskDto)
+            }
+
+            if ( task === null ) {
+                task = Task.createFromDto(taskDto).setDispatcher(this.dispatcher)
+            }
+
+            newTasksList.push(task)
+        }
+
+        this.tasks = newTasksList;
     }
 
     /**
-     * @deprecated will reload whole page instead
+     * @deprecated will reload tasks list instead
      * @param now
      */
     setTimers(now) {

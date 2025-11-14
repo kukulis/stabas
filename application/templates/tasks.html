@@ -102,8 +102,7 @@
 
         dispatcher.addListener('timerTick', ()=> {
             console.log('timerTick called')
-            // tasksComponent.setTimers(new Date())
-            // TODO reloadTasks
+            tasksComponent.reloadTasks().then(()=>redrawTasksList())
         })
     }
 

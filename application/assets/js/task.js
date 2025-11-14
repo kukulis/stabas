@@ -94,7 +94,7 @@ class Task {
     }
 
     getTimerDivId() {
-        return 'task-timer-'+this.id.toString();
+        return 'task-timer-' + this.id.toString();
     }
 
     /**
@@ -156,9 +156,12 @@ class Task {
         dateDiv.appendChild(document.createTextNode(formatTimer(this.getCurrentStatusDate())))
         taskElement.appendChild(dateDiv)
 
+        let now = new Date();
+
         let timerDiv = document.createElement('div')
         timerDiv.classList.add('task-timer')
-        timerDiv.appendChild(document.createTextNode('todo'))
+        let duration = this.calculateIntervalFromTheCurrentStatusDate(now);
+        timerDiv.appendChild(document.createTextNode(duration))
         timerDiv.setAttribute('id', this.getTimerDivId())
         taskElement.appendChild(timerDiv)
 
@@ -536,6 +539,27 @@ class Task {
             return this.closedAt
         }
     }
+
+    /**
+     *
+     * @param date {Date}
+     * @return {string}
+     */
+    calculateIntervalFromTheCurrentStatusDate(date) {
+        let statusDate = this.getCurrentStatusDate();
+        if (statusDate === null) {
+            return '-';
+        }
+
+        let distance = date.getTime() - statusDate.getTime()
+        let secondsDistance = Math.floor(distance / 1000);
+        let minutesDistance = Math.floor(secondsDistance / 60);
+        let remainingSecondsDistance = secondsDistance % 60;
+        let hoursDistance = Math.floor(minutesDistance / 60);
+        let remainingMinutesDistance = minutesDistance % 60;
+
+        return hoursDistance.toString() + ':' + remainingMinutesDistance.toString() + ':' + remainingSecondsDistance.toString();
+    }
 }
 
 
@@ -552,5 +576,8 @@ function getNextStatus(status) {
  * @param date {Date}
  */
 function formatTimer(date) {
+    if ( date === null ) {
+        return '-';
+    }
     return date.getHours().toString() + ':' + date.getMinutes().toString() + ':' + date.getSeconds().toString()
 }
