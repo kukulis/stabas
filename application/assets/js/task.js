@@ -15,6 +15,10 @@ statusesI2A.set(STATUS_EXECUTING, 'executing')
 statusesI2A.set(STATUS_FINISHED, 'finished')
 statusesI2A.set(STATUS_CLOSED, 'closed')
 
+const LATE_NONE = 'none'
+const LATE_SOFT = 'soft'
+const LATE_SEVERE = 'severe'
+
 
 function getStatusClass(statusId) {
     if (!statusesI2A.has(statusId)) {
@@ -94,14 +98,15 @@ class Task {
     }
 
     getTimerDivId() {
-        return 'task-timer-'+this.id.toString();
+        return 'task-timer-' + this.id.toString();
     }
 
     /**
-     *
+     * @param participantLoader {function}
+     * @param settings {Settings}
      * @returns {HTMLDivElement}
      */
-    renderTaskLine(participantLoader) {
+    renderTaskLine(participantLoader, settings) {
 
         let taskElement = document.createElement('div')
         // taskElement.setAttribute('class', 'task-line')
@@ -153,13 +158,24 @@ class Task {
 
         let dateDiv = document.createElement('div')
         dateDiv.classList.add('task-date')
-        dateDiv.appendChild(document.createTextNode(formatTimer(this.getCurrentStatusDate())))
+        let currentStatusDate = this.getCurrentStatusDate();
+        dateDiv.appendChild(document.createTextNode(formatTimer(currentStatusDate)))
         taskElement.appendChild(dateDiv)
+
+        let now = new Date();
 
         let timerDiv = document.createElement('div')
         timerDiv.classList.add('task-timer')
-        timerDiv.appendChild(document.createTextNode('todo'))
+
+        let late = now.getTime() - currentStatusDate.getTime();
+        let criticality = Task.calculateCriticalityOfTheCurrentStatusDelay(late, this.status)
+
+        let duration = this.calculateIntervalFromTheCurrentStatusDate(now);
+
+        // TODO late
+        timerDiv.appendChild(document.createTextNode(duration))
         timerDiv.setAttribute('id', this.getTimerDivId())
+        timerDiv.classList.add('late-' + criticality)
         taskElement.appendChild(timerDiv)
 
         let clearDiv = document.createElement('div')
@@ -167,9 +183,15 @@ class Task {
 
         taskElement.appendChild(clearDiv)
 
+        // TODO sender and receivers
+
         return taskElement;
     }
 
+    /**
+     * @deprecated reload whole page instead
+     * @param now
+     */
     setTimer(now) {
         let timerDiv = document.getElementById(this.getTimerDivId())
         clearTag(timerDiv)
@@ -532,6 +554,35 @@ class Task {
             return this.closedAt
         }
     }
+
+    /**
+     *
+     * @param date {Date}
+     * @return {string}
+     */
+    // TODO use distance instead of calculating distance inside the function
+    calculateIntervalFromTheCurrentStatusDate(date) {
+
+        let statusDate = this.getCurrentStatusDate();
+        if (statusDate === null) {
+            return '-';
+        }
+
+        let distance = date.getTime() - statusDate.getTime()
+        let secondsDistance = Math.floor(distance / 1000);
+        let minutesDistance = Math.floor(secondsDistance / 60);
+        let remainingSecondsDistance = secondsDistance % 60;
+        let hoursDistance = Math.floor(minutesDistance / 60);
+        let remainingMinutesDistance = minutesDistance % 60;
+
+        return hoursDistance.toString() + ':' + remainingMinutesDistance.toString() + ':' + remainingSecondsDistance.toString();
+    }
+
+    static calculateCriticalityOfTheCurrentStatusDelay(late) {
+        // TODO use settings, the delay and return the required criticality constant
+
+        return LATE_NONE;
+    }
 }
 
 
@@ -548,5 +599,8 @@ function getNextStatus(status) {
  * @param date {Date}
  */
 function formatTimer(date) {
+    if (date === null) {
+        return '-';
+    }
     return date.getHours().toString() + ':' + date.getMinutes().toString() + ':' + date.getSeconds().toString()
 }

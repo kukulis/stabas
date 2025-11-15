@@ -1,6 +1,6 @@
 /***********************************************************************
  *
- * TaskList
+ * TasksComponent
  *
  ***********************************************************************/
 class TasksComponent {
@@ -20,8 +20,25 @@ class TasksComponent {
      */
     participants = [];
 
-    constructor(dispatcher) {
+    /**
+     * @type {ApiClient}
+     */
+    apiClient = null;
+
+    /**
+     *
+     * @type {Settings}
+     */
+    settings = null;
+
+    /**
+     *
+     * @param dispatcher {Dispatcher}
+     * @param apiClient {ApiClient}
+     */
+    constructor(dispatcher, apiClient) {
         this.dispatcher = dispatcher;
+        this.apiClient = apiClient;
     }
 
     addTask(task) {
@@ -29,6 +46,7 @@ class TasksComponent {
     }
 
     /**
+     * Called when 'add task' button is pressed (currently with '+' label )
      * @returns {Promise<Task|null>}
      */
     async newTask() {
@@ -37,6 +55,7 @@ class TasksComponent {
         }, 0)
 
         console.log('newTask, maxId', maxId)
+        // TODO use ApiClient
         let response = await fetch('/api/tasks', {
             method: 'PUT',
             body: JSON.stringify({
@@ -84,6 +103,7 @@ class TasksComponent {
             return;
         }
 
+        // TODO use ApiClient
         fetch('/api/tasks/' + taskId, {method: 'DELETE'}).then(
             (response) => {
                 this.tasks = this.tasks.filter((task) => (task.id !== taskId))
@@ -109,16 +129,18 @@ class TasksComponent {
         tasksListElement.appendChild(addButton);
 
         for (let task of this.tasks) {
-            tasksListElement.appendChild(task.renderTaskLine(() => this.participants));
+            tasksListElement.appendChild(task.renderTaskLine(() => this.participants, this.settings));
         }
 
         return tasksListElement;
     }
 
     async loadParticipants() {
+        // TODO use ApiClient
         let response = await fetch("/api/participants", {
             method: "GET",
         });
+        // TODO handle errors
 
         let participantsDTO = await response.json();
 
@@ -128,6 +150,7 @@ class TasksComponent {
     }
 
     async loadTasks() {
+        // TODO use Api client
         let response = await fetch("/api/tasks", {
             method: "GET",
         })
@@ -154,11 +177,22 @@ class TasksComponent {
         // console.log ('tasks after loadTasks ',  this.tasks );
     }
 
-    static async initialize(dispatcher) {
-        let tasksComponent = new TasksComponent(dispatcher);
+    loadSettings() {
+        // TODO load from api
+        this.settings = new Settings()
+    }
+
+    /**
+     * @param dispatcher {Dispatcher}
+     * @param apiClient {ApiClient}
+     * @returns {Promise<TasksComponent>}
+     */
+    static async initialize(dispatcher, apiClient) {
+        let tasksComponent = new TasksComponent(dispatcher, apiClient);
 
         await tasksComponent.loadParticipants();
         await tasksComponent.loadTasks();
+        await tasksComponent.loadSettings();
 
         tasksComponent.startTimer();
 
@@ -175,13 +209,59 @@ class TasksComponent {
         saveButton.disabled = true;
     }
 
+    // TODO make possibility to start and stop timer
     startTimer() {
         var intervalId = setInterval(()=> {
             this.dispatcher.dispatch('timerTick')
             // clearInterval(intervalId)
-        }, 1000)
+        }, 5000)
     }
 
+    async reloadSettings() {
+        // TODO
+    }
+
+    async reloadParticipants() {
+        // TODO
+    }
+
+    async reloadTasks() {
+
+        let tasksDto = await this.apiClient.loadTasks()
+
+        let tasksMap = new Map();
+
+        for ( let task of  this.tasks ) {
+             tasksMap.set(task.id, task)
+        }
+
+        /**
+         * @type {Task[]}
+         */
+        let newTasksList = [];
+
+        for ( let taskDto of tasksDto ) {
+            let taskId = taskDto.id;
+            let task = null;
+            if ( tasksMap.has(taskId)) {
+                task = tasksMap.get(taskId)
+                task.updateFromDTO(taskDto)
+            }
+
+            if ( task === null ) {
+                task = Task.createFromDto(taskDto).setDispatcher(this.dispatcher)
+            }
+
+            newTasksList.push(task)
+        }
+
+        this.tasks = newTasksList;
+    }
+
+    /**
+     * @deprecated will reload tasks list instead
+     * @param now
+     */
     setTimers(now) {
         for(let task of this.tasks) {
             task.setTimer(now)
