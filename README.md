@@ -2,5 +2,6 @@
 valdymo konsolė
 
 # paleisti projektą
-Aplanke ./application vykdyti komandą:
-go run .
+Aplanke *./application* vykdyti komandą:
+
+`go run .`
