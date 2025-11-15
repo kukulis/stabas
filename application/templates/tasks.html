@@ -8,12 +8,13 @@
     <script src="/assets/js/dispatcher.js"></script>
     <script src="/assets/js/participant.js"></script>
     <script src="/assets/js/api.js"></script>
-    <link rel="stylesheet" type="text/css" href="/assets/css/stabas.css" />
+    <script src="/assets/js/settings.js"></script>
+    <link rel="stylesheet" type="text/css" href="/assets/css/stabas.css"/>
 </head>
 <body>
 {{ .menu}}
 
-<div id="app" >
+<div id="app">
     <div id="tasksList" class="tasks-list">
 
     </div>
@@ -100,9 +101,13 @@
             taskDetailsOuterDiv.style.display = 'none'
         });
 
-        dispatcher.addListener('timerTick', ()=> {
-            console.log('timerTick called')
-            tasksComponent.reloadTasks().then(()=>redrawTasksList())
+        dispatcher.addListener('timerTick', () => {
+            // console.log('timerTick called')
+            tasksComponent.reloadSettings().then(() =>
+                tasksComponent.reloadParticipants().then(() =>
+                    tasksComponent.reloadTasks().then(() => redrawTasksList())
+                )
+            )
         })
     }
 

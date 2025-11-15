@@ -27,6 +27,12 @@ class TasksComponent {
 
     /**
      *
+     * @type {Settings}
+     */
+    settings = null;
+
+    /**
+     *
      * @param dispatcher {Dispatcher}
      * @param apiClient {ApiClient}
      */
@@ -123,7 +129,7 @@ class TasksComponent {
         tasksListElement.appendChild(addButton);
 
         for (let task of this.tasks) {
-            tasksListElement.appendChild(task.renderTaskLine(() => this.participants));
+            tasksListElement.appendChild(task.renderTaskLine(() => this.participants, this.settings));
         }
 
         return tasksListElement;
@@ -171,6 +177,11 @@ class TasksComponent {
         // console.log ('tasks after loadTasks ',  this.tasks );
     }
 
+    loadSettings() {
+        // TODO load from api
+        this.settings = new Settings()
+    }
+
     /**
      * @param dispatcher {Dispatcher}
      * @param apiClient {ApiClient}
@@ -181,6 +192,7 @@ class TasksComponent {
 
         await tasksComponent.loadParticipants();
         await tasksComponent.loadTasks();
+        await tasksComponent.loadSettings();
 
         tasksComponent.startTimer();
 
@@ -205,7 +217,16 @@ class TasksComponent {
         }, 5000)
     }
 
+    async reloadSettings() {
+        // TODO
+    }
+
+    async reloadParticipants() {
+        // TODO
+    }
+
     async reloadTasks() {
+
         let tasksDto = await this.apiClient.loadTasks()
 
         let tasksMap = new Map();
