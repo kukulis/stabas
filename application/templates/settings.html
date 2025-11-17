@@ -2,32 +2,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Settings</title>
+    <title>Nustatymai</title>
+    
 </head>
 <body>
 {{ .menu}}
 
-    <!-- 
-    newStatusDelay = 5;
-    newStatusDelaySevere = 15;
-    sentStatusDelay = 2;
-    sentStatusDelaySevere = 6;
-    receivedStatusDelay = 5;
-    receivedStatusDelaySevere = 15;
-    executingStatusDelay = 10;
-    executingStatusDelaySevere = 20;
-    finishedStatusDelay = 60;
-    finishedStatusDelaySevere = 120;
-    -->
-
  <form action="/action_page.php">
   <label for="new-status-delay">New status delay:</label>
   <input type="text" id="new-status-delay" name="new-status-delay"><br><br>
-  <!-- <label for="lname">Last name:</label>
-  <input type="text" id="lname" name="lname"><br><br> -->
+
+  <label for="new-status-delay-severe">New status severe delay:</label> <!-- TODO how do translate? -->
+  <input type="text" id="new-status-delay-severe" name="new-status-delay-severe"><br><br>
+
+  <label for="sent-status-delay">Sent status delay:</label>
+  <input type="text" id="sent-status-delay" name="sent-status-delay"><br><br>
+
+  <label for="sent-status-delay-severe">Sent status delay-severe:</label>
+  <input type="text" id="sent-status-delay-severe" name="sent-status-delay-severe"><br><br>
+
+  <label for="received-status-delay">received-status-delay:</label>
+  <input type="text" id="received-status-delay" name="received-status-delay"><br><br>
+
+  <label for="received-status-delay-severe">received-status-delay-severe:</label>
+  <input type="text" id="received-status-delay-severe" name="received-status-delay-severe"><br><br>
+
+  <label for="executing-status-delay">executing status delay:</label>
+  <input type="text" id="executing-status-delay" name="executing-status-delay"><br><br>
+
+  <label for="executing-status-delay-severe">executing status delay:</label>
+  <input type="text" id="executing-status-delay-severe" name="executing-status-delay-severe"><br><br>
+
+  <label for="finished-status-delay">finished status delay:</label>
+  <input type="text" id="finished-status-delay" name="finished-status-delay"><br><br>
+
+  <label for="finished-status-delay-severe">finished status delay:</label>
+  <input type="text" id="finished-status-delay-severe" name="finished-status-delay-severe"><br><br>
+
   <input type="submit" value="Submit">
 </form> 
 
-TODO settings
 </body>
 </html>
