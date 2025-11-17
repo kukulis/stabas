@@ -14,6 +14,10 @@ type TaskController struct {
 	tasksRepository *dao.TasksRepository
 }
 
+func NewTaskController(tasksRepository *dao.TasksRepository) *TaskController {
+	return &TaskController{tasksRepository: tasksRepository}
+}
+
 func (controller *TaskController) GetAllTasks(c *gin.Context) {
 
 	// TODO order by statuses and dates
@@ -172,6 +176,3 @@ func (controller *TaskController) ChangeStatus(c *gin.Context) {
 
 	c.JSON(http.StatusOK, map[string]string{"success": "Changed status of task " + idStr + " to " + statusStr})
 }
-
-// TaskControllerInstance singleton
-var TaskControllerInstance = TaskController{tasksRepository: dao.NewTasksRepository()}
