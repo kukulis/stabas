@@ -147,3 +147,18 @@
 .task-line .change-status-button {
     min-width: 100pt;
 }
+
+.task-line .late-none {
+    float: left;
+}
+
+.task-line .late-soft {
+    background-color: yellow;
+    float: left;
+}
+
+.task-line .late-severe {
+    background-color: red;
+    color: white;
+    float: left;
+}

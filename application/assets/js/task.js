@@ -15,11 +15,6 @@ statusesI2A.set(STATUS_EXECUTING, 'executing')
 statusesI2A.set(STATUS_FINISHED, 'finished')
 statusesI2A.set(STATUS_CLOSED, 'closed')
 
-const LATE_NONE = 'none'
-const LATE_SOFT = 'soft'
-const LATE_SEVERE = 'severe'
-
-
 function getStatusClass(statusId) {
     if (!statusesI2A.has(statusId)) {
         return '';
@@ -168,11 +163,10 @@ class Task {
         timerDiv.classList.add('task-timer')
 
         let late = now.getTime() - currentStatusDate.getTime();
-        let criticality = Task.calculateCriticalityOfTheCurrentStatusDelay(late, this.status)
+        let criticality = settings.calculateCriticality(late, this.status)
 
         let duration = this.calculateIntervalFromTheCurrentStatusDate(now);
 
-        // TODO late
         timerDiv.appendChild(document.createTextNode(duration))
         timerDiv.setAttribute('id', this.getTimerDivId())
         timerDiv.classList.add('late-' + criticality)
@@ -188,28 +182,17 @@ class Task {
         return taskElement;
     }
 
-    /**
-     * @deprecated reload whole page instead
-     * @param now
-     */
-    setTimer(now) {
-        let timerDiv = document.getElementById(this.getTimerDivId())
-        clearTag(timerDiv)
-        timerDiv.appendChild(document.createTextNode('modified'))
-    }
-
     changeTaskStatus(event, task, newStatus) {
         fetch('/api/tasks/' + task.id + '/change-status?status=' + newStatus, {
             method: 'POST',
         }).then((response) => {
-            console.log('response received after changing status ', response)
+            // console.log('response received after changing status ', response)
             response.text().then((text) => {
                 if (response.status === 200) {
                     task.status = newStatus;
-                    this.dispatcher.dispatch('afterChangeStatus', [event, task.id]);
-                    return;
+                    console.log(text)
+                    this.dispatcher.dispatch('afterChangeStatus', [event, task]);
                 }
-                alert(text)
             }).catch((error) => console.log('error getting response after changing status', error))
         }).catch((error) => console.log('error changing status', error))
     }
@@ -577,12 +560,6 @@ class Task {
 
         return hoursDistance.toString() + ':' + remainingMinutesDistance.toString() + ':' + remainingSecondsDistance.toString();
     }
-
-    static calculateCriticalityOfTheCurrentStatusDelay(late) {
-        // TODO use settings, the delay and return the required criticality constant
-
-        return LATE_NONE;
-    }
 }
 
 
@@ -604,3 +581,5 @@ function formatTimer(date) {
     }
     return date.getHours().toString() + ':' + date.getMinutes().toString() + ':' + date.getSeconds().toString()
 }
+
+

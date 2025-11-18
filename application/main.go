@@ -18,7 +18,6 @@ func main() {
 		"templates/tasks.html",
 		"templates/participants.html",
 		"templates/settings.html",
-		"templates/test.html",
 	)
 
 	templatesDir := os.DirFS("templates")

@@ -92,9 +92,12 @@
             // console.log('task ' + taskId + ' result input', e)
             tasksComponent.enableSaveButton()
         });
-        dispatcher.addListener('afterChangeStatus', ([e, taskId]) => {
-            console.log('afterChangeStatus event received')
-            redrawTasksList();
+
+        dispatcher.addListener('afterChangeStatus', ([e, task]) => {
+            // may be reloading function is better inside a Task ..
+            tasksComponent.reloadSingleTask(task).then(() => {
+                redrawTasksList()
+            });
         });
 
         dispatcher.addListener('hideDetailsPressed', (e) => {
@@ -103,11 +106,14 @@
 
         dispatcher.addListener('timerTick', () => {
             // console.log('timerTick called')
-            tasksComponent.reloadSettings().then(() =>
-                tasksComponent.reloadParticipants().then(() =>
-                    tasksComponent.reloadTasks().then(() => redrawTasksList())
+
+            if (tasksComponent.settings.reloadTasksOnTimer) {
+                tasksComponent.reloadSettings().then(() =>
+                    tasksComponent.reloadParticipants().then(() =>
+                        tasksComponent.reloadTasks().then(() => redrawTasksList())
+                    )
                 )
-            )
+            }
         })
     }
 

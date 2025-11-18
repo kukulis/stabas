@@ -177,9 +177,8 @@ class TasksComponent {
         // console.log ('tasks after loadTasks ',  this.tasks );
     }
 
-    loadSettings() {
-        // TODO load from api
-        this.settings = new Settings()
+    async loadSettings() {
+        this.settings = await this.apiClient.loadSettings()
     }
 
     /**
@@ -259,12 +258,13 @@ class TasksComponent {
     }
 
     /**
-     * @deprecated will reload tasks list instead
-     * @param now
+     *
+     * @param task {Task}
+     * @returns {Promise<void>}
      */
-    setTimers(now) {
-        for(let task of this.tasks) {
-            task.setTimer(now)
-        }
+    async reloadSingleTask(task) {
+         let taskDto = await this.apiClient.loadTask(task.id)
+
+        task.updateFromDTO(taskDto)
     }
 }
