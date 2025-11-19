@@ -51,6 +51,17 @@
             redrawTasksList()
             tasksComponent.disableSaveButton();
         })
+
+        dispatcher.addListener('taskSavedPartially', (task) => {
+            console.log('Task saved partially ' + task.id)
+            alert('Was changes from another editor, look/modify values and save again.')
+            redrawTasksList()
+
+            let taskDetailsDiv = task.renderTaskDetailsFull(null, () => tasksComponent.participants);
+            dispatcher.dispatch('taskDetailsRendered', taskDetailsDiv)
+            tasksComponent.enableSaveButton();
+        })
+
         dispatcher.addListener('taskDetailsRendered', (taskInnerDiv) => {
             clearTag(taskDetailsOuterDiv)
             taskDetailsOuterDiv.appendChild(taskInnerDiv)
@@ -58,6 +69,7 @@
         })
 
         dispatcher.addListener('deleteTaskPressed', ([e, taskId]) => tasksComponent.deleteTask(e, taskId))
+
         dispatcher.addListener('onAddTask', () => {
             redrawTasksList();
             clearTag(taskDetailsOuterDiv)

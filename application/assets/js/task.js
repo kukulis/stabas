@@ -85,6 +85,7 @@ class Task {
         this.setSender(taskDTO.sender)
         this.setReceivers(taskDTO.receivers)
         this.setResult(taskDTO.result)
+        this.message = taskDTO.message
         this.sentAt = parseDate(taskDTO.sent_at)
         this.receivedAt = parseDate(taskDTO.received_at)
         this.executingAt = parseDate(taskDTO.executing_at)
@@ -96,12 +97,11 @@ class Task {
     }
     updateFromDTOMerged(taskDTO, myVersionTaskDTO) {
 
-        // if ( this.status == taskDTO.status)
-        // TODO
-        this.setStatus(taskDTO.status)
-        this.setSender(taskDTO.sender)
-        this.setReceivers(taskDTO.receivers)
-        this.setResult(taskDTO.result)
+        this.status = selectValue(this.status, taskDTO.status, myVersionTaskDTO.status)
+        this.sender = selectValue(this.sender, taskDTO.sender, myVersionTaskDTO.sender)
+        this.receivers = selectValue(this.receivers, taskDTO.receivers, myVersionTaskDTO.receivers)
+        this.message =  selectValue(this.message, taskDTO.message, myVersionTaskDTO.message)
+        this.result =  selectValue(this.result, taskDTO.result, myVersionTaskDTO.result)
         this.sentAt = parseDate(taskDTO.sent_at)
         this.receivedAt = parseDate(taskDTO.received_at)
         this.executingAt = parseDate(taskDTO.executing_at)
@@ -182,7 +182,12 @@ class Task {
         let timerDiv = document.createElement('div')
         timerDiv.classList.add('task-timer')
 
-        let late = now.getTime() - currentStatusDate.getTime();
+        let late = 0
+
+        if ( now !== null && currentStatusDate !== null ) {
+            late = now.getTime() - currentStatusDate.getTime();
+        }
+
         let criticality = settings.calculateCriticality(late, this.status)
 
         let duration = this.calculateIntervalFromTheCurrentStatusDate(now);
@@ -259,16 +264,17 @@ class Task {
                 taskResponse.json().then((taskDTO) => {
                     if ( taskResponse.status === 409 ) {
                         this.updateFromDTOMerged(taskDTO, myVersionDto)
+                        this.dispatcher.dispatch('taskSavedPartially', this)
                     }
                     else {
                         this.updateFromDTO(taskDTO)
+                        this.dispatcher.dispatch('taskSaved', this)
                     }
 
-                    this.dispatcher.dispatch('taskSaved', this)
 
-                    if ( taskResponse.status === 409 ) {
-                        this.dispatcher.dispatch('inputMessage', this)
-                    }
+                    // if ( taskResponse.status === 409 ) {
+                    //     this.dispatcher.dispatch('inputMessage', this)
+                    // }
                 })
             })
     }
@@ -614,4 +620,10 @@ function formatTimer(date) {
     return date.getHours().toString() + ':' + date.getMinutes().toString() + ':' + date.getSeconds().toString()
 }
 
+function selectValue(originalValue, newValue, anotherValue ) {
+    if ( originalValue !== newValue ) {
+        return newValue;
+    }
+    return anotherValue;
+}
 
