@@ -59,6 +59,8 @@ class Task {
     /** @type {boolean} */
     modified = false;
 
+    version = 0;
+
     constructor(message, id, date) {
         this.message = message;
         this.id = id;
@@ -88,6 +90,24 @@ class Task {
         this.executingAt = parseDate(taskDTO.executing_at)
         this.finishedAt = parseDate(taskDTO.finished_at)
         this.closedAt = parseDate(taskDTO.closed_at)
+        this.version = taskDTO.version
+
+        return this;
+    }
+    updateFromDTOMerged(taskDTO, myVersionTaskDTO) {
+
+        // if ( this.status == taskDTO.status)
+        // TODO
+        this.setStatus(taskDTO.status)
+        this.setSender(taskDTO.sender)
+        this.setReceivers(taskDTO.receivers)
+        this.setResult(taskDTO.result)
+        this.sentAt = parseDate(taskDTO.sent_at)
+        this.receivedAt = parseDate(taskDTO.received_at)
+        this.executingAt = parseDate(taskDTO.executing_at)
+        this.finishedAt = parseDate(taskDTO.finished_at)
+        this.closedAt = parseDate(taskDTO.closed_at)
+        this.version = taskDTO.version
 
         return this;
     }
@@ -205,6 +225,7 @@ class Task {
             status: this.status,
             sender: this.sender,
             receivers: this.receivers,
+            version: this.version+1,
         }
     }
 
@@ -212,31 +233,42 @@ class Task {
         // console.log('save button, event', event)
 
         this.modified = false;
-
         let messageInput = document.getElementById('message');
-        this.message = messageInput.value;
-
         let resultInput = document.getElementById('result');
-        this.result = resultInput.value;
-
         let statusSelect = document.getElementById('status');
-        this.status = parseInt(statusSelect.value);
-
         let senderSelect = document.getElementById('sender');
-        this.sender = parseInt(senderSelect.value);
-
         let receiversSelect = document.getElementById('receivers');
-        this.receivers = Array.from(receiversSelect.selectedOptions).map((option) => parseInt(option.value));
+
+        let myVersionDto = {
+            message: messageInput.value,
+            result: resultInput.value,
+            status: parseInt(statusSelect.value),
+            sender: parseInt(senderSelect.value),
+            receivers: Array.from(receiversSelect.selectedOptions).map((option) => parseInt(option.value)),
+            version: this.version +1,
+        }
+
+        //= this.buildObjectForJson()
 
         fetch('/api/tasks/' + this.id, {
             method: 'POST',
-            body: JSON.stringify(this.buildObjectForJson())
+            body: JSON.stringify(myVersionDto)
         })
             .catch((error) => console.log('error updating task to backend', error))
             .then((taskResponse) => {
                 taskResponse.json().then((taskDTO) => {
-                    this.updateFromDTO(taskDTO)
+                    if ( taskResponse.status === 409 ) {
+                        this.updateFromDTOMerged(taskDTO, myVersionDto)
+                    }
+                    else {
+                        this.updateFromDTO(taskDTO)
+                    }
+
                     this.dispatcher.dispatch('taskSaved', this)
+
+                    if ( taskResponse.status === 409 ) {
+                        this.dispatcher.dispatch('inputMessage', this)
+                    }
                 })
             })
     }

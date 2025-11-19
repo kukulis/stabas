@@ -69,18 +69,16 @@ class TasksComponent {
             return null;
         }
 
-        // TODO better to return the new created task
-        let taskId = await response.json()
+        let taskDto = await response.json()
 
-        let taskResponse = await fetch('/api/tasks/' + taskId,
-            {method: 'GET'}
-        ).catch((error) => console.log('error getting task by id ' + taskId, error));
-
-        if (taskResponse === undefined) {
-            return null;
-        }
-
-        let taskDto = await taskResponse.json();
+        // let taskResponse = await fetch('/api/tasks/' + taskId,
+        //     {method: 'GET'}
+        // ).catch((error) => console.log('error getting task by id ' + taskId, error));
+        //
+        // if (taskResponse === undefined) {
+        //     return null;
+        // }
+        // let taskDto = await taskResponse.json();
 
         let task = Task.createFromDto(taskDto).setDispatcher(this.dispatcher)
 

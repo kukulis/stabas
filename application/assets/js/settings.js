@@ -14,7 +14,7 @@ class Settings {
     finishedStatusDelay = 60;
     finishedStatusDelaySevere = 120;
 
-    reloadTasksOnTimer = true;
+    reloadTasksOnTimer = false;
 
     // other settings values
 

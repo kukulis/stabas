@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin/codec/json"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -65,7 +66,7 @@ func (controller *TaskController) AddTask(c *gin.Context) {
 
 	controller.tasksRepository.AddTask(task)
 
-	c.JSON(http.StatusOK, task.Id)
+	c.JSON(http.StatusOK, task)
 }
 
 // UpdateTask updates task
@@ -85,26 +86,29 @@ func (controller *TaskController) UpdateTask(c *gin.Context) {
 		return
 	}
 
-	task := entities.NewTask()
+	receivedTask := entities.NewTask()
 
-	err = json.API.Unmarshal(buf, &task)
+	err = json.API.Unmarshal(buf, &receivedTask)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{"error": "error parsing json" + err.Error()})
 		return
 	}
 
-	task.Id = id
+	receivedTask.Id = id
 
-	_ = task.SetStatusDateIfNil(time.Now())
+	_ = receivedTask.SetStatusDateIfNil(time.Now())
 
-	err = controller.tasksRepository.UpdateTask(task)
+	existingTask, err := controller.tasksRepository.UpdateTaskWithValidation(receivedTask)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]string{"error": "updating task" + err.Error()})
+		if strings.Contains(err.Error(), "version") {
+			c.JSON(http.StatusConflict, existingTask)
+			return
+		}
+		c.JSON(http.StatusBadRequest, map[string]string{"error": "updating receivedTask" + err.Error()})
 		return
 	}
 
-	// return full task
-	c.JSON(http.StatusOK, task)
+	c.JSON(http.StatusOK, existingTask)
 }
 
 // DeleteTask Deletes task
@@ -168,11 +172,18 @@ func (controller *TaskController) ChangeStatus(c *gin.Context) {
 	}
 
 	task.Status = status
-
+	task.Version = task.Version + 1
 	err = task.SetStatusDate(time.Now())
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{"error": "Changing status " + err.Error()})
+		return
 	}
 
-	c.JSON(http.StatusOK, map[string]string{"success": "Changed status of task " + idStr + " to " + statusStr})
+	existingTask, err := controller.tasksRepository.UpdateTaskWithValidation(task)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]string{"error": "Changing status " + err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, existingTask)
 }
