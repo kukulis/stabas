@@ -82,9 +82,6 @@ func (repo *TasksRepository) UpdateTaskWithValidation(task *entities.Task) (*ent
 	if task.Version != existingTask.Version+1 {
 		return existingTask, errors.New("Wrong task version")
 	}
-	// compare versions
-	// update
-	// return updated task
 
 	return repo.UpdateTask(task)
 }

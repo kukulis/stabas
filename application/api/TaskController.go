@@ -171,15 +171,16 @@ func (controller *TaskController) ChangeStatus(c *gin.Context) {
 		return
 	}
 
-	task.Status = status
-	task.Version = task.Version + 1
-	err = task.SetStatusDate(time.Now())
+	taskCopy := *task
+	taskCopy.Status = status
+	taskCopy.Version = task.Version + 1
+	err = taskCopy.SetStatusDate(time.Now())
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{"error": "Changing status " + err.Error()})
 		return
 	}
 
-	existingTask, err := controller.tasksRepository.UpdateTaskWithValidation(task)
+	existingTask, err := controller.tasksRepository.UpdateTaskWithValidation(&taskCopy)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{"error": "Changing status " + err.Error()})
 		return
