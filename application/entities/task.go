@@ -7,10 +7,11 @@ import (
 )
 
 type Task struct {
-	Id          int        `json:"id"`
-	Message     string     `json:"message"`
-	Result      string     `json:"result"`
-	Sender      int        `json:"sender"`
+	Id      int    `json:"id"`
+	Message string `json:"message"`
+	Result  string `json:"result"`
+	Sender  int    `json:"sender"`
+
 	Receivers   []int      `json:"receivers"`
 	Status      int        `json:"status"`
 	CreatedAt   *time.Time `json:"created_at"`
@@ -21,6 +22,7 @@ type Task struct {
 	ClosedAt    *time.Time `json:"closed_at"`
 	Deleted     bool       `json:"deleted"`
 	Version     int        `json:"version"`
+	TaskGroup   int        `json:"task_group"`
 }
 
 func NewTask() *Task {

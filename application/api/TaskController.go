@@ -98,6 +98,12 @@ func (controller *TaskController) UpdateTask(c *gin.Context) {
 
 	_ = receivedTask.SetStatusDateIfNil(time.Now())
 
+	// TODO split task to several tasks if the task has many receivers and the status is NEW
+	// TODO Assign new group ID to these tasks too.
+	// TODO Use UpdateTask without validation then
+
+	// TODO If the status is different than "NEW" do not let it have multiple receivers
+
 	existingTask, err := controller.tasksRepository.UpdateTaskWithValidation(receivedTask)
 	if err != nil {
 		if strings.Contains(err.Error(), "version") {

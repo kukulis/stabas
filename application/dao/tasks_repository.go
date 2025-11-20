@@ -12,6 +12,8 @@ type TasksRepository struct {
 }
 
 func NewTasksRepository() *TasksRepository {
+
+	// TODO fill initial tasks list with groups for developement
 	return &TasksRepository{tasks: make([]*entities.Task, 0), maxId: 0}
 }
 

@@ -40,6 +40,8 @@ class Task {
     status = 0;
     /** @type {int} */
     sender = 0;
+
+    // TODO single receiver
     /** @type {[int]} */
     receivers = [];
 
@@ -60,6 +62,8 @@ class Task {
     modified = false;
 
     version = 0;
+
+    taskGroup = 0;
 
     constructor(message, id, date) {
         this.message = message;
@@ -91,6 +95,7 @@ class Task {
         this.executingAt = parseDate(taskDTO.executing_at)
         this.finishedAt = parseDate(taskDTO.finished_at)
         this.closedAt = parseDate(taskDTO.closed_at)
+        this.taskGroup = parseDate(taskDTO.task_group)
         this.version = taskDTO.version
 
         return this;
@@ -626,4 +631,15 @@ function selectValue(originalValue, newValue, anotherValue ) {
     }
     return anotherValue;
 }
+
+
+class TaskGroup extends Task {
+
+    /**
+     * @type {[Task]}
+     */
+    children = [];
+
+}
+
 

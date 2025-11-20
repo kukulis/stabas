@@ -172,6 +172,8 @@ class TasksComponent {
             );
         }
 
+        // TODO make tasks groups
+
         // console.log ('tasks after loadTasks ',  this.tasks );
     }
 
@@ -251,6 +253,8 @@ class TasksComponent {
 
             newTasksList.push(task)
         }
+
+        // TODO make tasks groups
 
         this.tasks = newTasksList;
     }
