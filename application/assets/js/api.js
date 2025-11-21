@@ -15,6 +15,8 @@ class ApiClient {
         return await response.json();
     }
 
+    // TODO load groups
+
     async loadTask(id){
         let response = await fetch("/api/tasks/"+id, {
             method: "GET",

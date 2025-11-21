@@ -25,6 +25,20 @@ func (controller *TaskController) GetAllTasks(c *gin.Context) {
 	c.JSON(http.StatusOK, controller.tasksRepository.FindAll())
 }
 
+func (controller *TaskController) GetTasksGroups(c *gin.Context) {
+	// get available tasks from repository
+	tasks := controller.tasksRepository.FindAll()
+	tasksCopy := make([]*entities.Task, len(tasks))
+	for i, task := range tasks {
+		tasksCopy[i] = &entities.Task{}
+		*tasksCopy[i] = *task
+	}
+	// group them
+	groupedTasks := GroupTasks(tasksCopy)
+
+	c.JSON(http.StatusOK, groupedTasks)
+}
+
 func (controller *TaskController) GetTask(c *gin.Context) {
 
 	idStr := c.Param("id")
@@ -193,16 +207,4 @@ func (controller *TaskController) ChangeStatus(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, existingTask)
-}
-
-func (controller *TaskController) GetTasksGroups(c *gin.Context) {
-	// get available tasks from repository
-	tasks := controller.tasksRepository.FindAll()
-	tasksCopy := make([]*entities.Task, len(tasks))
-	for i, task := range tasks {
-		tasksCopy[i] = &entities.Task{}
-		*tasksCopy[i] = *task
-	}
-	// group them
-	// return results
 }
