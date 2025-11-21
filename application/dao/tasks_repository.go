@@ -40,9 +40,9 @@ func NewTasksRepository() *TasksRepository {
 			},
 
 			{
-				Id:        2,
-				Message:   "task2",
-				Result:    "result2",
+				Id:        6,
+				Message:   "task22",
+				Result:    "result22",
 				Sender:    1,
 				Receivers: []int{3},
 				Status:    1,
@@ -73,7 +73,7 @@ func NewTasksRepository() *TasksRepository {
 				TaskGroup: 3,
 			},
 		},
-		maxId: 4,
+		maxId: 6,
 	}
 }
 

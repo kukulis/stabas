@@ -19,3 +19,8 @@ Eiti į tls direktoriją cmdline.
 # run single test
 
     go test -run TestGroupTasks
+
+
+# build for windows
+
+    GOOS=windows GOARCH=amd64 go build
