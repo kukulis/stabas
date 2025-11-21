@@ -12,7 +12,14 @@ type ParticipantsRepository struct {
 }
 
 func NewParticipantsRepository() *ParticipantsRepository {
-	return &ParticipantsRepository{}
+	return &ParticipantsRepository{
+		participants: []*entities.Participant{
+			&entities.Participant{Id: 1, Name: "Participant 1"},
+			&entities.Participant{Id: 2, Name: "Participant 2"},
+			&entities.Participant{Id: 3, Name: "Participant 3"},
+		},
+	}
+
 }
 
 func (rep *ParticipantsRepository) GetParticipants() []*entities.Participant {

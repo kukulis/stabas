@@ -23,6 +23,7 @@ type Task struct {
 	Deleted     bool       `json:"deleted"`
 	Version     int        `json:"version"`
 	TaskGroup   int        `json:"task_group"`
+	Children    []*Task    `json:"children"`
 }
 
 func NewTask() *Task {

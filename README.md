@@ -16,3 +16,6 @@ Eiti į tls direktoriją cmdline.
     openssl req -new -x509 -sha256 -key server.key -out server.crt -days 3650
 
 
+# run single test
+
+    go test -run TestGroupTasks

@@ -14,7 +14,67 @@ type TasksRepository struct {
 func NewTasksRepository() *TasksRepository {
 
 	// TODO fill initial tasks list with groups for developement
-	return &TasksRepository{tasks: make([]*entities.Task, 0), maxId: 0}
+	return &TasksRepository{
+		tasks: []*entities.Task{
+			{
+				Id:        1,
+				Message:   "task1",
+				Result:    "result1",
+				Sender:    1,
+				Receivers: []int{2},
+				Status:    1,
+				Deleted:   false,
+				Version:   1,
+				TaskGroup: 1,
+			},
+			{
+				Id:        2,
+				Message:   "task2",
+				Result:    "result2",
+				Sender:    1,
+				Receivers: []int{3},
+				Status:    1,
+				Deleted:   false,
+				Version:   1,
+				TaskGroup: 1,
+			},
+
+			{
+				Id:        2,
+				Message:   "task2",
+				Result:    "result2",
+				Sender:    1,
+				Receivers: []int{3},
+				Status:    1,
+				Deleted:   false,
+				Version:   1,
+				TaskGroup: 1,
+			},
+			{
+				Id:        3,
+				Message:   "task3",
+				Result:    "result3",
+				Sender:    2,
+				Receivers: []int{1},
+				Status:    1,
+				Deleted:   false,
+				Version:   1,
+				TaskGroup: 3,
+			},
+			{
+				Id:        4,
+				Message:   "task4",
+				Result:    "result4",
+				Sender:    2,
+				Receivers: []int{3},
+				Status:    1,
+				Deleted:   false,
+				Version:   1,
+				TaskGroup: 3,
+			},
+		},
+		maxId: 4,
+	}
 }
 
 func (repo *TasksRepository) FindById(id int) (*entities.Task, error) {
