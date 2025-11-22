@@ -640,6 +640,8 @@ class TaskGroup extends Task {
      */
     children = [];
 
+    // make expand button and children display
+
 }
 
 

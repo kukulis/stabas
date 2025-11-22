@@ -15,10 +15,29 @@ class ApiClient {
         return await response.json();
     }
 
-    // TODO load groups
 
-    async loadTask(id){
-        let response = await fetch("/api/tasks/"+id, {
+    /**
+     * Groups are same tasks but with children
+     * @returns {Promise<TaskGroup[]>} It is actually not taskGroups, but has same fields
+     */
+    async loadGroups() {
+        let response = await fetch("/api/groups", {
+            method: "GET",
+        })
+            .catch((error) => {
+                console.log('error fetching groups', error)
+            });
+
+        if (response === undefined) {
+            console.log('loadGroups response is undefined')
+            return null;
+        }
+
+        return await response.json();
+    }
+
+    async loadTask(id) {
+        let response = await fetch("/api/tasks/" + id, {
             method: "GET",
         })
             .catch((error) => {
@@ -30,7 +49,7 @@ class ApiClient {
             return;
         }
 
-        return await response.json().catch((error)=> console.log('Json error', error));
+        return await response.json().catch((error) => console.log('Json error', error));
     }
 
     /**

@@ -148,32 +148,14 @@ class TasksComponent {
     }
 
     async loadTasks() {
-        // TODO use Api client
-        let response = await fetch("/api/tasks", {
-            method: "GET",
-        })
-            .catch((error) => {
-                console.log('error fetching tasks', error)
-            });
+        let groupsDto = await this.apiClient.loadGroups();
 
-        if (response === undefined) {
-            console.log('loadTasks response is undefined')
-            return;
-        }
-
-        let tasksDto = await response.json();
-        // console.log('tasksDto', tasksDto)
-
-
-        for (let taskDto of tasksDto) {
+        for (let groupDto of groupsDto) {
             // console.log('loadTasks: adding task from backend, status ', taskDto.status)
             this.addTask(
-                Task.createFromDto(taskDto).setDispatcher(this.dispatcher)
+                TaskGroup.createFromDto(groupDto).setDispatcher(this.dispatcher)
             );
         }
-
-        // TODO make tasks groups
-
         // console.log ('tasks after loadTasks ',  this.tasks );
     }
 
@@ -226,7 +208,7 @@ class TasksComponent {
 
     async reloadTasks() {
 
-        let tasksDto = await this.apiClient.loadTasks()
+        let tasksDto = await this.apiClient.loadGroups()
 
         let tasksMap = new Map();
 
