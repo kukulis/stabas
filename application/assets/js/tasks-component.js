@@ -69,18 +69,16 @@ class TasksComponent {
             return null;
         }
 
-        // TODO better to return the new created task
-        let taskId = await response.json()
+        let taskDto = await response.json()
 
-        let taskResponse = await fetch('/api/tasks/' + taskId,
-            {method: 'GET'}
-        ).catch((error) => console.log('error getting task by id ' + taskId, error));
-
-        if (taskResponse === undefined) {
-            return null;
-        }
-
-        let taskDto = await taskResponse.json();
+        // let taskResponse = await fetch('/api/tasks/' + taskId,
+        //     {method: 'GET'}
+        // ).catch((error) => console.log('error getting task by id ' + taskId, error));
+        //
+        // if (taskResponse === undefined) {
+        //     return null;
+        // }
+        // let taskDto = await taskResponse.json();
 
         let task = Task.createFromDto(taskDto).setDispatcher(this.dispatcher)
 
@@ -174,12 +172,13 @@ class TasksComponent {
             );
         }
 
+        // TODO make tasks groups
+
         // console.log ('tasks after loadTasks ',  this.tasks );
     }
 
-    loadSettings() {
-        // TODO load from api
-        this.settings = new Settings()
+    async loadSettings() {
+        this.settings = await this.apiClient.loadSettings()
     }
 
     /**
@@ -255,16 +254,19 @@ class TasksComponent {
             newTasksList.push(task)
         }
 
+        // TODO make tasks groups
+
         this.tasks = newTasksList;
     }
 
     /**
-     * @deprecated will reload tasks list instead
-     * @param now
+     *
+     * @param task {Task}
+     * @returns {Promise<void>}
      */
-    setTimers(now) {
-        for(let task of this.tasks) {
-            task.setTimer(now)
-        }
+    async reloadSingleTask(task) {
+         let taskDto = await this.apiClient.loadTask(task.id)
+
+        task.updateFromDTO(taskDto)
     }
 }

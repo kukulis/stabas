@@ -7,11 +7,16 @@ import (
 	"github.com/gin-gonic/gin/codec/json"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 )
 
 type TaskController struct {
 	tasksRepository *dao.TasksRepository
+}
+
+func NewTaskController(tasksRepository *dao.TasksRepository) *TaskController {
+	return &TaskController{tasksRepository: tasksRepository}
 }
 
 func (controller *TaskController) GetAllTasks(c *gin.Context) {
@@ -61,7 +66,7 @@ func (controller *TaskController) AddTask(c *gin.Context) {
 
 	controller.tasksRepository.AddTask(task)
 
-	c.JSON(http.StatusOK, task.Id)
+	c.JSON(http.StatusOK, task)
 }
 
 // UpdateTask updates task
@@ -81,26 +86,35 @@ func (controller *TaskController) UpdateTask(c *gin.Context) {
 		return
 	}
 
-	task := entities.NewTask()
+	receivedTask := entities.NewTask()
 
-	err = json.API.Unmarshal(buf, &task)
+	err = json.API.Unmarshal(buf, &receivedTask)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{"error": "error parsing json" + err.Error()})
 		return
 	}
 
-	task.Id = id
+	receivedTask.Id = id
 
-	_ = task.SetStatusDateIfNil(time.Now())
+	_ = receivedTask.SetStatusDateIfNil(time.Now())
 
-	err = controller.tasksRepository.UpdateTask(task)
+	// TODO split task to several tasks if the task has many receivers and the status is NEW
+	// TODO Assign new group ID to these tasks too.
+	// TODO Use UpdateTask without validation then
+
+	// TODO If the status is different than "NEW" do not let it have multiple receivers
+
+	existingTask, err := controller.tasksRepository.UpdateTaskWithValidation(receivedTask)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, map[string]string{"error": "updating task" + err.Error()})
+		if strings.Contains(err.Error(), "version") {
+			c.JSON(http.StatusConflict, existingTask)
+			return
+		}
+		c.JSON(http.StatusBadRequest, map[string]string{"error": "updating receivedTask" + err.Error()})
 		return
 	}
 
-	// return full task
-	c.JSON(http.StatusOK, task)
+	c.JSON(http.StatusOK, existingTask)
 }
 
 // DeleteTask Deletes task
@@ -163,15 +177,20 @@ func (controller *TaskController) ChangeStatus(c *gin.Context) {
 		return
 	}
 
-	task.Status = status
-
-	err = task.SetStatusDate(time.Now())
+	taskCopy := *task
+	taskCopy.Status = status
+	taskCopy.Version = task.Version + 1
+	err = taskCopy.SetStatusDate(time.Now())
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{"error": "Changing status " + err.Error()})
+		return
 	}
 
-	c.JSON(http.StatusOK, map[string]string{"success": "Changed status of task " + idStr + " to " + statusStr})
-}
+	existingTask, err := controller.tasksRepository.UpdateTaskWithValidation(&taskCopy)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]string{"error": "Changing status " + err.Error()})
+		return
+	}
 
-// TaskControllerInstance singleton
-var TaskControllerInstance = TaskController{tasksRepository: dao.NewTasksRepository()}
+	c.JSON(http.StatusOK, existingTask)
+}

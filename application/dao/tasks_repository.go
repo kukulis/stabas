@@ -12,6 +12,8 @@ type TasksRepository struct {
 }
 
 func NewTasksRepository() *TasksRepository {
+
+	// TODO fill initial tasks list with groups for developement
 	return &TasksRepository{tasks: make([]*entities.Task, 0), maxId: 0}
 }
 
@@ -38,11 +40,11 @@ func (repo *TasksRepository) AddTask(task *entities.Task) int {
 	return task.Id
 }
 
-func (repo *TasksRepository) UpdateTask(task *entities.Task) error {
+func (repo *TasksRepository) UpdateTask(task *entities.Task) (*entities.Task, error) {
 	t, err := repo.FindById(task.Id)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	t.Message = task.Message
@@ -56,8 +58,9 @@ func (repo *TasksRepository) UpdateTask(task *entities.Task) error {
 	t.ExecutingAt = task.ExecutingAt
 	t.FinishedAt = task.FinishedAt
 	t.ClosedAt = task.ClosedAt
+	t.Version = task.Version
 
-	return nil
+	return t, nil
 }
 
 func (repo *TasksRepository) DeleteTask(id int) error {
@@ -69,3 +72,30 @@ func (repo *TasksRepository) DeleteTask(id int) error {
 
 	return nil
 }
+
+func (repo *TasksRepository) UpdateTaskWithValidation(task *entities.Task) (*entities.Task, error) {
+	// find existing task
+	existingTask, err := repo.FindById(task.Id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if task.Version != existingTask.Version+1 {
+		return existingTask, errors.New("Wrong task version")
+	}
+
+	return repo.UpdateTask(task)
+}
+
+//func (repo *TasksRepository) UpdateTaskStatusAndVersion(id int, status int, version int) error {
+//	t, err := repo.FindById(id)
+//	if err != nil {
+//		return err
+//	}
+//
+//	t.Status = status
+//	t.Version = version
+//
+//	return nil
+//}

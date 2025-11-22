@@ -51,6 +51,17 @@
             redrawTasksList()
             tasksComponent.disableSaveButton();
         })
+
+        dispatcher.addListener('taskSavedPartially', (task) => {
+            console.log('Task saved partially ' + task.id)
+            alert('Was changes from another editor, look/modify values and save again.')
+            redrawTasksList()
+
+            let taskDetailsDiv = task.renderTaskDetailsFull(null, () => tasksComponent.participants);
+            dispatcher.dispatch('taskDetailsRendered', taskDetailsDiv)
+            tasksComponent.enableSaveButton();
+        })
+
         dispatcher.addListener('taskDetailsRendered', (taskInnerDiv) => {
             clearTag(taskDetailsOuterDiv)
             taskDetailsOuterDiv.appendChild(taskInnerDiv)
@@ -58,6 +69,7 @@
         })
 
         dispatcher.addListener('deleteTaskPressed', ([e, taskId]) => tasksComponent.deleteTask(e, taskId))
+
         dispatcher.addListener('onAddTask', () => {
             redrawTasksList();
             clearTag(taskDetailsOuterDiv)
@@ -92,9 +104,12 @@
             // console.log('task ' + taskId + ' result input', e)
             tasksComponent.enableSaveButton()
         });
-        dispatcher.addListener('afterChangeStatus', ([e, taskId]) => {
-            console.log('afterChangeStatus event received')
-            redrawTasksList();
+
+        dispatcher.addListener('afterChangeStatus', ([e, task]) => {
+            // may be reloading function is better inside a Task ..
+            tasksComponent.reloadSingleTask(task).then(() => {
+                redrawTasksList()
+            });
         });
 
         dispatcher.addListener('hideDetailsPressed', (e) => {
@@ -103,11 +118,14 @@
 
         dispatcher.addListener('timerTick', () => {
             // console.log('timerTick called')
-            tasksComponent.reloadSettings().then(() =>
-                tasksComponent.reloadParticipants().then(() =>
-                    tasksComponent.reloadTasks().then(() => redrawTasksList())
+
+            if (tasksComponent.settings.reloadTasksOnTimer) {
+                tasksComponent.reloadSettings().then(() =>
+                    tasksComponent.reloadParticipants().then(() =>
+                        tasksComponent.reloadTasks().then(() => redrawTasksList())
+                    )
                 )
-            )
+            }
         })
     }
 

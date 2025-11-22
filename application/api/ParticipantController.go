@@ -13,6 +13,10 @@ type ParticipantController struct {
 	participantsRepository *dao.ParticipantsRepository
 }
 
+func NewParticipantController(participantsRepository *dao.ParticipantsRepository) *ParticipantController {
+	return &ParticipantController{participantsRepository: participantsRepository}
+}
+
 func (controller *ParticipantController) GetParticipants(c *gin.Context) {
 	c.JSON(http.StatusOK, controller.participantsRepository.GetParticipants())
 }
@@ -110,5 +114,3 @@ func (controller *ParticipantController) DeleteParticipant(c *gin.Context) {
 
 	c.JSON(http.StatusOK, strconv.Itoa(id))
 }
-
-var ParticipantsControllerInstance = ParticipantController{&dao.ParticipantsRepository{}}

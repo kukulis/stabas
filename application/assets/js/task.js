@@ -15,11 +15,6 @@ statusesI2A.set(STATUS_EXECUTING, 'executing')
 statusesI2A.set(STATUS_FINISHED, 'finished')
 statusesI2A.set(STATUS_CLOSED, 'closed')
 
-const LATE_NONE = 'none'
-const LATE_SOFT = 'soft'
-const LATE_SEVERE = 'severe'
-
-
 function getStatusClass(statusId) {
     if (!statusesI2A.has(statusId)) {
         return '';
@@ -45,6 +40,8 @@ class Task {
     status = 0;
     /** @type {int} */
     sender = 0;
+
+    // TODO single receiver
     /** @type {[int]} */
     receivers = [];
 
@@ -63,6 +60,10 @@ class Task {
 
     /** @type {boolean} */
     modified = false;
+
+    version = 0;
+
+    taskGroup = 0;
 
     constructor(message, id, date) {
         this.message = message;
@@ -88,11 +89,30 @@ class Task {
         this.setSender(taskDTO.sender)
         this.setReceivers(taskDTO.receivers)
         this.setResult(taskDTO.result)
+        this.message = taskDTO.message
         this.sentAt = parseDate(taskDTO.sent_at)
         this.receivedAt = parseDate(taskDTO.received_at)
         this.executingAt = parseDate(taskDTO.executing_at)
         this.finishedAt = parseDate(taskDTO.finished_at)
         this.closedAt = parseDate(taskDTO.closed_at)
+        this.taskGroup = parseDate(taskDTO.task_group)
+        this.version = taskDTO.version
+
+        return this;
+    }
+    updateFromDTOMerged(taskDTO, myVersionTaskDTO) {
+
+        this.status = selectValue(this.status, taskDTO.status, myVersionTaskDTO.status)
+        this.sender = selectValue(this.sender, taskDTO.sender, myVersionTaskDTO.sender)
+        this.receivers = selectValue(this.receivers, taskDTO.receivers, myVersionTaskDTO.receivers)
+        this.message =  selectValue(this.message, taskDTO.message, myVersionTaskDTO.message)
+        this.result =  selectValue(this.result, taskDTO.result, myVersionTaskDTO.result)
+        this.sentAt = parseDate(taskDTO.sent_at)
+        this.receivedAt = parseDate(taskDTO.received_at)
+        this.executingAt = parseDate(taskDTO.executing_at)
+        this.finishedAt = parseDate(taskDTO.finished_at)
+        this.closedAt = parseDate(taskDTO.closed_at)
+        this.version = taskDTO.version
 
         return this;
     }
@@ -167,12 +187,16 @@ class Task {
         let timerDiv = document.createElement('div')
         timerDiv.classList.add('task-timer')
 
-        let late = now.getTime() - currentStatusDate.getTime();
-        let criticality = Task.calculateCriticalityOfTheCurrentStatusDelay(late, this.status)
+        let late = 0
+
+        if ( now !== null && currentStatusDate !== null ) {
+            late = now.getTime() - currentStatusDate.getTime();
+        }
+
+        let criticality = settings.calculateCriticality(late, this.status)
 
         let duration = this.calculateIntervalFromTheCurrentStatusDate(now);
 
-        // TODO late
         timerDiv.appendChild(document.createTextNode(duration))
         timerDiv.setAttribute('id', this.getTimerDivId())
         timerDiv.classList.add('late-' + criticality)
@@ -188,28 +212,17 @@ class Task {
         return taskElement;
     }
 
-    /**
-     * @deprecated reload whole page instead
-     * @param now
-     */
-    setTimer(now) {
-        let timerDiv = document.getElementById(this.getTimerDivId())
-        clearTag(timerDiv)
-        timerDiv.appendChild(document.createTextNode('modified'))
-    }
-
     changeTaskStatus(event, task, newStatus) {
         fetch('/api/tasks/' + task.id + '/change-status?status=' + newStatus, {
             method: 'POST',
         }).then((response) => {
-            console.log('response received after changing status ', response)
+            // console.log('response received after changing status ', response)
             response.text().then((text) => {
                 if (response.status === 200) {
                     task.status = newStatus;
-                    this.dispatcher.dispatch('afterChangeStatus', [event, task.id]);
-                    return;
+                    console.log(text)
+                    this.dispatcher.dispatch('afterChangeStatus', [event, task]);
                 }
-                alert(text)
             }).catch((error) => console.log('error getting response after changing status', error))
         }).catch((error) => console.log('error changing status', error))
     }
@@ -222,6 +235,7 @@ class Task {
             status: this.status,
             sender: this.sender,
             receivers: this.receivers,
+            version: this.version+1,
         }
     }
 
@@ -229,31 +243,43 @@ class Task {
         // console.log('save button, event', event)
 
         this.modified = false;
-
         let messageInput = document.getElementById('message');
-        this.message = messageInput.value;
-
         let resultInput = document.getElementById('result');
-        this.result = resultInput.value;
-
         let statusSelect = document.getElementById('status');
-        this.status = parseInt(statusSelect.value);
-
         let senderSelect = document.getElementById('sender');
-        this.sender = parseInt(senderSelect.value);
-
         let receiversSelect = document.getElementById('receivers');
-        this.receivers = Array.from(receiversSelect.selectedOptions).map((option) => parseInt(option.value));
+
+        let myVersionDto = {
+            message: messageInput.value,
+            result: resultInput.value,
+            status: parseInt(statusSelect.value),
+            sender: parseInt(senderSelect.value),
+            receivers: Array.from(receiversSelect.selectedOptions).map((option) => parseInt(option.value)),
+            version: this.version +1,
+        }
+
+        //= this.buildObjectForJson()
 
         fetch('/api/tasks/' + this.id, {
             method: 'POST',
-            body: JSON.stringify(this.buildObjectForJson())
+            body: JSON.stringify(myVersionDto)
         })
             .catch((error) => console.log('error updating task to backend', error))
             .then((taskResponse) => {
                 taskResponse.json().then((taskDTO) => {
-                    this.updateFromDTO(taskDTO)
-                    this.dispatcher.dispatch('taskSaved', this)
+                    if ( taskResponse.status === 409 ) {
+                        this.updateFromDTOMerged(taskDTO, myVersionDto)
+                        this.dispatcher.dispatch('taskSavedPartially', this)
+                    }
+                    else {
+                        this.updateFromDTO(taskDTO)
+                        this.dispatcher.dispatch('taskSaved', this)
+                    }
+
+
+                    // if ( taskResponse.status === 409 ) {
+                    //     this.dispatcher.dispatch('inputMessage', this)
+                    // }
                 })
             })
     }
@@ -577,12 +603,6 @@ class Task {
 
         return hoursDistance.toString() + ':' + remainingMinutesDistance.toString() + ':' + remainingSecondsDistance.toString();
     }
-
-    static calculateCriticalityOfTheCurrentStatusDelay(late) {
-        // TODO use settings, the delay and return the required criticality constant
-
-        return LATE_NONE;
-    }
 }
 
 
@@ -604,3 +624,22 @@ function formatTimer(date) {
     }
     return date.getHours().toString() + ':' + date.getMinutes().toString() + ':' + date.getSeconds().toString()
 }
+
+function selectValue(originalValue, newValue, anotherValue ) {
+    if ( originalValue !== newValue ) {
+        return newValue;
+    }
+    return anotherValue;
+}
+
+
+class TaskGroup extends Task {
+
+    /**
+     * @type {[Task]}
+     */
+    children = [];
+
+}
+
+

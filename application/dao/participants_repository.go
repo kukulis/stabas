@@ -11,6 +11,10 @@ type ParticipantsRepository struct {
 	participants []*entities.Participant
 }
 
+func NewParticipantsRepository() *ParticipantsRepository {
+	return &ParticipantsRepository{}
+}
+
 func (rep *ParticipantsRepository) GetParticipants() []*entities.Participant {
 	return util.ArrayFilter(rep.participants, func(participant *entities.Participant) bool {
 		return !participant.Deleted
