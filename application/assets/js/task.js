@@ -127,7 +127,7 @@ class Task {
      * @returns {HTMLDivElement}
      */
     renderTaskLine(participantLoader, settings) {
-
+        console.log('Task.renderTaskLine called')
         let taskElement = document.createElement('div')
         // taskElement.setAttribute('class', 'task-line')
         taskElement.classList.add('task-line')
@@ -641,6 +641,35 @@ class TaskGroup extends Task {
     children = [];
 
     // make expand button and children display
+
+    renderTaskLine(participantLoader, settings) {
+        console.log('TaskGroup.renderTaskLine called')
+
+        let lineContainer = super.renderTaskLine(participantLoader, settings)
+
+        let expandButton = document.createElement('button')
+        expandButton.appendChild(document.createTextNode('/'))
+        expandButton.classList.add('expand-button')
+
+        lineContainer.insertBefore(expandButton, lineContainer.firstChild)
+
+
+        for( let childTask of this.children ) {
+            lineContainer.appendChild( childTask.renderTaskLine(participantLoader, settings))
+        }
+        return lineContainer
+    }
+
+    /**
+     * @returns {TaskGroup}
+     */
+    static createFromDto(taskDTO) {
+        let taskGroup = new TaskGroup(taskDTO.message, taskDTO.id, parseDate(taskDTO.created_at))
+
+        taskGroup.updateFromDTO(taskDTO)
+
+        return taskGroup
+    }
 
 }
 

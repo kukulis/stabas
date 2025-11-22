@@ -152,9 +152,14 @@ class TasksComponent {
 
         for (let groupDto of groupsDto) {
             // console.log('loadTasks: adding task from backend, status ', taskDto.status)
-            this.addTask(
-                TaskGroup.createFromDto(groupDto).setDispatcher(this.dispatcher)
-            );
+            let taskGroup = TaskGroup.createFromDto(groupDto).setDispatcher(this.dispatcher)
+            this.addTask( taskGroup )
+
+            for ( let childTaskDto of groupDto.children ) {
+                let task = Task.createFromDto(childTaskDto).setDispatcher(this.dispatcher)
+
+                taskGroup.children.push(task)
+            }
         }
         // console.log ('tasks after loadTasks ',  this.tasks );
     }
@@ -230,13 +235,11 @@ class TasksComponent {
             }
 
             if ( task === null ) {
-                task = Task.createFromDto(taskDto).setDispatcher(this.dispatcher)
+                task = TaskGroup.createFromDto(taskDto).setDispatcher(this.dispatcher)
             }
 
             newTasksList.push(task)
         }
-
-        // TODO make tasks groups
 
         this.tasks = newTasksList;
     }

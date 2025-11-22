@@ -11,6 +11,10 @@ import (
 )
 
 func main() {
+
+	// TODO check for certificates
+	// build if missing one
+
 	router := gin.Default()
 
 	router.LoadHTMLFiles(
@@ -46,7 +50,6 @@ func main() {
 	//api.NewTaskController()
 	router.GET("/api/tasks", func(c *gin.Context) { di.TaskControllerInstance.GetAllTasks(c) })
 	router.GET("/api/groups", func(c *gin.Context) { di.TaskControllerInstance.GetTasksGroups(c) })
-	//router.GET("/api/tasks2", func(c *gin.Context) { testController.GetAllTasks(c) })
 	router.GET("/api/tasks/:id", func(c *gin.Context) { di.TaskControllerInstance.GetTask(c) })
 	router.PUT("/api/tasks", func(c *gin.Context) { di.TaskControllerInstance.AddTask(c) })
 	router.POST("/api/tasks/:id/change-status", func(c *gin.Context) { di.TaskControllerInstance.ChangeStatus(c) })
