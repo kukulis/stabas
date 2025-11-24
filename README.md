@@ -2,6 +2,13 @@
 valdymo konsolė
 
 # Projekto paleidimas
+
+## Susigeneruoti sertifikatus 
+
+Žr. sekciją "Sertifikatų generavimas" dokumentacijoje.
+
+## Paleisti aplikaciją
+
 Aplanke *./application* vykdyti komandą:
 
 `go run .`
