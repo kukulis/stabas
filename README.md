@@ -1,7 +1,7 @@
 # stabas
 valdymo konsolė
 
-# paleisti projektą
+# Projekto paleidimas
 Aplanke *./application* vykdyti komandą:
 
 `go run .`
@@ -15,4 +15,6 @@ Eiti į tls direktoriją cmdline.
     
     openssl req -new -x509 -sha256 -key server.key -out server.crt -days 3650
 
+# Naudojamos bibliotekos
 
+* github.com/gin-gonic/gin – HTTP tinklo karkasas.

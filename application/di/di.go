@@ -7,3 +7,4 @@ import (
 
 var TaskControllerInstance = api.NewTaskController(dao.NewTasksRepository())
 var ParticipantsControllerInstance = api.NewParticipantController(dao.NewParticipantsRepository())
+var SettingsControllerInstance = api.NewSettingsController(&dao.SettingsRepository{})

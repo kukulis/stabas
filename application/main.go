@@ -1,13 +1,14 @@
 package main
 
 import (
-	"darbelis.eu/stabas/di"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"html/template"
 	"io/fs"
 	"net/http"
 	"os"
+
+	"darbelis.eu/stabas/di"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -56,6 +57,8 @@ func main() {
 	router.POST("/api/participants/:id", func(c *gin.Context) { di.ParticipantsControllerInstance.UpdateParticipant(c) })
 	router.PUT("/api/participants", func(c *gin.Context) { di.ParticipantsControllerInstance.AddParticipant(c) })
 	router.DELETE("/api/participants/:id", func(c *gin.Context) { di.ParticipantsControllerInstance.DeleteParticipant(c) })
+
+	router.GET("/api/settings", func(c *gin.Context) { di.SettingsControllerInstance.GetSettings(c) })
 
 	router.StaticFile("/favicon.ico", "./assets/favicon.ico")
 	router.Static("/assets/js", "./assets/js")
