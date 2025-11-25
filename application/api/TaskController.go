@@ -35,6 +35,9 @@ func (controller *TaskController) GetTasksGroups(c *gin.Context) {
 	}
 	// group them
 	groupedTasks := GroupTasks(tasksCopy)
+	tasksFilter := TasksFilter{SortByTime: true, SortByStatus: true}
+
+	SortTasks(groupedTasks, tasksFilter)
 
 	c.JSON(http.StatusOK, groupedTasks)
 }

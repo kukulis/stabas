@@ -122,5 +122,32 @@ func (task *Task) SetStatusDateIfNil(date time.Time) error {
 	}
 
 	return errors.New("invalid status " + strconv.Itoa(task.Status))
+}
 
+func (task *Task) GetStatusTime() *time.Time {
+	if task.Status == STATUS_NEW {
+		return task.CreatedAt
+	}
+
+	if task.Status == STATUS_SENT {
+		return task.SentAt
+	}
+
+	if task.Status == STATUS_RECEIVED {
+		return task.ReceivedAt
+	}
+
+	if task.Status == STATUS_EXECUTING {
+		return task.ExecutingAt
+	}
+
+	if task.Status == STATUS_FINISHED {
+		return task.FinishedAt
+	}
+
+	if task.Status == STATUS_CLOSED {
+		return task.ClosedAt
+	}
+
+	return nil
 }

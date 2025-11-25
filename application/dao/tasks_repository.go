@@ -4,6 +4,7 @@ import (
 	"darbelis.eu/stabas/entities"
 	"darbelis.eu/stabas/util"
 	"errors"
+	"time"
 )
 
 type TasksRepository struct {
@@ -13,7 +14,12 @@ type TasksRepository struct {
 
 func NewTasksRepository() *TasksRepository {
 
-	// TODO fill initial tasks list with groups for developement
+	now := time.Now()
+	now1 := time.Now().Add(time.Second)
+	now2 := time.Now().Add(time.Second * 2)
+	now3 := time.Now().Add(time.Second * 3)
+	now4 := time.Now().Add(time.Second * 4)
+
 	return &TasksRepository{
 		tasks: []*entities.Task{
 			{
@@ -26,6 +32,7 @@ func NewTasksRepository() *TasksRepository {
 				Deleted:   false,
 				Version:   1,
 				TaskGroup: 1,
+				CreatedAt: &now3,
 			},
 			{
 				Id:        2,
@@ -37,6 +44,7 @@ func NewTasksRepository() *TasksRepository {
 				Deleted:   false,
 				Version:   1,
 				TaskGroup: 1,
+				CreatedAt: &now1,
 			},
 
 			{
@@ -49,6 +57,7 @@ func NewTasksRepository() *TasksRepository {
 				Deleted:   false,
 				Version:   1,
 				TaskGroup: 1,
+				CreatedAt: &now2,
 			},
 			{
 				Id:        3,
@@ -60,6 +69,7 @@ func NewTasksRepository() *TasksRepository {
 				Deleted:   false,
 				Version:   1,
 				TaskGroup: 3,
+				CreatedAt: &now,
 			},
 			{
 				Id:        4,
@@ -71,6 +81,7 @@ func NewTasksRepository() *TasksRepository {
 				Deleted:   false,
 				Version:   1,
 				TaskGroup: 3,
+				CreatedAt: &now4,
 			},
 		},
 		maxId: 6,

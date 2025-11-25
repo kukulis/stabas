@@ -1,8 +1,6 @@
 package api
 
-import (
-	"darbelis.eu/stabas/entities"
-)
+import "darbelis.eu/stabas/entities"
 
 // GroupTasks Groups array of tasks bet putting each to others Children
 func GroupTasks(tasks []*entities.Task) []*entities.Task {
