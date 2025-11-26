@@ -24,3 +24,19 @@ type Settings struct {
 	// finishedStatusDelaySevere = 120;
 	FinishedStatusDelaySevere int `json:"finished_status_delay_severe"`
 }
+
+func NewSettings() *Settings {
+	return &Settings{
+		Id:                         0,
+		NewStatusDelay:             5,
+		NewStatusDelaySevere:       15,
+		SentStatusDelay:            2,
+		SentStatusDelaySevere:      6,
+		ReceivedStatusDelay:        5,
+		ReceivedStatusDelaySevere:  15,
+		ExecutingStatusDelay:       10,
+		ExecutingStatusDelaySevere: 20,
+		FinishedStatusDelay:        60,
+		FinishedStatusDelaySevere:  120,
+	}
+}
