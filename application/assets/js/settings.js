@@ -3,6 +3,7 @@ const LATE_SOFT = 'soft'
 const LATE_SEVERE = 'severe'
 
 class Settings {
+    id = 0;
     newStatusDelay = 5;
     newStatusDelaySevere = 15;
     sentStatusDelay = 2;
@@ -17,6 +18,15 @@ class Settings {
     reloadTasksOnTimer = false;
 
     // other settings values
+
+    /**
+     * @param id {number}
+     * @param newStatusDelay {string}
+     */
+    constructor(id, newStatusDelay) {
+        this.id = id;
+        this.newStatusDelay = newStatusDelay;
+    }
 
     calculateCriticality(delay, status) {
         let delayMinutes = delay / (1000 * 60)
@@ -36,14 +46,40 @@ class Settings {
         return LATE_NONE
     }
 
-    static solveCriticality ( delay, softLate, severeLate ) {
-        if ( delay < softLate) {
+    static solveCriticality(delay, softLate, severeLate) {
+        if (delay < softLate) {
             return LATE_NONE;
         }
-        if ( delay < severeLate ) {
+        if (delay < severeLate) {
             return LATE_SOFT
         }
 
         return LATE_SEVERE
     }
+    /**
+     *
+     * @returns {HTMLDivElement}
+     */
+    renderLine() {
+        let lineDiv = document.createElement('div');
+        lineDiv.setAttribute('id', "settings-div");
+        lineDiv.style['border'] = "solid thin black"
+
+        clearTag(lineDiv);
+
+        let idDiv = document.createElement('div');
+        idDiv.appendChild(document.createTextNode(this.id.toString()));
+        lineDiv.appendChild(idDiv)
+
+        let newStatusDelayInput = document.createElement('input');
+        newStatusDelayInput.value = this.newStatusDelay
+
+        lineDiv.appendChild(newStatusDelayInput)
+
+
+        return lineDiv;
+    }
+
+
+
 }

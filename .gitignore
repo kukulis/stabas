@@ -1,2 +1,5 @@
 .idea
+# Ignore certificate files.
 application/tls/
+# Ignore vscode launch configuration.
+.vscode/

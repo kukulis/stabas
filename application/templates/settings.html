@@ -1,46 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Nustatymai</title>
-    
+  <meta charset="UTF-8">
+  <title>Nustatymai</title>
+
+  <script src="/assets/js/settings-component.js"></script>
+
+  <script src="/assets/js/dispatcher.js"></script>
+
+    <script src="/assets/js/settings.js"></script>
+
+    <script src="/assets/js/util.js"></script>
+
 </head>
+
 <body>
-{{ .menu}}
 
- <form action="/action_page.php">
-  <label for="new-status-delay">New status delay:</label>
-  <input type="text" id="new-status-delay" name="new-status-delay"><br><br>
+  <div class="settings_container" id="settings-app">
 
-  <label for="new-status-delay-severe">New status severe delay:</label> <!-- TODO how do translate? -->
-  <input type="text" id="new-status-delay-severe" name="new-status-delay-severe"><br><br>
+  </div>
+  {{ .menu}}
 
-  <label for="sent-status-delay">Sent status delay:</label>
-  <input type="text" id="sent-status-delay" name="sent-status-delay"><br><br>
+  <script type="application/javascript">
+    let dispatcher = new Dispatcher();
+    let settingsComponent = null
+    let redrawSettingsList = null
 
-  <label for="sent-status-delay-severe">Sent status delay-severe:</label>
-  <input type="text" id="sent-status-delay-severe" name="sent-status-delay-severe"><br><br>
+    SettingsComponent.initialize(dispatcher).then(
+      (sc) => {
+        settingsComponent = sc
 
-  <label for="received-status-delay">received-status-delay:</label>
-  <input type="text" id="received-status-delay" name="received-status-delay"><br><br>
+        console.log('settingsComponent', settingsComponent)
 
-  <label for="received-status-delay-severe">received-status-delay-severe:</label>
-  <input type="text" id="received-status-delay-severe" name="received-status-delay-severe"><br><br>
 
-  <label for="executing-status-delay">executing status delay:</label>
-  <input type="text" id="executing-status-delay" name="executing-status-delay"><br><br>
+        redrawSettings = () => {
+          let settingsDiv = document.getElementById('settings-app');
+          clearTag(settingsDiv);
+          settingsDiv.appendChild(settingsComponent.renderSettings());
+        }
 
-  <label for="executing-status-delay-severe">executing status delay:</label>
-  <input type="text" id="executing-status-delay-severe" name="executing-status-delay-severe"><br><br>
+        redrawSettings();
+      }
+    )
 
-  <label for="finished-status-delay">finished status delay:</label>
-  <input type="text" id="finished-status-delay" name="finished-status-delay"><br><br>
 
-  <label for="finished-status-delay-severe">finished status delay:</label>
-  <input type="text" id="finished-status-delay-severe" name="finished-status-delay-severe"><br><br>
 
-  <input type="submit" value="Submit">
-</form> 
+  </script>
 
 </body>
+
 </html>
