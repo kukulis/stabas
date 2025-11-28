@@ -93,17 +93,19 @@ class Task {
      * @returns {Task}
      */
     updateFromDTO(taskDTO) {
+        console.log('Task.updateFromDTO called')
         this.setStatus(taskDTO.status)
         this.setSender(taskDTO.sender)
         this.setReceivers(taskDTO.receivers)
-        this.setResult(taskDTO.result)
         this.message = taskDTO.message
+        this.setResult(taskDTO.result)
+        this.taskGroup = taskDTO.task_group
+
         this.sentAt = parseDate(taskDTO.sent_at)
         this.receivedAt = parseDate(taskDTO.received_at)
         this.executingAt = parseDate(taskDTO.executing_at)
         this.finishedAt = parseDate(taskDTO.finished_at)
         this.closedAt = parseDate(taskDTO.closed_at)
-        this.taskGroup = parseDate(taskDTO.task_group)
         this.version = taskDTO.version
 
         return this;
@@ -115,12 +117,13 @@ class Task {
      * @returns {Task}
      */
     updateFromDTOMerged(taskDTO, myVersionTaskDTO) {
-
         this.status = selectValue(this.status, taskDTO.status, myVersionTaskDTO.status)
         this.sender = selectValue(this.sender, taskDTO.sender, myVersionTaskDTO.sender)
         this.receivers = selectValue(this.receivers, taskDTO.receivers, myVersionTaskDTO.receivers)
         this.message =  selectValue(this.message, taskDTO.message, myVersionTaskDTO.message)
         this.result =  selectValue(this.result, taskDTO.result, myVersionTaskDTO.result)
+        this.taskGroup = taskDTO.task_group
+
         this.sentAt = parseDate(taskDTO.sent_at)
         this.receivedAt = parseDate(taskDTO.received_at)
         this.executingAt = parseDate(taskDTO.executing_at)
@@ -144,7 +147,6 @@ class Task {
      * @returns {HTMLDivElement}
      */
     renderTaskLine(participantLoader, settings) {
-        console.log('Task.renderTaskLine called')
         let taskElement = document.createElement('div')
         // taskElement.setAttribute('class', 'task-line')
         taskElement.classList.add('task-line')
@@ -295,17 +297,16 @@ class Task {
                 taskResponse.json().then((taskDTO) => {
                     if ( taskResponse.status === 409 ) {
                         this.updateFromDTOMerged(taskDTO, myVersionDto)
+                        // for possible children
+                        this.setDispatcher(this.dispatcher)
                         this.dispatcher.dispatch('taskSavedPartially', this)
                     }
                     else {
                         this.updateFromDTO(taskDTO)
+                        // for possible children
+                        this.setDispatcher(this.dispatcher)
                         this.dispatcher.dispatch('taskSaved', this)
                     }
-
-
-                    // if ( taskResponse.status === 409 ) {
-                    //     this.dispatcher.dispatch('inputMessage', this)
-                    // }
                 })
             })
     }
@@ -359,6 +360,7 @@ class Task {
         tdIdLabel.appendChild(document.createTextNode('ID'));
         let tdIdValue = document.createElement('td');
         tdIdValue.appendChild(document.createTextNode(this.id.toString()));
+        tdIdValue.appendChild(document.createTextNode(' ('+ this.taskGroup.toString()+ ')'));
         trId.appendChild(tdIdLabel)
         trId.appendChild(tdIdValue)
 
@@ -699,6 +701,9 @@ class Task {
     deleteTask(taskId) {
         // nothing
     }
+    whoIAm() {
+        return "TaskGroup"
+    }
 }
 
 
@@ -755,8 +760,6 @@ class TaskGroup extends Task {
      * @returns {HTMLDivElement}
      */
     renderTaskLine(participantLoader, settings) {
-        console.log('TaskGroup.renderTaskLine called')
-
         let lineContainer = super.renderTaskLine(participantLoader, settings)
 
         let expandButton = document.createElement('button')
@@ -778,6 +781,10 @@ class TaskGroup extends Task {
      */
     getChildrenMap() {
         let map = new Map();
+
+        if ( this.children === null ) {
+            return map;
+        }
         for ( let task of this.children ) {
             map.set(task.id, task )
         }
@@ -789,6 +796,7 @@ class TaskGroup extends Task {
      * @returns {TaskGroup}
      */
     static createFromDto(taskDTO) {
+        console.log('TaskGroup.createFromDTO called for '+taskDTO.id)
         let taskGroup = new TaskGroup(taskDTO.message, taskDTO.id, parseDate(taskDTO.created_at))
 
         taskGroup.updateFromDTO(taskDTO)
@@ -802,23 +810,21 @@ class TaskGroup extends Task {
      * @returns {TaskGroup}
      */
     updateFromDTO(taskGroupDTO) {
+        return this.groupUpdateFromDTO(taskGroupDTO)
+    }
+    groupUpdateFromDTO(taskGroupDTO) {
+        console.log('TaskGroup.updateFromDTO called for '+this.id)
         super.updateFromDTO(taskGroupDTO);
 
-        let newChildren = []
-        // previous children map
-        let childrenMap = this.getChildrenMap()
-        for ( let taskDTO of  taskGroupDTO.children) {
-            let task = null;
-            if ( childrenMap.has(taskDTO.id)) {
-                task = childrenMap.get(taskDTO.id)
-                task.updateFromDTO(taskDTO)
-            } else {
-                task = Task.createFromDto(taskDTO)
-            }
+        this.children = []
 
-            newChildren.push(task)
+        if ( taskGroupDTO.children === null ) {
+            return this;
         }
-        this.children = newChildren
+
+        for ( let taskDTO of  taskGroupDTO.children) {
+             this.children.push(Task.createFromDto(taskDTO))
+        }
 
         return this;
     }
@@ -852,6 +858,10 @@ class TaskGroup extends Task {
 
     deleteTask(taskId) {
         this.children = this.children.filter((task)=> task.id !== taskId)
+    }
+
+    whoIAm() {
+        return "TaskGroup"
     }
 }
 

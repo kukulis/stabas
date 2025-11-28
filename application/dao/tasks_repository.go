@@ -105,6 +105,9 @@ func (repo *TasksRepository) FindAll() []*entities.Task {
 func (repo *TasksRepository) AddTask(task *entities.Task) int {
 	repo.maxId++
 	task.Id = repo.maxId
+	if task.TaskGroup == 0 {
+		task.TaskGroup = repo.maxId
+	}
 
 	repo.tasks = append(repo.tasks, task)
 
@@ -130,6 +133,7 @@ func (repo *TasksRepository) UpdateTask(task *entities.Task) (*entities.Task, er
 	t.FinishedAt = task.FinishedAt
 	t.ClosedAt = task.ClosedAt
 	t.Version = task.Version
+	t.TaskGroup = task.TaskGroup
 
 	return t, nil
 }

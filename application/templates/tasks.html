@@ -15,6 +15,7 @@
 {{ .menu}}
 
 <div id="app">
+    <button onclick="reloadAndRedrawTasksList()">Reload</button>
     <div id="tasksList" class="tasks-list">
 
     </div>
@@ -26,11 +27,11 @@
     let redrawTasksList = null;
     let tasksComponent = null;
     let apiClient = new ApiClient();
+    let reloadAndRedrawTasksList = null;
 
     TasksComponent.initialize(dispatcher, apiClient).then(
         (tc) => {
             tasksComponent = tc;
-
 
             // console.log('tasks.html[28], tasks amount', tasksComponent.tasks.length )
             redrawTasksList = () => {
@@ -38,6 +39,13 @@
                 clearTag(tasksListDiv);
                 tasksListDiv.appendChild(tasksComponent.renderTasks());
             }
+
+            reloadAndRedrawTasksList = () => tasksComponent.reloadSettings().then(() =>
+                tasksComponent.reloadParticipants().then(() =>
+                    tasksComponent.reloadTasks().then(() => redrawTasksList())
+                )
+            )
+
             redrawTasksList();
             initializeListeners(tasksComponent)
         }
@@ -46,9 +54,12 @@
     // =================== events initialization ===================================
     function initializeListeners(tasksComponent) {
         const taskDetailsOuterDiv = document.getElementById('taskDetails2')
+
         dispatcher.addListener('taskSaved', (task) => {
             console.log('Task saved ' + task.id)
             redrawTasksList()
+            let taskDetailsDiv = task.renderTaskDetailsFull(null, () => tasksComponent.participants);
+            dispatcher.dispatch('taskDetailsRendered', taskDetailsDiv)
             tasksComponent.disableSaveButton();
         })
 
@@ -122,7 +133,7 @@
             if (tasksComponent.settings.reloadTasksOnTimer) {
                 tasksComponent.reloadSettings().then(() =>
                     tasksComponent.reloadParticipants().then(() =>
-                        tasksComponent.reloadTasks().then(() => redrawTasksList())
+                        tasksComponent.loadTasks().then(() => redrawTasksList())
                     )
                 )
             }

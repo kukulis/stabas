@@ -3,6 +3,7 @@ package api
 import (
 	"darbelis.eu/stabas/dao"
 	"darbelis.eu/stabas/entities"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/codec/json"
 	"net/http"
@@ -81,6 +82,7 @@ func (controller *TaskController) AddTask(c *gin.Context) {
 	task.CreatedAt = &now
 
 	controller.tasksRepository.AddTask(task)
+	fmt.Printf("Added task id %d\n", task.Id)
 
 	c.JSON(http.StatusOK, task)
 }
@@ -113,11 +115,13 @@ func (controller *TaskController) UpdateTask(c *gin.Context) {
 	}
 
 	receivedTask.Id = id
+	fmt.Printf("We are updating task id %d\n", id)
 
 	_ = receivedTask.SetStatusDateIfNil(time.Now())
 
 	// split task to several tasks if the task has many receivers and the status is NEW
 	if receivedTask.Status == entities.STATUS_NEW && len(receivedTask.Receivers) > 1 {
+		fmt.Printf("Going to split task with %d amount of receivers\n", len(receivedTask.Receivers))
 		receivedTask.TaskGroup = id
 		initialReceivers := receivedTask.Receivers
 
@@ -143,21 +147,36 @@ func (controller *TaskController) UpdateTask(c *gin.Context) {
 
 			receivedTask.Children = append(receivedTask.Children, additionalTask)
 		}
-	}
+		existingTask, err := controller.tasksRepository.UpdateTask(receivedTask)
 
-	// TODO If the status is different than "NEW" do not let it have multiple receivers
-
-	existingTask, err := controller.tasksRepository.UpdateTaskWithValidation(receivedTask)
-	if err != nil {
-		if strings.Contains(err.Error(), "version") {
-			c.JSON(http.StatusConflict, existingTask)
+		if err != nil {
+			// TODO try to reuse code block
+			if strings.Contains(err.Error(), "version") {
+				c.JSON(http.StatusConflict, existingTask)
+				return
+			}
+			c.JSON(http.StatusBadRequest, map[string]string{"error": "updating receivedTask" + err.Error()})
 			return
 		}
-		c.JSON(http.StatusBadRequest, map[string]string{"error": "updating receivedTask" + err.Error()})
-		return
+
+		c.JSON(http.StatusOK, existingTask)
+	} else {
+
+		// TODO If the status is different than "NEW" do not let it have multiple receivers
+
+		existingTask, err := controller.tasksRepository.UpdateTaskWithValidation(receivedTask)
+		if err != nil {
+			// TODO try to reuse code block
+			if strings.Contains(err.Error(), "version") {
+				c.JSON(http.StatusConflict, existingTask)
+				return
+			}
+			c.JSON(http.StatusBadRequest, map[string]string{"error": "updating receivedTask" + err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, existingTask)
 	}
 
-	c.JSON(http.StatusOK, existingTask)
 }
 
 // DeleteTask Deletes task

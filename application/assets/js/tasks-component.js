@@ -11,7 +11,7 @@ class TasksComponent {
     dispatcher = null;
 
     /**
-     * @type {[Task]}
+     * @type {[Task]|[TaskGroup]}
      */
     tasks = [];
 
@@ -70,7 +70,7 @@ class TasksComponent {
         }
 
         let taskDto = await response.json()
-        let task = Task.createFromDto(taskDto).setDispatcher(this.dispatcher)
+        let task = TaskGroup.createFromDto(taskDto).setDispatcher(this.dispatcher)
 
         this.tasks.push(task);
 
@@ -105,7 +105,7 @@ class TasksComponent {
         }
 
         let confirmDelete = true;
-        if (foundTask.status !== STATUS_CLOSED) {
+        if (foundTask.status !== STATUS_CLOSED && foundTask.status !== STATUS_NEW ) {
             confirmDelete = confirm("Delete task " + taskId + " ?")
         }
 
@@ -163,6 +163,8 @@ class TasksComponent {
     }
 
     async loadTasks() {
+
+        this.tasks = [];
         let groupsDto = await this.apiClient.loadGroups();
 
         for (let groupDto of groupsDto) {
@@ -170,7 +172,7 @@ class TasksComponent {
             let taskGroup = TaskGroup.createFromDto(groupDto).setDispatcher(this.dispatcher)
             this.addTask( taskGroup )
         }
-        // console.log ('tasks after loadTasks ',  this.tasks );
+        console.log ('setting dispatcher in the loadTasks ',  this.tasks );
     }
 
     async loadSettings() {
