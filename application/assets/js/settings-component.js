@@ -20,25 +20,24 @@ class SettingsComponent {
     async loadSettings() {
         let response = await fetch('/api/settings')
         let settingsDto = await response.json()
-        // console.log('Loaded settings ' + settingsDto.length);
+        console.log('Loaded settings ' + settingsDto.id, settingsDto.newStatusDelay);
         this.settings;
 
         // for (let settingDto of settingsDto) {
-            this.settings = (new Settings(
-                settingsDto.id,
-                 settingsDto.newStatusDelay,
-                  settingsDto.newStatusDelaySevere,
-                  settingsDto.sentStatusDelay,
-                  settingsDto.sentStatusDelaySevere,
-                  settingsDto.receivedStatusDelay,
-                  settingsDto.receivedStatusDelaySevere,
-                  settingsDto.executingStatusDelay,
-                  settingsDto.executingStatusDelaySevere,
-                  settingsDto.finishedStatusDelaySevere,
-                  settingsDto.finishedStatusDelaySevere,
-                ))
-            dispatcher.dispatch('afterLoadSettings')
-        // }
+        this.settings = (new Settings(
+            settingsDto.id,
+            settingsDto.newStatusDelay,
+            settingsDto.newStatusDelaySevere,
+            settingsDto.sentStatusDelay,
+            settingsDto.sentStatusDelaySevere,
+            settingsDto.receivedStatusDelay,
+            settingsDto.receivedStatusDelaySevere,
+            settingsDto.executingStatusDelay,
+            settingsDto.executingStatusDelaySevere,
+            settingsDto.finishedStatusDelaySevere,
+            settingsDto.finishedStatusDelaySevere,
+        ))
+        dispatcher.dispatch('afterLoadSettings')
     }
 
     // dispatcher?
@@ -51,7 +50,8 @@ class SettingsComponent {
 
     renderSettings() {
         let settingsDiv = document.createElement('div');
-        
+
+        console.log('render settingsComponent', this.settings) 
         settingsDiv.appendChild(this.settings.renderLine());
 
         return settingsDiv;

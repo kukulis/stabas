@@ -21,11 +21,12 @@ class Settings {
 
     /**
      * @param id {number}
-     * @param newStatusDelay {string}
+     * @param newStatusDelay {number}
      */
-    constructor(id, newStatusDelay) {
+    constructor(id, newStatusDelay, newStatusDelaySevere) {
         this.id = id;
         this.newStatusDelay = newStatusDelay;
+        this.newStatusDelaySevere = newStatusDelaySevere;
     }
 
     calculateCriticality(delay, status) {
@@ -61,6 +62,7 @@ class Settings {
      * @returns {HTMLDivElement}
      */
     renderLine() {
+        console.log("render settings line :)" + this)
         let lineDiv = document.createElement('div');
         lineDiv.setAttribute('id', "settings-div");
         lineDiv.style['border'] = "solid thin black"
