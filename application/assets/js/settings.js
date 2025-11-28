@@ -62,22 +62,56 @@ class Settings {
      * @returns {HTMLDivElement}
      */
     renderLine() {
+        // 1. Render a editable line which displays any text
+        // 2. pass any column of table to it?
+        
         console.log("render settings line :)" + this)
         let lineDiv = document.createElement('div');
         lineDiv.setAttribute('id', "settings-div");
-        lineDiv.style['border'] = "solid thin black"
+        lineDiv.style['border'] = "solid thin black";
 
         clearTag(lineDiv);
 
         let idDiv = document.createElement('div');
-        idDiv.appendChild(document.createTextNode(this.id.toString()));
-        lineDiv.appendChild(idDiv)
+        idDiv.appendChild(document.createTextNode("Nustatymai"));
+        lineDiv.appendChild(idDiv);
 
+        idDiv.appendChild(document.createElement("br"))
+
+        idDiv.appendChild(document.createTextNode("newStatusDelay"));
         let newStatusDelayInput = document.createElement('input');
-        newStatusDelayInput.value = this.newStatusDelay
+        newStatusDelayInput.value = this.newStatusDelay;
+        idDiv.appendChild(newStatusDelayInput)
 
-        lineDiv.appendChild(newStatusDelayInput)
+        idDiv.appendChild(document.createElement("br"))
 
+        idDiv.appendChild(document.createTextNode("newStatusDelaySevere"));
+        let newStatusDelaySevereInput = document.createElement('input');
+        newStatusDelaySevereInput.value = this.newStatusDelaySevere;
+        idDiv.appendChild(newStatusDelaySevereInput)
+
+        idDiv.appendChild(document.createElement("br"))
+
+        idDiv.appendChild(document.createTextNode("sentStatusDelay"));
+        let sentStatusDelayInput = document.createElement('input');
+        sentStatusDelayInput.value = this.sentStatusDelay;
+        idDiv.appendChild(sentStatusDelayInput)
+
+        idDiv.appendChild(document.createElement("br"))
+
+        idDiv.appendChild(document.createTextNode("sentStatusDelaySevere"));
+        let sentStatusDelaySevereInput = document.createElement('input');
+        sentStatusDelaySevereInput.value = this.sentStatusDelaySevere;
+        idDiv.appendChild(sentStatusDelaySevereInput)
+
+    //         receivedStatusDelay = 5;
+    // receivedStatusDelaySevere = 15;
+    // executingStatusDelay = 10;
+    // executingStatusDelaySevere = 20;
+    // finishedStatusDelay = 60;
+    // finishedStatusDelaySevere = 120;
+
+    
 
         return lineDiv;
     }

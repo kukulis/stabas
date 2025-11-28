@@ -3,7 +3,7 @@ package entities
 type Settings struct {
 	Id int `json:"id"`
 
-	// Use camelCase for json and PascalCase is used for go because of the access modifiers.
+	// Use camelCase for json and PascalCase is used for go in this case because of the access modifiers.
 	NewStatusDelay             int `json:"newStatusDelay"`
 	NewStatusDelaySevere       int `json:"newStatusDelaySevere"`
 	SentStatusDelay            int `json:"sentStatusDelay"`
