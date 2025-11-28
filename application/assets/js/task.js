@@ -22,8 +22,10 @@ function getStatusClass(statusId) {
     return 'status-' + statusesI2A.get(statusId);
 }
 
+/**
+ *
+ */
 class Task {
-
 
     /**
      * @type {Dispatcher}
@@ -65,6 +67,12 @@ class Task {
 
     taskGroup = 0;
 
+    /**
+     *
+     * @param message {string}
+     * @param id {int}
+     * @param date {Date}
+     */
     constructor(message, id, date) {
         this.message = message;
         this.id = id;
@@ -100,6 +108,12 @@ class Task {
 
         return this;
     }
+
+    /**
+     * @param taskDTO
+     * @param myVersionTaskDTO
+     * @returns {Task}
+     */
     updateFromDTOMerged(taskDTO, myVersionTaskDTO) {
 
         this.status = selectValue(this.status, taskDTO.status, myVersionTaskDTO.status)
@@ -117,6 +131,9 @@ class Task {
         return this;
     }
 
+    /**
+     * @returns {string}
+     */
     getTimerDivId() {
         return 'task-timer-' + this.id.toString();
     }
@@ -212,6 +229,11 @@ class Task {
         return taskElement;
     }
 
+    /**
+     * @param event {Event}
+     * @param task {Task}
+     * @param newStatus {int}
+     */
     changeTaskStatus(event, task, newStatus) {
         fetch('/api/tasks/' + task.id + '/change-status?status=' + newStatus, {
             method: 'POST',
@@ -227,18 +249,22 @@ class Task {
         }).catch((error) => console.log('error changing status', error))
     }
 
-    buildObjectForJson() {
-        return {
-            id: this.id,
-            message: this.message,
-            result: this.result,
-            status: this.status,
-            sender: this.sender,
-            receivers: this.receivers,
-            version: this.version+1,
-        }
-    }
+    // buildObjectForJson() {
+    //     return {
+    //         id: this.id,
+    //         message: this.message,
+    //         result: this.result,
+    //         status: this.status,
+    //         sender: this.sender,
+    //         receivers: this.receivers,
+    //         version: this.version+1,
+    //     }
+    // }
 
+    /**
+     *
+     * @param event {Event}
+     */
     saveAction(event) {
         // console.log('save button, event', event)
 
@@ -284,10 +310,13 @@ class Task {
             })
     }
 
-    /*******************************************************************************
-     * renderTaskDetailsFull
+    /*****************************************************************************
+     *   renderTaskDetailsFull
+     *****************************************************************************
      *
-     *******************************************************************************
+     * @param event {Event}
+     * @param participantsLoader
+     * @returns {HTMLDivElement}
      */
     renderTaskDetailsFull(event, participantsLoader) {
         let innerDetailsDiv = document.createElement('div')
@@ -321,6 +350,9 @@ class Task {
         return innerDetailsDiv
     }
 
+    /**
+     * @param tableDiv {HTMLElement}
+     */
     renderTrId(tableDiv) {
         let trId = document.createElement('tr');
         let tdIdLabel = document.createElement('td');
@@ -333,6 +365,9 @@ class Task {
         tableDiv.appendChild(trId)
     }
 
+    /**
+     * @param tableDiv {HTMLElement}
+     */
     renderTrMessage(tableDiv) {
         let tr = document.createElement('tr');
         let tdLabel = document.createElement('td');
@@ -359,6 +394,9 @@ class Task {
         tableDiv.appendChild(tr)
     }
 
+    /**
+     * @param tableDiv {HTMLElement}
+     */
     renderTrResult(tableDiv) {
         let tr = document.createElement('tr');
         let tdLabel = document.createElement('td');
@@ -385,6 +423,9 @@ class Task {
         tableDiv.appendChild(tr)
     }
 
+    /**
+     * @param tableDiv {HTMLElement}
+     */
     renderStatus(tableDiv) {
         let tr = document.createElement('tr');
         let tdLabel = document.createElement('td');
@@ -421,6 +462,11 @@ class Task {
         tableDiv.appendChild(tr)
     }
 
+    /**
+     *
+     * @param tableDiv {HTMLElement}
+     * @param participantsLoader {function}
+     */
     renderSender(tableDiv, participantsLoader) {
         let tr = document.createElement('tr');
         let tdLabel = document.createElement('td');
@@ -462,6 +508,10 @@ class Task {
         tableDiv.appendChild(tr)
     }
 
+    /**
+     * @param tableDiv {HTMLElement}
+     * @param participantsLoader {function}
+     */
     renderReceivers(tableDiv, participantsLoader) {
         let tr = document.createElement('tr');
         let tdLabel = document.createElement('td');
@@ -509,6 +559,11 @@ class Task {
         tableDiv.appendChild(tr)
     }
 
+    /**
+     * @param tableDiv {HTMLDivElement}
+     * @param labelText {string}
+     * @param value {string}
+     */
     renderTextTr(tableDiv, labelText, value) {
         let trId = document.createElement('tr');
         let tdIdLabel = document.createElement('td');
@@ -521,6 +576,9 @@ class Task {
         tableDiv.appendChild(trId)
     }
 
+    /**
+     * @param tableDiv {HTMLElement}
+     */
     renderDates(tableDiv) {
         this.renderTextTr(tableDiv, 'Created at', formatDate(this.createdAt))
         this.renderTextTr(tableDiv, 'Sent at', formatDate(this.sentAt))
@@ -530,36 +588,62 @@ class Task {
         this.renderTextTr(tableDiv, 'Closed at', formatDate(this.closedAt))
     }
 
+    /**
+     * @param result {string}
+     * @returns {Task}
+     */
     setResult(result) {
         this.result = result;
 
         return this;
     }
 
+    /**
+     * @param status {int}
+     * @returns {Task}
+     */
     setStatus(status) {
         this.status = status;
 
         return this;
     }
 
+    /**
+     * @param sender {int}
+     * @returns {Task}
+     */
     setSender(sender) {
         this.sender = sender;
 
         return this;
     }
 
+    /**
+     *
+     * @param receivers
+     * @returns {Task}
+     */
     setReceivers(receivers) {
         this.receivers = receivers;
 
         return this;
     }
 
+    /**
+     *
+     * @param dispatcher
+     * @returns {Task}
+     */
     setDispatcher(dispatcher) {
         this.dispatcher = dispatcher;
 
         return this;
     }
 
+    /**
+     *
+     * @returns {Date}
+     */
     getCurrentStatusDate() {
         if (this.status === STATUS_NEW) {
             return this.createdAt
@@ -606,6 +690,11 @@ class Task {
 }
 
 
+/**
+ *
+ * @param status {int}
+ * @returns {int}
+ */
 function getNextStatus(status) {
     if (status === 6) {
         return status;
@@ -625,14 +714,20 @@ function formatTimer(date) {
     return date.getHours().toString() + ':' + date.getMinutes().toString() + ':' + date.getSeconds().toString()
 }
 
-function selectValue(originalValue, newValue, anotherValue ) {
-    if ( originalValue !== newValue ) {
+/**
+ *
+ */
+function selectValue(originalValue, newValue, anotherValue) {
+    if (originalValue !== newValue) {
         return newValue;
     }
     return anotherValue;
 }
 
 
+/**
+ *
+ */
 class TaskGroup extends Task {
 
     /**
@@ -640,8 +735,13 @@ class TaskGroup extends Task {
      */
     children = [];
 
-    // make expand button and children display
+    // TODO make expand button and children display
 
+    /**
+     * @param participantLoader {function}
+     * @param settings {Settings}
+     * @returns {HTMLDivElement}
+     */
     renderTaskLine(participantLoader, settings) {
         console.log('TaskGroup.renderTaskLine called')
 
@@ -661,6 +761,19 @@ class TaskGroup extends Task {
     }
 
     /**
+     *
+     * @returns {Map<number, Task>}
+     */
+    getChildrenMap() {
+        let map = new Map();
+        for ( let task of this.children ) {
+            map.set(task.id, task )
+        }
+
+        return map;
+    }
+
+    /**
      * @returns {TaskGroup}
      */
     static createFromDto(taskDTO) {
@@ -671,6 +784,45 @@ class TaskGroup extends Task {
         return taskGroup
     }
 
+    /**
+     *
+     * @param taskGroupDTO
+     * @returns {TaskGroup}
+     */
+    updateFromDTO(taskGroupDTO) {
+        super.updateFromDTO(taskGroupDTO);
+
+        let newChildren = []
+        // previous children map
+        let childrenMap = this.getChildrenMap()
+        for ( let taskDTO of  taskGroupDTO.children) {
+            let task = null;
+            if ( childrenMap.has(taskDTO.id)) {
+                task = childrenMap.get(taskDTO.id)
+                task.updateFromDTO(taskDTO)
+            } else {
+                task = Task.createFromDto(taskDTO)
+            }
+
+            newChildren.push(task)
+        }
+        this.children = newChildren
+
+        return this;
+    }
+
+    /**
+     * @param dispatcher {Dispatcher}
+     */
+    setDispatcher(dispatcher) {
+        this.dispatcher = dispatcher
+
+        for ( let task of this.children) {
+            task.setDispatcher( dispatcher )
+        }
+
+        return this
+    }
 }
 
 

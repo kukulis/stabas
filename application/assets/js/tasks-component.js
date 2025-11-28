@@ -154,12 +154,6 @@ class TasksComponent {
             // console.log('loadTasks: adding task from backend, status ', taskDto.status)
             let taskGroup = TaskGroup.createFromDto(groupDto).setDispatcher(this.dispatcher)
             this.addTask( taskGroup )
-
-            for ( let childTaskDto of groupDto.children ) {
-                let task = Task.createFromDto(childTaskDto).setDispatcher(this.dispatcher)
-
-                taskGroup.children.push(task)
-            }
         }
         // console.log ('tasks after loadTasks ',  this.tasks );
     }
