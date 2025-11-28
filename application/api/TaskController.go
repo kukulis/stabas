@@ -20,8 +20,6 @@ func NewTaskController(tasksRepository *dao.TasksRepository) *TaskController {
 }
 
 func (controller *TaskController) GetAllTasks(c *gin.Context) {
-
-	// TODO order by statuses and dates
 	c.JSON(http.StatusOK, controller.tasksRepository.FindAll())
 }
 
@@ -35,6 +33,7 @@ func (controller *TaskController) GetTasksGroups(c *gin.Context) {
 	}
 	// group them
 	groupedTasks := GroupTasks(tasksCopy)
+	// TODO take parameters from request
 	tasksFilter := TasksFilter{SortByTime: true, SortByStatus: true}
 
 	SortTasks(groupedTasks, tasksFilter)
@@ -87,6 +86,8 @@ func (controller *TaskController) AddTask(c *gin.Context) {
 }
 
 // UpdateTask updates task
+
+// TODO cover controller with the test
 func (controller *TaskController) UpdateTask(c *gin.Context) {
 
 	idStr := c.Param("id")
@@ -115,9 +116,34 @@ func (controller *TaskController) UpdateTask(c *gin.Context) {
 
 	_ = receivedTask.SetStatusDateIfNil(time.Now())
 
-	// TODO split task to several tasks if the task has many receivers and the status is NEW
-	// TODO Assign new group ID to these tasks too.
-	// TODO Use UpdateTask without validation then
+	// split task to several tasks if the task has many receivers and the status is NEW
+	if receivedTask.Status == entities.STATUS_NEW && len(receivedTask.Receivers) > 1 {
+		receivedTask.TaskGroup = id
+		initialReceivers := receivedTask.Receivers
+
+		receivedTask.Receivers = []int{initialReceivers[0]}
+
+		// create multiple additional tasks with the same group
+		receivedTask, _ := controller.tasksRepository.UpdateTask(receivedTask)
+
+		for i := 1; i < len(initialReceivers); i++ {
+			receiver := initialReceivers[i]
+
+			additionalTask := &entities.Task{}
+			// does this copy fields?
+			*additionalTask = *receivedTask
+
+			// reset id
+			additionalTask.Id = 0
+			// assign receiver
+			additionalTask.Receivers = []int{receiver}
+			additionalTask.TaskGroup = receivedTask.TaskGroup
+
+			controller.tasksRepository.AddTask(additionalTask)
+
+			receivedTask.Children = append(receivedTask.Children, additionalTask)
+		}
+	}
 
 	// TODO If the status is different than "NEW" do not let it have multiple receivers
 

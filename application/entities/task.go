@@ -151,3 +151,7 @@ func (task *Task) GetStatusTime() *time.Time {
 
 	return nil
 }
+
+//func (task *Task) CopyFields(other *Task) {
+//
+//}
