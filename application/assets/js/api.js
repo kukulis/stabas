@@ -1,4 +1,12 @@
 class ApiClient {
+
+    /**
+     * loadGroups is used lately.
+     *
+     * This endpoint may be useful still.
+     *
+     * @returns {Promise<any>}
+     */
     async loadTasks() {
         let response = await fetch("/api/tasks", {
             method: "GET",
@@ -59,5 +67,14 @@ class ApiClient {
     async loadSettings() {
         // TODO load from api
         return new Settings()
+    }
+
+    async deleteTask(taskId) {
+        await fetch('/api/tasks/' + taskId, {method: 'DELETE'}).catch((error) => {
+            console.log('error deleting task ' + taskId, error)
+            return false
+        })
+
+        return true
     }
 }

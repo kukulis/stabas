@@ -687,6 +687,18 @@ class Task {
 
         return hoursDistance.toString() + ':' + remainingMinutesDistance.toString() + ':' + remainingSecondsDistance.toString();
     }
+
+    findTask(taskId) {
+        if ( this.id === taskId) {
+            return this;
+        }
+
+        return null;
+    }
+
+    deleteTask(taskId) {
+        // nothing
+    }
 }
 
 
@@ -822,6 +834,24 @@ class TaskGroup extends Task {
         }
 
         return this
+    }
+
+    findTask(taskId) {
+        if ( this.id === taskId) {
+            return this;
+        }
+
+        for ( let task of  this.children ) {
+            if (task.id === taskId) {
+                return task;
+            }
+        }
+
+        return null;
+    }
+
+    deleteTask(taskId) {
+        this.children = this.children.filter((task)=> task.id !== taskId)
     }
 }
 

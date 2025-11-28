@@ -70,16 +70,6 @@ class TasksComponent {
         }
 
         let taskDto = await response.json()
-
-        // let taskResponse = await fetch('/api/tasks/' + taskId,
-        //     {method: 'GET'}
-        // ).catch((error) => console.log('error getting task by id ' + taskId, error));
-        //
-        // if (taskResponse === undefined) {
-        //     return null;
-        // }
-        // let taskDto = await taskResponse.json();
-
         let task = Task.createFromDto(taskDto).setDispatcher(this.dispatcher)
 
         this.tasks.push(task);
@@ -87,10 +77,32 @@ class TasksComponent {
         return task;
     }
 
+    findTask(taskId) {
+        for ( let task of this.tasks) {
+            let foundTask = task.findTask(taskId)
+
+            if ( foundTask !== null ) {
+                return foundTask
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     *
+     * @param event
+     * @param taskId
+     */
     deleteTask(event, taskId) {
         event.stopPropagation();
 
-        let foundTask = this.tasks.find((task) => task.id === taskId)
+        let foundTask = this.findTask(taskId)
+
+        if ( foundTask === null) {
+            console.log('error: no task found by taskId '+taskId)
+            return;
+        }
 
         let confirmDelete = true;
         if (foundTask.status !== STATUS_CLOSED) {
@@ -101,13 +113,16 @@ class TasksComponent {
             return;
         }
 
-        // TODO use ApiClient
-        fetch('/api/tasks/' + taskId, {method: 'DELETE'}).then(
-            (response) => {
+        this.apiClient.deleteTask(taskId).then(
+            (success) => {
+                if ( !success) {
+                    return
+                }
                 this.tasks = this.tasks.filter((task) => (task.id !== taskId))
+                // delete task from each child
+                this.tasks.forEach((task)=>task.deleteTask(taskId))
                 this.dispatcher.dispatch('afterDeleteTask', taskId);
             })
-            .catch((error) => console.log('error deleting task ' + taskId, error))
     }
 
     /**
