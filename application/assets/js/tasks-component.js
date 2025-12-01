@@ -242,7 +242,7 @@ class TasksComponent {
             let task = null;
             if ( tasksMap.has(taskId)) {
                 task = tasksMap.get(taskId)
-                task.updateFromDTO(taskDto)
+                task.updateFromDTO(taskDto).setDispatcher(dispatcher)
             }
 
             if ( task === null ) {

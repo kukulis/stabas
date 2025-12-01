@@ -134,7 +134,7 @@ func (controller *TaskController) UpdateTask(c *gin.Context) {
 			receiver := initialReceivers[i]
 
 			additionalTask := &entities.Task{}
-			// does this copy fields?
+			// copy fields
 			*additionalTask = *receivedTask
 
 			// reset id
@@ -163,6 +163,7 @@ func (controller *TaskController) UpdateTask(c *gin.Context) {
 	} else {
 
 		// TODO If the status is different than "NEW" do not let it have multiple receivers
+		// also do not let task to have multiple receivers, if it has child or parent.
 
 		existingTask, err := controller.tasksRepository.UpdateTaskWithValidation(receivedTask)
 		if err != nil {
