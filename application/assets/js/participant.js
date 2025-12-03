@@ -94,6 +94,7 @@ class Participant {
             name: this.name,
         }
 
+        // TODO use ApiClient.updateParticipant() through Dispatcher
         fetch('/api/participants/' + this.id, {
             method: 'PUT',
             body: JSON.stringify(dataToUpdate),

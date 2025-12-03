@@ -237,6 +237,7 @@ class Task {
      * @param newStatus {int}
      */
     changeTaskStatus(event, task, newStatus) {
+        // TODO use ApiClient.changeTaskStatus()
         fetch('/api/tasks/' + task.id + '/change-status?status=' + newStatus, {
             method: 'POST',
         }).then((response) => {
@@ -288,6 +289,7 @@ class Task {
 
         //= this.buildObjectForJson()
 
+        // TODO use ApiClient.updateTask()
         fetch('/api/tasks/' + this.id, {
             method: 'PUT',
             body: JSON.stringify(myVersionDto)

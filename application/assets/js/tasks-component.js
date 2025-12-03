@@ -55,21 +55,17 @@ class TasksComponent {
         }, 0)
 
         console.log('newTask, maxId', maxId)
-        // TODO use ApiClient
-        let response = await fetch('/api/tasks', {
-            method: 'POST',
-            body: JSON.stringify({
-                message: 'Task ' + (maxId + 1),
-                sender: 1,
-                receivers: [],
-            })
-        }).catch((error) => console.log('backend error creating task ', error));
+        let taskDto = await this.apiClient.createTask({
+            message: 'Task ' + (maxId + 1),
+            sender: 1,
+            receivers: [],
+        })
 
-        if (response === undefined) {
+        if (taskDto === null) {
+
+            // TODO throw exception
             return null;
         }
-
-        let taskDto = await response.json()
         let task = TaskGroup.createFromDto(taskDto).setDispatcher(this.dispatcher)
 
         this.tasks.push(task);
@@ -149,13 +145,11 @@ class TasksComponent {
     }
 
     async loadParticipants() {
-        // TODO use ApiClient
-        let response = await fetch("/api/participants", {
-            method: "GET",
-        });
-        // TODO handle errors
+        let participantsDTO = await this.apiClient.loadParticipants();
 
-        let participantsDTO = await response.json();
+        if (participantsDTO === null) {
+            throw new Error('Failed to load participants')
+        }
 
         for (let p of participantsDTO) {
             this.participants.push(new Participant(p.id, p.name))
