@@ -51,14 +51,14 @@ func main() {
 	router.GET("/api/tasks", func(c *gin.Context) { di.TaskControllerInstance.GetAllTasks(c) })
 	router.GET("/api/groups", func(c *gin.Context) { di.TaskControllerInstance.GetTasksGroups(c) })
 	router.GET("/api/tasks/:id", func(c *gin.Context) { di.TaskControllerInstance.GetTask(c) })
-	router.PUT("/api/tasks", func(c *gin.Context) { di.TaskControllerInstance.AddTask(c) })
+	router.POST("/api/tasks", func(c *gin.Context) { di.TaskControllerInstance.AddTask(c) })
 	router.POST("/api/tasks/:id/change-status", func(c *gin.Context) { di.TaskControllerInstance.ChangeStatus(c) })
-	router.POST("/api/tasks/:id", func(c *gin.Context) { di.TaskControllerInstance.UpdateTask(c) })
+	router.PUT("/api/tasks/:id", func(c *gin.Context) { di.TaskControllerInstance.UpdateTask(c) })
 	router.DELETE("/api/tasks/:id", func(c *gin.Context) { di.TaskControllerInstance.DeleteTask(c) })
 
 	router.GET("/api/participants", func(c *gin.Context) { di.ParticipantsControllerInstance.GetParticipants(c) })
-	router.POST("/api/participants/:id", func(c *gin.Context) { di.ParticipantsControllerInstance.UpdateParticipant(c) })
-	router.PUT("/api/participants", func(c *gin.Context) { di.ParticipantsControllerInstance.AddParticipant(c) })
+	router.PUT("/api/participants/:id", func(c *gin.Context) { di.ParticipantsControllerInstance.UpdateParticipant(c) })
+	router.POST("/api/participants", func(c *gin.Context) { di.ParticipantsControllerInstance.AddParticipant(c) })
 	router.DELETE("/api/participants/:id", func(c *gin.Context) { di.ParticipantsControllerInstance.DeleteParticipant(c) })
 
 	router.StaticFile("/favicon.ico", "./assets/favicon.ico")

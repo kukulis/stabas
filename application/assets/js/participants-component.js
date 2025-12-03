@@ -44,7 +44,7 @@ class ParticipantsComponent {
 
         // till here
         fetch('api/participants', {
-            method: 'PUT',
+            method: 'POST',
             body: JSON.stringify(participantData)
         })
             .then((response) => {

@@ -95,7 +95,7 @@ class Participant {
         }
 
         fetch('/api/participants/' + this.id, {
-            method: 'POST',
+            method: 'PUT',
             body: JSON.stringify(dataToUpdate),
         })
             .then((response) => {

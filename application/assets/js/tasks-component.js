@@ -57,7 +57,7 @@ class TasksComponent {
         console.log('newTask, maxId', maxId)
         // TODO use ApiClient
         let response = await fetch('/api/tasks', {
-            method: 'PUT',
+            method: 'POST',
             body: JSON.stringify({
                 message: 'Task ' + (maxId + 1),
                 sender: 1,

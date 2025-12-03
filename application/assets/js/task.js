@@ -289,7 +289,7 @@ class Task {
         //= this.buildObjectForJson()
 
         fetch('/api/tasks/' + this.id, {
-            method: 'POST',
+            method: 'PUT',
             body: JSON.stringify(myVersionDto)
         })
             .catch((error) => console.log('error updating task to backend', error))
