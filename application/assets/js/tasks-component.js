@@ -213,9 +213,14 @@ class TasksComponent {
     }
 
     async reloadParticipants() {
-        // TODO
+        this.participants = [];
+        await this.loadParticipants();
     }
 
+    /**
+     * Tries to assign values, received from API, to the already existing Task objects instead of creating new.
+     * @returns {Promise<void>}
+     */
     async reloadTasks() {
 
         let tasksDto = await this.apiClient.loadGroups()

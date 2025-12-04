@@ -237,32 +237,22 @@ class Task {
      * @param newStatus {int}
      */
     changeTaskStatus(event, task, newStatus) {
-        // TODO use ApiClient.changeTaskStatus()
-        fetch('/api/tasks/' + task.id + '/change-status?status=' + newStatus, {
-            method: 'POST',
-        }).then((response) => {
-            // console.log('response received after changing status ', response)
-            response.text().then((text) => {
-                if (response.status === 200) {
-                    task.status = newStatus;
-                    console.log(text)
-                    this.dispatcher.dispatch('afterChangeStatus', [event, task]);
-                }
-            }).catch((error) => console.log('error getting response after changing status', error))
-        }).catch((error) => console.log('error changing status', error))
+        // // TODO use ApiClient.changeTaskStatus()
+        // fetch('/api/tasks/' + task.id + '/change-status?status=' + newStatus, {
+        //     method: 'POST',
+        // }).then((response) => {
+        //     // console.log('response received after changing status ', response)
+        //     response.text().then((text) => {
+        //         if (response.status === 200) {
+        //             task.status = newStatus;
+        //             console.log(text)
+        //             this.dispatcher.dispatch('afterChangeStatus', [event, task]);
+        //         }
+        //     }).catch((error) => console.log('error getting response after changing status', error))
+        // }).catch((error) => console.log('error changing status', error))
+        //
+        this.dispatcher.dispatch('onChangeTaskStatus', [task, newStatus])
     }
-
-    // buildObjectForJson() {
-    //     return {
-    //         id: this.id,
-    //         message: this.message,
-    //         result: this.result,
-    //         status: this.status,
-    //         sender: this.sender,
-    //         receivers: this.receivers,
-    //         version: this.version+1,
-    //     }
-    // }
 
     /**
      *
