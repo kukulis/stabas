@@ -293,4 +293,15 @@ class TasksComponent {
                 console.log('response data:', data)
             })
     }
+
+    selectTask(task) {
+        // unselect all tasks first TODO
+        for ( let t of this.tasks ) {
+            t.selected = false
+            t.handleUnSelect()
+        }
+
+        task.selected = true;
+        task.handleSelect()
+    }
 }

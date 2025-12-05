@@ -60,12 +60,16 @@ class Task {
     /** @type {Date} */
     closedAt = null;
 
-    /** @type {boolean} */
-    modified = false;
-
     version = 0;
 
     taskGroup = 0;
+
+    /** @type {boolean} */
+    modified = false;
+
+    visible = true;
+    selected = false;
+
 
     /**
      *
@@ -120,8 +124,8 @@ class Task {
         this.status = selectValue(this.status, taskDTO.status, myVersionTaskDTO.status)
         this.sender = selectValue(this.sender, taskDTO.sender, myVersionTaskDTO.sender)
         this.receivers = selectValue(this.receivers, taskDTO.receivers, myVersionTaskDTO.receivers)
-        this.message =  selectValue(this.message, taskDTO.message, myVersionTaskDTO.message)
-        this.result =  selectValue(this.result, taskDTO.result, myVersionTaskDTO.result)
+        this.message = selectValue(this.message, taskDTO.message, myVersionTaskDTO.message)
+        this.result = selectValue(this.result, taskDTO.result, myVersionTaskDTO.result)
         this.taskGroup = taskDTO.task_group
 
         this.sentAt = parseDate(taskDTO.sent_at)
@@ -140,25 +144,37 @@ class Task {
     getTimerDivId() {
         return 'task-timer-' + this.id.toString();
     }
+
     /**
      * @param participantLoader {function}
      * @param settings {Settings}
      * @returns {HTMLDivElement}
      */
-    renderTaskLine (participantLoader, settings) {
+    renderTaskLine(participantLoader, settings) {
         let taskLineDiv = this.renderTaskLineBase(participantLoader, settings)
         return taskLineDiv
     }
+
+    getLineElementId() {
+        return 'task-line-' + this.id
+    }
+
     /**
      * @param participantLoader {function}
      * @param settings {Settings}
      * @returns {HTMLDivElement}
      */
     renderTaskLineBase(participantLoader, settings) {
+        let thisTask = this;
+
         let taskElement = document.createElement('div')
         // taskElement.setAttribute('class', 'task-line')
         taskElement.classList.add('task-line')
         taskElement.classList.add(getStatusClass(this.status))
+        taskElement.id = this.getLineElementId()
+        if (this.selected) {
+            taskElement.classList.add('selected')
+        }
 
         let messageDiv = document.createElement('div')
         messageDiv.setAttribute('class', 'message')
@@ -166,6 +182,7 @@ class Task {
         messageDiv.addEventListener('click', (e) => {
             let taskDetailsDiv = this.renderTaskDetailsFull(e, participantLoader);
             this.dispatcher.dispatch('taskDetailsRendered', taskDetailsDiv)
+            this.dispatcher.dispatch('taskSelected', thisTask)
         });
 
         taskElement.appendChild(messageDiv);
@@ -205,7 +222,7 @@ class Task {
 
         let late = 0
 
-        if ( now !== null && currentStatusDate !== null ) {
+        if (now !== null && currentStatusDate !== null) {
             late = now.getTime() - currentStatusDate.getTime();
         }
 
@@ -220,7 +237,6 @@ class Task {
 
         let deleteButton = document.createElement('button');
         deleteButton.appendChild(document.createTextNode('-'));
-        const thisTask = this;
         deleteButton.addEventListener('click', (event) => {
                 thisTask.dispatcher.dispatch('deleteTaskPressed', [event, this.id])
             }
@@ -268,7 +284,7 @@ class Task {
             status: parseInt(statusSelect.value),
             sender: parseInt(senderSelect.value),
             receivers: Array.from(receiversSelect.selectedOptions).map((option) => parseInt(option.value)),
-            version: this.version +1,
+            version: this.version + 1,
         }
 
         this.dispatcher.dispatch('onSaveTask', [event, this, myVersionDto])
@@ -323,7 +339,7 @@ class Task {
         tdIdLabel.appendChild(document.createTextNode('ID'));
         let tdIdValue = document.createElement('td');
         tdIdValue.appendChild(document.createTextNode(this.id.toString()));
-        tdIdValue.appendChild(document.createTextNode(' ('+ this.taskGroup.toString()+ ')'));
+        tdIdValue.appendChild(document.createTextNode(' (' + this.taskGroup.toString() + ')'));
         trId.appendChild(tdIdLabel)
         trId.appendChild(tdIdValue)
 
@@ -654,7 +670,7 @@ class Task {
     }
 
     findTask(taskId) {
-        if ( this.id === taskId) {
+        if (this.id === taskId) {
             return this;
         }
 
@@ -664,8 +680,19 @@ class Task {
     deleteTask(taskId) {
         // nothing
     }
+
     whoIAm() {
         return "TaskGroup"
+    }
+
+    handleSelect() {
+        let lineDiv = document.getElementById(this.getLineElementId())
+        lineDiv.classList.add('selected')
+    }
+
+    handleUnSelect() {
+        let lineDiv = document.getElementById(this.getLineElementId())
+        lineDiv.classList.remove('selected')
     }
 }
 
@@ -715,6 +742,8 @@ class TaskGroup extends Task {
      */
     children = [];
 
+    expanded = true;
+
     // TODO make expand button and children display
 
     /**
@@ -725,16 +754,15 @@ class TaskGroup extends Task {
     renderTaskLine(participantLoader, settings) {
         let lineContainer = this.renderTaskLineBase(participantLoader, settings)
 
-        if ( this.children.length > 0  ) {
+        if (this.children.length > 0) {
             let expandButton = document.createElement('button')
             expandButton.appendChild(document.createTextNode('/'))
             expandButton.classList.add('expand-button')
             let thisTask = this;
-            expandButton.addEventListener('click', (event)=>thisTask.toggleExpandGroup())
+            expandButton.addEventListener('click', (event) => thisTask.toggleExpandGroup())
 
             lineContainer.insertBefore(expandButton, lineContainer.firstChild)
-        }
-        else {
+        } else {
             let childlessPrefix = document.createElement('span');
             childlessPrefix.appendChild(document.createTextNode('\u{00A0}'))
             childlessPrefix.classList.add('childless-prefix')
@@ -743,7 +771,7 @@ class TaskGroup extends Task {
         }
 
 
-        for( let childTask of this.children ) {
+        for (let childTask of this.children) {
             let childTaskDiv = childTask.renderTaskLine(participantLoader, settings)
 
             let childArrow = document.createElement('span')
@@ -751,7 +779,7 @@ class TaskGroup extends Task {
             childArrow.classList.add('child-prefix')
             childTaskDiv.insertBefore(childArrow, childTaskDiv.firstChild)
 
-            lineContainer.appendChild( childTaskDiv)
+            lineContainer.appendChild(childTaskDiv)
         }
         return lineContainer
     }
@@ -763,11 +791,11 @@ class TaskGroup extends Task {
     getChildrenMap() {
         let map = new Map();
 
-        if ( this.children === null ) {
+        if (this.children === null) {
             return map;
         }
-        for ( let task of this.children ) {
-            map.set(task.id, task )
+        for (let task of this.children) {
+            map.set(task.id, task)
         }
 
         return map;
@@ -777,7 +805,7 @@ class TaskGroup extends Task {
      * @returns {TaskGroup}
      */
     static createFromDto(taskDTO) {
-        console.log('TaskGroup.createFromDTO called for '+taskDTO.id)
+        console.log('TaskGroup.createFromDTO called for ' + taskDTO.id)
         let taskGroup = new TaskGroup(taskDTO.message, taskDTO.id, parseDate(taskDTO.created_at))
 
         taskGroup.updateFromDTO(taskDTO)
@@ -793,18 +821,30 @@ class TaskGroup extends Task {
     updateFromDTO(taskGroupDTO) {
         return this.groupUpdateFromDTO(taskGroupDTO)
     }
+
     groupUpdateFromDTO(taskGroupDTO) {
-        console.log('TaskGroup.updateFromDTO called for '+this.id)
+        console.log('TaskGroup.updateFromDTO called for ' + this.id)
         super.updateFromDTO(taskGroupDTO);
+
+        let previousChildrenMap = new Map();
+        for (let child of this.children) {
+            previousChildrenMap.set(child.id, child)
+        }
+
 
         this.children = []
 
-        if ( taskGroupDTO.children === null ) {
+        if (taskGroupDTO.children === null) {
             return this;
         }
 
-        for ( let taskDTO of  taskGroupDTO.children) {
-             this.children.push(Task.createFromDto(taskDTO))
+        for (let taskDTO of taskGroupDTO.children) {
+            if (previousChildrenMap.has(taskDTO.id)) {
+                this.children.push(previousChildrenMap.get(taskDTO.id).updateFromDTO(taskDTO))
+                continue;
+            }
+
+            this.children.push(Task.createFromDto(taskDTO))
         }
 
         return this;
@@ -816,19 +856,19 @@ class TaskGroup extends Task {
     setDispatcher(dispatcher) {
         this.dispatcher = dispatcher
 
-        for ( let task of this.children) {
-            task.setDispatcher( dispatcher )
+        for (let task of this.children) {
+            task.setDispatcher(dispatcher)
         }
 
         return this
     }
 
     findTask(taskId) {
-        if ( this.id === taskId) {
+        if (this.id === taskId) {
             return this;
         }
 
-        for ( let task of  this.children ) {
+        for (let task of this.children) {
             if (task.id === taskId) {
                 return task;
             }
@@ -838,7 +878,7 @@ class TaskGroup extends Task {
     }
 
     deleteTask(taskId) {
-        this.children = this.children.filter((task)=> task.id !== taskId)
+        this.children = this.children.filter((task) => task.id !== taskId)
     }
 
     whoIAm() {
@@ -847,6 +887,14 @@ class TaskGroup extends Task {
 
     toggleExpandGroup() {
         console.log('toggle expand group called')
+    }
+
+    handleUnSelect() {
+        super.handleUnSelect()
+        for (let child of this.children) {
+            child.selected = false;
+            child.handleUnSelect()
+        }
     }
 }
 

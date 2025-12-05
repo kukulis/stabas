@@ -157,6 +157,10 @@
         dispatcher.addListener('onSaveTask', ([e, task, myVersionDto]) => {
             tasksComponent.handleUpdateTask(e,task, myVersionDto)
         })
+
+        dispatcher.addListener('taskSelected', (task) => {
+            tasksComponent.selectTask(task)
+        })
     }
 
     // =============================================================================
