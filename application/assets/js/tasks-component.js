@@ -130,7 +130,7 @@ class TasksComponent {
         addButton.setAttribute('class', 'add-task')
         addButton.addEventListener('click', () => {
             this.newTask()
-                .then((task) => this.dispatcher.dispatch('onAddTask', task));
+                .then((task) => this.dispatcher.dispatch('afterAddTask', task));
         });
 
         tasksListElement.appendChild(addButton);

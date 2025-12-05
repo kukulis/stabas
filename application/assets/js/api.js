@@ -103,7 +103,7 @@ class ApiClient {
      * Update an existing task
      * @param {number} taskId - Task ID to update
      * @param {Object} taskData - Updated task data
-     * @returns {Promise<{response: Response, data: any}>}
+     * @returns {Promise<[Response, data]>}
      */
     async updateTask(taskId, taskData) {
         let response = await fetch('/api/tasks/' + taskId, {
@@ -119,7 +119,7 @@ class ApiClient {
         }
 
         let data = await response.json()
-        return { response, data }
+        return [ response, data ]
     }
 
     /**

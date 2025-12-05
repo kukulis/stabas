@@ -165,8 +165,15 @@
 
 .task-line .expand-button {
     float: left;
+    width: 15pt;
 }
 
 .task-line .child-prefix {
     float: left;
+    width: 25pt;
+}
+
+.task-line .childless-prefix {
+    float: left;
+    width: 15pt;
 }

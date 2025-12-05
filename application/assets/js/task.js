@@ -271,30 +271,7 @@ class Task {
             version: this.version +1,
         }
 
-        //= this.buildObjectForJson()
-
-        // TODO use ApiClient.updateTask()
-        fetch('/api/tasks/' + this.id, {
-            method: 'PUT',
-            body: JSON.stringify(myVersionDto)
-        })
-            .catch((error) => console.log('error updating task to backend', error))
-            .then((taskResponse) => {
-                taskResponse.json().then((taskDTO) => {
-                    if ( taskResponse.status === 409 ) {
-                        this.updateFromDTOMerged(taskDTO, myVersionDto)
-                        // for possible children
-                        this.setDispatcher(this.dispatcher)
-                        this.dispatcher.dispatch('taskSavedPartially', this)
-                    }
-                    else {
-                        this.updateFromDTO(taskDTO)
-                        // for possible children
-                        this.setDispatcher(this.dispatcher)
-                        this.dispatcher.dispatch('taskSaved', this)
-                    }
-                })
-            })
+        this.dispatcher.dispatch('onSaveTask', [event, this, myVersionDto])
     }
 
     /*****************************************************************************
@@ -752,8 +729,17 @@ class TaskGroup extends Task {
             let expandButton = document.createElement('button')
             expandButton.appendChild(document.createTextNode('/'))
             expandButton.classList.add('expand-button')
+            let thisTask = this;
+            expandButton.addEventListener('click', (event)=>thisTask.toggleExpandGroup())
 
             lineContainer.insertBefore(expandButton, lineContainer.firstChild)
+        }
+        else {
+            let childlessPrefix = document.createElement('span');
+            childlessPrefix.appendChild(document.createTextNode('\u{00A0}'))
+            childlessPrefix.classList.add('childless-prefix')
+
+            lineContainer.insertBefore(childlessPrefix, lineContainer.firstChild)
         }
 
 
@@ -857,6 +843,10 @@ class TaskGroup extends Task {
 
     whoIAm() {
         return "TaskGroup"
+    }
+
+    toggleExpandGroup() {
+        console.log('toggle expand group called')
     }
 }
 
