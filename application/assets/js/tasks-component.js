@@ -62,9 +62,7 @@ class TasksComponent {
         })
 
         if (taskDto === null) {
-
-            // TODO throw exception
-            return null;
+            throw new Error('Could not create a new task')
         }
         let task = TaskGroup.createFromDto(taskDto).setDispatcher(this.dispatcher)
 

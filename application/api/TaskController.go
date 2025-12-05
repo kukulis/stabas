@@ -3,7 +3,7 @@ package api
 import (
 	"darbelis.eu/stabas/dao"
 	"darbelis.eu/stabas/entities"
-	"fmt"
+	"darbelis.eu/stabas/util"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/codec/json"
 	"net/http"
@@ -13,11 +13,21 @@ import (
 )
 
 type TaskController struct {
-	tasksRepository *dao.TasksRepository
+	tasksRepository        *dao.TasksRepository
+	participantsRepository *dao.ParticipantsRepository
+	timeProvider           util.TimeProvider
 }
 
-func NewTaskController(tasksRepository *dao.TasksRepository) *TaskController {
-	return &TaskController{tasksRepository: tasksRepository}
+func NewTaskController(
+	tasksRepository *dao.TasksRepository,
+	participantsRepository *dao.ParticipantsRepository,
+	timeProvider util.TimeProvider,
+) *TaskController {
+	return &TaskController{
+		tasksRepository:        tasksRepository,
+		participantsRepository: participantsRepository,
+		timeProvider:           timeProvider,
+	}
 }
 
 func (controller *TaskController) GetAllTasks(c *gin.Context) {
@@ -78,11 +88,11 @@ func (controller *TaskController) AddTask(c *gin.Context) {
 	}
 
 	// set current date to the task
-	now := time.Now()
+	now := controller.timeProvider.ProvideTime()
 	task.CreatedAt = &now
 
 	controller.tasksRepository.AddTask(task)
-	fmt.Printf("Added task id %d\n", task.Id)
+	//fmt.Printf("Added task id %d\n", task.Id)
 
 	c.JSON(http.StatusOK, task)
 }
@@ -115,13 +125,13 @@ func (controller *TaskController) UpdateTask(c *gin.Context) {
 	}
 
 	receivedTask.Id = id
-	fmt.Printf("We are updating task id %d\n", id)
+	//fmt.Printf("We are updating task id %d\n", id)
 
 	_ = receivedTask.SetStatusDateIfNil(time.Now())
 
 	// split task to several tasks if the task has many receivers and the status is NEW
 	if receivedTask.Status == entities.STATUS_NEW && len(receivedTask.Receivers) > 1 {
-		fmt.Printf("Going to split task with %d amount of receivers\n", len(receivedTask.Receivers))
+		//fmt.Printf("Going to split task with %d amount of receivers\n", len(receivedTask.Receivers))
 		receivedTask.TaskGroup = id
 		initialReceivers := receivedTask.Receivers
 

@@ -5,6 +5,7 @@ import (
 	"darbelis.eu/stabas/api"
 	"darbelis.eu/stabas/dao"
 	"darbelis.eu/stabas/entities"
+	"darbelis.eu/stabas/util"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -13,10 +14,15 @@ import (
 	"time"
 )
 
+var testableTime, _ = time.Parse(time.RFC3339, "2025-12-05T15:04:05Z")
+
 func setupTestController() (*api.TaskController, *dao.TasksRepository) {
-	repo := dao.NewTasksRepository()
-	controller := api.NewTaskController(repo)
-	return controller, repo
+	tasksRepository := NewTasksRepository()
+	participantsRepository := NewParticipantsRepository()
+
+	timeProvider := util.FixedTimeProvider{Time: testableTime}
+	controller := api.NewTaskController(tasksRepository, participantsRepository, timeProvider)
+	return controller, tasksRepository
 }
 
 func TestGetAllTasks(t *testing.T) {
@@ -40,6 +46,8 @@ func TestGetAllTasks(t *testing.T) {
 	if len(tasks) == 0 {
 		t.Error("Expected non-empty tasks list")
 	}
+
+	// TODO assert that received tasks list is equal to the exact list
 }
 
 func TestGetTasksGroups(t *testing.T) {
@@ -63,6 +71,7 @@ func TestGetTasksGroups(t *testing.T) {
 	if len(groupedTasks) == 0 {
 		t.Error("Expected non-empty grouped tasks list")
 	}
+	// TODO assert more exact tasks groups ( regarding data in the repository_factory.go )
 }
 
 func TestGetTask_Success(t *testing.T) {
@@ -131,9 +140,10 @@ func TestAddTask(t *testing.T) {
 	body, _ := json.Marshal(newTask)
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
-	c.Request = httptest.NewRequest("POST", "/tasks", bytes.NewBuffer(body))
+	c.Request = httptest.NewRequest("", "/", bytes.NewBuffer(body))
 
 	initialCount := len(repo.FindAll())
+
 	controller.AddTask(c)
 
 	if w.Code != http.StatusOK {
@@ -154,8 +164,8 @@ func TestAddTask(t *testing.T) {
 		t.Errorf("Expected message 'New test task', got '%s'", createdTask.Message)
 	}
 
-	if createdTask.CreatedAt == nil {
-		t.Error("Expected CreatedAt to be set")
+	if *createdTask.CreatedAt != testableTime {
+		t.Errorf("Expected CreatedAt to be %v, got %v", testableTime, *createdTask.CreatedAt)
 	}
 
 	finalCount := len(repo.FindAll())
@@ -233,7 +243,7 @@ func TestUpdateTask_SplitWithMultipleReceivers(t *testing.T) {
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
 	c.Params = gin.Params{gin.Param{Key: "id", Value: "1"}}
-	c.Request = httptest.NewRequest("PUT", "/tasks/1", bytes.NewBuffer(body))
+	c.Request = httptest.NewRequest("", "/", bytes.NewBuffer(body))
 
 	controller.UpdateTask(c)
 
@@ -295,7 +305,9 @@ func TestUpdateTask_VersionConflict(t *testing.T) {
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
 	c.Params = gin.Params{gin.Param{Key: "id", Value: "1"}}
-	c.Request = httptest.NewRequest("PUT", "/tasks/1", bytes.NewBuffer(body))
+	// it seems method parameter is not important
+	// also url is not important
+	c.Request = httptest.NewRequest("", "/", bytes.NewBuffer(body))
 
 	controller.UpdateTask(c)
 
@@ -358,6 +370,8 @@ func TestUpdateTask_MultipleReceiversWithParent(t *testing.T) {
 		t.Errorf("Expected status %d (bad request) when updating task with parent and multiple receivers, got %d", http.StatusBadRequest, w.Code)
 	}
 }
+
+// TODO test case with a non existant sender or receiver
 
 func TestUpdateTask_MultipleReceiversWithChildren(t *testing.T) {
 	controller, repo := setupTestController()
