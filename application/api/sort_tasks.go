@@ -32,3 +32,12 @@ func compareByTime(a, b *entities.Task) int {
 func compareByStatusTime(a, b *entities.Task) int {
 	return a.GetStatusTime().Compare(*b.GetStatusTime())
 }
+func CompareTasksById(a, b *entities.Task) int {
+	if a.Id == b.Id {
+		return 0
+	}
+	if a.Id > b.Id {
+		return 1
+	}
+	return -1
+}

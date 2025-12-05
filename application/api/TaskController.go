@@ -4,9 +4,11 @@ import (
 	"darbelis.eu/stabas/dao"
 	"darbelis.eu/stabas/entities"
 	"darbelis.eu/stabas/util"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/codec/json"
 	"net/http"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -129,6 +131,12 @@ func (controller *TaskController) UpdateTask(c *gin.Context) {
 
 	_ = receivedTask.SetStatusDateIfNil(time.Now())
 
+	err = controller.validateTaskForUpdate(receivedTask)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return
+	}
+
 	// split task to several tasks if the task has many receivers and the status is NEW
 	if receivedTask.Status == entities.STATUS_NEW && len(receivedTask.Receivers) > 1 {
 		//fmt.Printf("Going to split task with %d amount of receivers\n", len(receivedTask.Receivers))
@@ -188,6 +196,35 @@ func (controller *TaskController) UpdateTask(c *gin.Context) {
 		c.JSON(http.StatusOK, existingTask)
 	}
 
+}
+
+func (controller *TaskController) validateTaskForUpdate(receivedTask *entities.Task) error {
+	existingTask, err := controller.tasksRepository.FindById(receivedTask.Id)
+	if err != nil {
+		return err
+	}
+
+	if existingTask.Status != entities.STATUS_NEW {
+		if existingTask.Sender != receivedTask.Sender {
+			return errors.New("Can't modify sender if task is NOT new")
+		}
+		if !reflect.DeepEqual(existingTask.Receivers, receivedTask.Receivers) {
+			return errors.New("Can't modify receivers if task is NOT new")
+		}
+	}
+
+	if existingTask.Status == entities.STATUS_NEW && len(receivedTask.Receivers) > 1 {
+		countWithSameGroup := controller.tasksRepository.GetCountWithSameGroup(existingTask.TaskGroup)
+		if countWithSameGroup > 1 {
+			if existingTask.TaskGroup == existingTask.Id {
+				return errors.New("Can't add more receivers as the task has children tasks")
+			} else {
+				return errors.New("Can't add more receivers as the task has parent task")
+			}
+		}
+	}
+
+	return nil
 }
 
 // DeleteTask Deletes task

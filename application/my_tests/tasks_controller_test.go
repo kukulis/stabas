@@ -242,13 +242,22 @@ func TestUpdateTask_SplitWithMultipleReceivers(t *testing.T) {
 	body, _ := json.Marshal(updatedTask)
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{gin.Param{Key: "id", Value: "1"}}
+	c.Params = gin.Params{gin.Param{Key: "id", Value: "8"}}
 	c.Request = httptest.NewRequest("", "/", bytes.NewBuffer(body))
 
 	controller.UpdateTask(c)
 
 	if w.Code != http.StatusOK {
 		t.Errorf("Expected status %d, got %d", http.StatusOK, w.Code)
+
+		errorResult := map[string]string{}
+		err := json.Unmarshal(w.Body.Bytes(), &errorResult)
+		if err != nil {
+			t.Fatalf("Failed to unmarshal response: %v", err)
+		}
+
+		t.Errorf("Received error is [%s]", errorResult["error"])
+		return
 	}
 
 	var result entities.Task
@@ -261,7 +270,7 @@ func TestUpdateTask_SplitWithMultipleReceivers(t *testing.T) {
 		t.Errorf("Expected 1 receiver on parent task, got %d", len(result.Receivers))
 	}
 
-	if result.TaskGroup != 1 {
+	if result.TaskGroup != 8 {
 		t.Errorf("Expected task group to be 1, got %d", result.TaskGroup)
 	}
 
@@ -316,16 +325,16 @@ func TestUpdateTask_VersionConflict(t *testing.T) {
 	}
 }
 
-func TestUpdateTask_MultipleReceiversNonNewStatus(t *testing.T) {
+func TestUpdateTask_ModifyReceiverNonNewStatus(t *testing.T) {
 	controller, repo := setupTestController()
 
-	existingTask, _ := repo.FindById(1)
+	existingTask, _ := repo.FindById(7)
 
 	updatedTask := map[string]interface{}{
 		"message":   "Task with multiple receivers",
 		"result":    "",
 		"sender":    existingTask.Sender,
-		"receivers": []int{2, 3, 4},
+		"receivers": []int{1},
 		"status":    entities.STATUS_SENT,
 		"version":   existingTask.Version + 1,
 	}
@@ -333,13 +342,13 @@ func TestUpdateTask_MultipleReceiversNonNewStatus(t *testing.T) {
 	body, _ := json.Marshal(updatedTask)
 	w := httptest.NewRecorder()
 	c, _ := gin.CreateTestContext(w)
-	c.Params = gin.Params{gin.Param{Key: "id", Value: "1"}}
-	c.Request = httptest.NewRequest("PUT", "/tasks/1", bytes.NewBuffer(body))
+	c.Params = gin.Params{gin.Param{Key: "id", Value: "7"}}
+	c.Request = httptest.NewRequest("", "/", bytes.NewBuffer(body))
 
 	controller.UpdateTask(c)
 
 	if w.Code != http.StatusBadRequest {
-		t.Errorf("Expected status %d (bad request) when updating non-NEW task with multiple receivers, got %d", http.StatusBadRequest, w.Code)
+		t.Errorf("Expected status %d (bad request) when updating non-NEW task receivers, got %d", http.StatusBadRequest, w.Code)
 	}
 }
 

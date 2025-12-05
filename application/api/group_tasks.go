@@ -1,6 +1,9 @@
 package api
 
-import "darbelis.eu/stabas/entities"
+import (
+	"darbelis.eu/stabas/entities"
+	"slices"
+)
 
 // GroupTasks Groups array of tasks bet putting each to others Children
 func GroupTasks(tasks []*entities.Task) []*entities.Task {
@@ -24,6 +27,9 @@ func GroupTasks(tasks []*entities.Task) []*entities.Task {
 	for _, t := range tasksGroupsMap {
 		result = append(result, t)
 	}
+
+	// sort for the same test results ( otherwise fails each 6th time in average when running test )
+	slices.SortFunc(result, CompareTasksById)
 
 	return result
 }

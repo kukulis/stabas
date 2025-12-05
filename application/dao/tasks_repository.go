@@ -94,5 +94,5 @@ func (repo *TasksRepository) UpdateTaskWithValidation(task *entities.Task) (*ent
 }
 
 func (repo *TasksRepository) GetCountWithSameGroup(groupId int) int {
-	return len(util.ArrayFilter(repo.tasks, func(t *entities.Task) bool { return t.TaskGroup == groupId }))
+	return len(util.ArrayFilter(repo.tasks, func(t *entities.Task) bool { return t.TaskGroup == groupId && !t.Deleted }))
 }

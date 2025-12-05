@@ -76,8 +76,34 @@ func NewTasksRepository() *dao.TasksRepository {
 				TaskGroup: 3,
 				CreatedAt: &now4,
 			},
+			// 'sent' task, used to fail splitting test
+			{
+				Id:        7,
+				Message:   "task7",
+				Result:    "result7",
+				Sender:    2,
+				Receivers: []int{3},
+				Status:    2,
+				Deleted:   false,
+				Version:   1,
+				TaskGroup: 7,
+				CreatedAt: &now4,
+			},
+			// new task, used for splitting test
+			{
+				Id:        8,
+				Message:   "task8",
+				Result:    "result8",
+				Sender:    2,
+				Receivers: []int{3},
+				Status:    1,
+				Deleted:   false,
+				Version:   1,
+				TaskGroup: 8,
+				CreatedAt: &now4,
+			},
 		},
-		6,
+		8,
 	)
 }
 

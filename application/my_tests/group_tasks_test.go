@@ -166,6 +166,6 @@ func TestGroupTasks(t *testing.T) {
 
 		gotJson := string(gotJsonB)
 		wantJson := string(wantJsonB)
-		t.Errorf("Arrays were not equal want %v \n\n,  got %v", wantJson, gotJson)
+		t.Errorf("Arrays were not equal WANT: \n %v \n\n,  GOT: \n %v\n", wantJson, gotJson)
 	}
 }
