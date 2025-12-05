@@ -155,36 +155,7 @@
         })
 
         dispatcher.addListener('onSaveTask', ([e, task, myVersionDto]) => {
-            apiClient.updateTask(task.id, myVersionDto)
-                .catch((error) => console.log('error updating task to backend', error))
-                .then((result) => {
-                    if (result === null) {
-                        alert('did not receive any result for updating task ' + task.id)
-                    }
-
-                    let [taskResponse, data] = result
-
-                    if (taskResponse.status === 200) {
-                        task.updateFromDTO(data)
-                        // for possible children
-                        task.setDispatcher(dispatcher)
-                        dispatcher.dispatch('taskSaved', task)
-                        return
-                    }
-                    if (taskResponse.status === 409) {
-                        task.updateFromDTOMerged(data, myVersionDto)
-                        // for possible children
-                        this.setDispatcher(dispatcher)
-                        dispatcher.dispatch('taskSavedPartially', task)
-                        return
-                    }
-                    if (taskResponse.status === 400) {
-                        alert('Error updating task ' + task.id + ' : ' + data.error)
-                        return
-                    }
-                    alert('Unhandled error ' + taskResponse.status + ' updating task ' + task.id)
-                    console.log('response data:', data)
-                })
+            tasksComponent.handleUpdateTask(e,task, myVersionDto)
         })
     }
 

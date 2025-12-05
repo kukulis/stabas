@@ -72,10 +72,10 @@ class TasksComponent {
     }
 
     findTask(taskId) {
-        for ( let task of this.tasks) {
+        for (let task of this.tasks) {
             let foundTask = task.findTask(taskId)
 
-            if ( foundTask !== null ) {
+            if (foundTask !== null) {
                 return foundTask
             }
         }
@@ -93,13 +93,13 @@ class TasksComponent {
 
         let foundTask = this.findTask(taskId)
 
-        if ( foundTask === null) {
-            console.log('error: no task found by taskId '+taskId)
+        if (foundTask === null) {
+            console.log('error: no task found by taskId ' + taskId)
             return;
         }
 
         let confirmDelete = true;
-        if (foundTask.status !== STATUS_CLOSED && foundTask.status !== STATUS_NEW ) {
+        if (foundTask.status !== STATUS_CLOSED && foundTask.status !== STATUS_NEW) {
             confirmDelete = confirm("Delete task " + taskId + " ?")
         }
 
@@ -109,12 +109,12 @@ class TasksComponent {
 
         this.apiClient.deleteTask(taskId).then(
             (success) => {
-                if ( !success) {
+                if (!success) {
                     return
                 }
                 this.tasks = this.tasks.filter((task) => (task.id !== taskId))
                 // delete task from each child
-                this.tasks.forEach((task)=>task.deleteTask(taskId))
+                this.tasks.forEach((task) => task.deleteTask(taskId))
                 this.dispatcher.dispatch('afterDeleteTask', taskId);
             })
     }
@@ -161,7 +161,7 @@ class TasksComponent {
         for (let groupDto of groupsDto) {
             // console.log('loadTasks: adding task from backend, status ', taskDto.status)
             let taskGroup = TaskGroup.createFromDto(groupDto).setDispatcher(this.dispatcher)
-            this.addTask( taskGroup )
+            this.addTask(taskGroup)
         }
     }
 
@@ -198,7 +198,7 @@ class TasksComponent {
 
     // TODO make possibility to start and stop timer
     startTimer() {
-        var intervalId = setInterval(()=> {
+        var intervalId = setInterval(() => {
             this.dispatcher.dispatch('timerTick')
             // clearInterval(intervalId)
         }, 5000)
@@ -223,8 +223,8 @@ class TasksComponent {
 
         let tasksMap = new Map();
 
-        for ( let task of  this.tasks ) {
-             tasksMap.set(task.id, task)
+        for (let task of this.tasks) {
+            tasksMap.set(task.id, task)
         }
 
         /**
@@ -232,15 +232,15 @@ class TasksComponent {
          */
         let newTasksList = [];
 
-        for ( let taskDto of tasksDto ) {
+        for (let taskDto of tasksDto) {
             let taskId = taskDto.id;
             let task = null;
-            if ( tasksMap.has(taskId)) {
+            if (tasksMap.has(taskId)) {
                 task = tasksMap.get(taskId)
                 task.updateFromDTO(taskDto).setDispatcher(dispatcher)
             }
 
-            if ( task === null ) {
+            if (task === null) {
                 task = TaskGroup.createFromDto(taskDto).setDispatcher(this.dispatcher)
             }
 
@@ -256,8 +256,41 @@ class TasksComponent {
      * @returns {Promise<void>}
      */
     async reloadSingleTask(task) {
-         let taskDto = await this.apiClient.loadTask(task.id)
+        let taskDto = await this.apiClient.loadTask(task.id)
 
         task.updateFromDTO(taskDto)
+    }
+
+    handleUpdateTask(e, task, myVersionDto) {
+        apiClient.updateTask(task.id, myVersionDto)
+            .catch((error) => console.log('error updating task to backend', error))
+            .then((result) => {
+                if (result === null) {
+                    alert('did not receive any result for updating task ' + task.id)
+                }
+
+                let [taskResponse, data] = result
+
+                if (taskResponse.status === 200) {
+                    task.updateFromDTO(data)
+                    // for possible children
+                    task.setDispatcher(this.dispatcher)
+                    this.dispatcher.dispatch('taskSaved', task)
+                    return
+                }
+                if (taskResponse.status === 409) {
+                    task.updateFromDTOMerged(data, myVersionDto)
+                    // for possible children
+                    this.setDispatcher(this.dispatcher)
+                    this.dispatcher.dispatch('taskSavedPartially', task)
+                    return
+                }
+                if (taskResponse.status === 400) {
+                    alert('Error updating task ' + task.id + ' : ' + data.error)
+                    return
+                }
+                alert('Unhandled error ' + taskResponse.status + ' updating task ' + task.id)
+                console.log('response data:', data)
+            })
     }
 }
