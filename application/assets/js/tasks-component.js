@@ -155,7 +155,6 @@ class TasksComponent {
     }
 
     async loadTasks() {
-
         this.tasks = [];
         let groupsDto = await this.apiClient.loadGroups();
 
@@ -164,7 +163,6 @@ class TasksComponent {
             let taskGroup = TaskGroup.createFromDto(groupDto).setDispatcher(this.dispatcher)
             this.addTask( taskGroup )
         }
-        console.log ('setting dispatcher in the loadTasks ',  this.tasks );
     }
 
     async loadSettings() {

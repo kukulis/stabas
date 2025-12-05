@@ -166,3 +166,7 @@
 .task-line .expand-button {
     float: left;
 }
+
+.task-line .child-prefix {
+    float: left;
+}

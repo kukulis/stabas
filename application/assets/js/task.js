@@ -140,28 +140,25 @@ class Task {
     getTimerDivId() {
         return 'task-timer-' + this.id.toString();
     }
-
     /**
      * @param participantLoader {function}
      * @param settings {Settings}
      * @returns {HTMLDivElement}
      */
-    renderTaskLine(participantLoader, settings) {
+    renderTaskLine (participantLoader, settings) {
+        let taskLineDiv = this.renderTaskLineBase(participantLoader, settings)
+        return taskLineDiv
+    }
+    /**
+     * @param participantLoader {function}
+     * @param settings {Settings}
+     * @returns {HTMLDivElement}
+     */
+    renderTaskLineBase(participantLoader, settings) {
         let taskElement = document.createElement('div')
         // taskElement.setAttribute('class', 'task-line')
         taskElement.classList.add('task-line')
         taskElement.classList.add(getStatusClass(this.status))
-
-        let deleteButton = document.createElement('button');
-        deleteButton.appendChild(document.createTextNode('-'));
-        const thisTask = this;
-        deleteButton.addEventListener('click', (event) => {
-                thisTask.dispatcher.dispatch('deleteTaskPressed', [event, this.id])
-            }
-        );
-        deleteButton.setAttribute('class', 'delete-button')
-
-        taskElement.appendChild(deleteButton);
 
         let messageDiv = document.createElement('div')
         messageDiv.setAttribute('class', 'message')
@@ -221,6 +218,17 @@ class Task {
         timerDiv.classList.add('late-' + criticality)
         taskElement.appendChild(timerDiv)
 
+        let deleteButton = document.createElement('button');
+        deleteButton.appendChild(document.createTextNode('-'));
+        const thisTask = this;
+        deleteButton.addEventListener('click', (event) => {
+                thisTask.dispatcher.dispatch('deleteTaskPressed', [event, this.id])
+            }
+        );
+        deleteButton.setAttribute('class', 'delete-button')
+
+        taskElement.appendChild(deleteButton);
+
         let clearDiv = document.createElement('div')
         clearDiv.setAttribute('class', 'clear')
 
@@ -237,20 +245,6 @@ class Task {
      * @param newStatus {int}
      */
     changeTaskStatus(event, task, newStatus) {
-        // // TODO use ApiClient.changeTaskStatus()
-        // fetch('/api/tasks/' + task.id + '/change-status?status=' + newStatus, {
-        //     method: 'POST',
-        // }).then((response) => {
-        //     // console.log('response received after changing status ', response)
-        //     response.text().then((text) => {
-        //         if (response.status === 200) {
-        //             task.status = newStatus;
-        //             console.log(text)
-        //             this.dispatcher.dispatch('afterChangeStatus', [event, task]);
-        //         }
-        //     }).catch((error) => console.log('error getting response after changing status', error))
-        // }).catch((error) => console.log('error changing status', error))
-        //
         this.dispatcher.dispatch('onChangeTaskStatus', [task, newStatus])
     }
 
@@ -752,17 +746,26 @@ class TaskGroup extends Task {
      * @returns {HTMLDivElement}
      */
     renderTaskLine(participantLoader, settings) {
-        let lineContainer = super.renderTaskLine(participantLoader, settings)
+        let lineContainer = this.renderTaskLineBase(participantLoader, settings)
 
-        let expandButton = document.createElement('button')
-        expandButton.appendChild(document.createTextNode('/'))
-        expandButton.classList.add('expand-button')
+        if ( this.children.length > 0  ) {
+            let expandButton = document.createElement('button')
+            expandButton.appendChild(document.createTextNode('/'))
+            expandButton.classList.add('expand-button')
 
-        lineContainer.insertBefore(expandButton, lineContainer.firstChild)
+            lineContainer.insertBefore(expandButton, lineContainer.firstChild)
+        }
 
 
         for( let childTask of this.children ) {
-            lineContainer.appendChild( childTask.renderTaskLine(participantLoader, settings))
+            let childTaskDiv = childTask.renderTaskLine(participantLoader, settings)
+
+            let childArrow = document.createElement('span')
+            childArrow.appendChild(document.createTextNode('\u{21A6}'))
+            childArrow.classList.add('child-prefix')
+            childTaskDiv.insertBefore(childArrow, childTaskDiv.firstChild)
+
+            lineContainer.appendChild( childTaskDiv)
         }
         return lineContainer
     }
