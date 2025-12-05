@@ -176,6 +176,12 @@ class Task {
             taskElement.classList.add('selected')
         }
 
+        let participantsDiv = document.createElement('div')
+        participantsDiv.classList.add('task-participants')
+        // get participants names instead
+        participantsDiv.appendChild(document.createTextNode(this.sender+'-->'+  this.receivers.join(',')))
+        taskElement.appendChild(participantsDiv)
+
         let messageDiv = document.createElement('div')
         messageDiv.setAttribute('class', 'message')
         messageDiv.appendChild(document.createTextNode('' + this.id + ': ' + this.message))

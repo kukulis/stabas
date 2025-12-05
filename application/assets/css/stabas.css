@@ -64,6 +64,11 @@
     color: white;
 }
 
+.task-line .task-participants {
+    float: left;
+    width: 30pt;
+}
+
 
 
 .status-sent .status {
@@ -183,6 +188,7 @@
     float: left;
     width: 15pt;
 }
+
 
 .task-group .task-line {
     display: none;
