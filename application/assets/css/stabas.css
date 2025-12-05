@@ -175,9 +175,19 @@
 .task-line .child-prefix {
     float: left;
     width: 25pt;
+    text-align: right;
+    padding-right: 5pt;
 }
 
 .task-line .childless-prefix {
     float: left;
     width: 15pt;
+}
+
+.task-group .task-line {
+    display: none;
+}
+
+.task-group.expanded .task-line {
+    display: block;
 }

@@ -81,7 +81,7 @@
 
         dispatcher.addListener('deleteTaskPressed', ([e, taskId]) => tasksComponent.deleteTask(e, taskId))
 
-        dispatcher.addListener('onAddTask', () => {
+        dispatcher.addListener('afterAddTask', () => {
             redrawTasksList();
             clearTag(taskDetailsOuterDiv)
         })

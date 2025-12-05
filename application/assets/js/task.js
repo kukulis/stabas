@@ -742,9 +742,7 @@ class TaskGroup extends Task {
      */
     children = [];
 
-    expanded = true;
-
-    // TODO make expand button and children display
+    expanded = false;
 
     /**
      * @param participantLoader {function}
@@ -753,6 +751,10 @@ class TaskGroup extends Task {
      */
     renderTaskLine(participantLoader, settings) {
         let lineContainer = this.renderTaskLineBase(participantLoader, settings)
+        lineContainer.classList.add('task-group')
+        if ( this.expanded ) {
+            lineContainer.classList.add('expanded')
+        }
 
         if (this.children.length > 0) {
             let expandButton = document.createElement('button')
@@ -887,6 +889,16 @@ class TaskGroup extends Task {
 
     toggleExpandGroup() {
         console.log('toggle expand group called')
+
+        this.expanded = !this.expanded
+
+        let lineDiv = document.getElementById(this.getLineElementId())
+        if ( this.expanded) {
+            lineDiv.classList.add('expanded')
+        }
+        else {
+            lineDiv.classList.remove('expanded')
+        }
     }
 
     handleUnSelect() {
