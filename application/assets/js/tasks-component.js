@@ -135,6 +135,15 @@ class TasksComponent {
 
         tasksListElement.appendChild(addButton);
 
+        let reloadButton = document.createElement('button');
+        reloadButton.appendChild(document.createTextNode('↻'));
+        reloadButton.setAttribute('class', 'reload-button');
+        reloadButton.addEventListener('click', () => {
+            this.dispatcher.dispatch('reloadPressed');
+        });
+
+        tasksListElement.appendChild(reloadButton);
+
         for (let task of this.tasks) {
             tasksListElement.appendChild(task.renderTaskLine(() => this.participants, this.settings));
         }

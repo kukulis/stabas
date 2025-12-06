@@ -15,7 +15,6 @@
 {{ .menu}}
 
 <div id="app">
-    <button class="reload-button" onclick="reloadAndRedrawTasksList()">↻</button>
     <div id="tasksList" class="tasks-list">
 
     </div>
@@ -160,6 +159,10 @@
 
         dispatcher.addListener('taskSelected', (task) => {
             tasksComponent.selectTask(task)
+        })
+
+        dispatcher.addListener('reloadPressed', () => {
+            reloadAndRedrawTasksList()
         })
     }
 
