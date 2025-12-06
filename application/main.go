@@ -90,7 +90,7 @@ func main() {
 	router.Static("/assets/js", "./assets/js")
 	router.Static("/assets/css", "./assets/css")
 
-	err := router.RunTLS(":8443", "./tls/server.crt", "./tls/server.key")
+	err = router.RunTLS(":8443", "./tls/server.crt", "./tls/server.key")
 
 	fmt.Println(err)
 }
