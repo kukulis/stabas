@@ -1,27 +1,21 @@
 package dao
 
 import (
+	"darbelis.eu/stabas/db"
 	"darbelis.eu/stabas/entities"
 	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
-	_ "modernc.org/sqlite"
 )
 
 type LiteTaskRepository struct {
-	db *sql.DB
+	database *db.Database
 }
 
-func NewLiteTaskRepository(dbPath string) (*LiteTaskRepository, error) {
-	db, err := sql.Open("sqlite", dbPath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to open database: %w", err)
-	}
-
-	repo := &LiteTaskRepository{db: db}
+func NewLiteTaskRepository(database *db.Database) (*LiteTaskRepository, error) {
+	repo := &LiteTaskRepository{database: database}
 	if err := repo.initSchema(); err != nil {
-		db.Close()
 		return nil, fmt.Errorf("failed to initialize schema: %w", err)
 	}
 
@@ -29,6 +23,11 @@ func NewLiteTaskRepository(dbPath string) (*LiteTaskRepository, error) {
 }
 
 func (repo *LiteTaskRepository) initSchema() error {
+	db, err := repo.database.GetDB()
+	if err != nil {
+		return err
+	}
+
 	schema := `
 	CREATE TABLE IF NOT EXISTS tasks (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -48,12 +47,12 @@ func (repo *LiteTaskRepository) initSchema() error {
 		task_group INTEGER
 	);
 	`
-	_, err := repo.db.Exec(schema)
+	_, err = db.Exec(schema)
 	return err
 }
 
 func (repo *LiteTaskRepository) Close() error {
-	return repo.db.Close()
+	return repo.database.Close()
 }
 
 func (repo *LiteTaskRepository) scanTask(row *sql.Row) (*entities.Task, error) {
@@ -183,6 +182,11 @@ func (repo *LiteTaskRepository) scanTasks(rows *sql.Rows) ([]*entities.Task, err
 }
 
 func (repo *LiteTaskRepository) FindById(id int) (*entities.Task, error) {
+	db, err := repo.database.GetDB()
+	if err != nil {
+		return nil, err
+	}
+
 	query := `
 		SELECT id, message, result, sender, receivers, status,
 			   created_at, sent_at, received_at, executing_at, finished_at, closed_at,
@@ -191,7 +195,7 @@ func (repo *LiteTaskRepository) FindById(id int) (*entities.Task, error) {
 		WHERE id = ?
 	`
 
-	row := repo.db.QueryRow(query, id)
+	row := db.QueryRow(query, id)
 	task, err := repo.scanTask(row)
 	if err == sql.ErrNoRows {
 		return nil, errors.New("task not found")
@@ -200,6 +204,11 @@ func (repo *LiteTaskRepository) FindById(id int) (*entities.Task, error) {
 }
 
 func (repo *LiteTaskRepository) FindAll() []*entities.Task {
+	db, err := repo.database.GetDB()
+	if err != nil {
+		return []*entities.Task{}
+	}
+
 	query := `
 		SELECT id, message, result, sender, receivers, status,
 			   created_at, sent_at, received_at, executing_at, finished_at, closed_at,
@@ -208,7 +217,7 @@ func (repo *LiteTaskRepository) FindAll() []*entities.Task {
 		WHERE deleted = 0
 	`
 
-	rows, err := repo.db.Query(query)
+	rows, err := db.Query(query)
 	if err != nil {
 		return []*entities.Task{}
 	}
@@ -223,6 +232,11 @@ func (repo *LiteTaskRepository) FindAll() []*entities.Task {
 }
 
 func (repo *LiteTaskRepository) AddTask(task *entities.Task) int {
+	db, err := repo.database.GetDB()
+	if err != nil {
+		return 0
+	}
+
 	receiversJSON, _ := json.Marshal(task.Receivers)
 
 	query := `
@@ -232,7 +246,7 @@ func (repo *LiteTaskRepository) AddTask(task *entities.Task) int {
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
 
-	result, err := repo.db.Exec(query,
+	result, err := db.Exec(query,
 		task.Message,
 		task.Result,
 		task.Sender,
@@ -263,13 +277,18 @@ func (repo *LiteTaskRepository) AddTask(task *entities.Task) int {
 	// If TaskGroup is 0, set it to the task ID
 	if task.TaskGroup == 0 {
 		task.TaskGroup = task.Id
-		repo.db.Exec("UPDATE tasks SET task_group = ? WHERE id = ?", task.TaskGroup, task.Id)
+		db.Exec("UPDATE tasks SET task_group = ? WHERE id = ?", task.TaskGroup, task.Id)
 	}
 
 	return task.Id
 }
 
 func (repo *LiteTaskRepository) UpdateTask(task *entities.Task) (*entities.Task, error) {
+	db, err := repo.database.GetDB()
+	if err != nil {
+		return nil, err
+	}
+
 	// First check if task exists
 	existingTask, err := repo.FindById(task.Id)
 	if err != nil {
@@ -291,7 +310,7 @@ func (repo *LiteTaskRepository) UpdateTask(task *entities.Task) (*entities.Task,
 		taskGroup = existingTask.TaskGroup
 	}
 
-	_, err = repo.db.Exec(query,
+	_, err = db.Exec(query,
 		task.Message,
 		task.Result,
 		task.Sender,
@@ -316,8 +335,13 @@ func (repo *LiteTaskRepository) UpdateTask(task *entities.Task) (*entities.Task,
 }
 
 func (repo *LiteTaskRepository) DeleteTask(id int) error {
+	db, err := repo.database.GetDB()
+	if err != nil {
+		return err
+	}
+
 	query := "UPDATE tasks SET deleted = 1 WHERE id = ?"
-	result, err := repo.db.Exec(query, id)
+	result, err := db.Exec(query, id)
 	if err != nil {
 		return err
 	}
@@ -348,9 +372,14 @@ func (repo *LiteTaskRepository) UpdateTaskWithValidation(task *entities.Task) (*
 }
 
 func (repo *LiteTaskRepository) GetCountWithSameGroup(groupId int) int {
+	db, err := repo.database.GetDB()
+	if err != nil {
+		return 0
+	}
+
 	query := "SELECT COUNT(*) FROM tasks WHERE task_group = ? AND deleted = 0"
 	var count int
-	err := repo.db.QueryRow(query, groupId).Scan(&count)
+	err = db.QueryRow(query, groupId).Scan(&count)
 	if err != nil {
 		return 0
 	}
