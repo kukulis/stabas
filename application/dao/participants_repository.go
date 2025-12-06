@@ -7,14 +7,6 @@ import (
 	"fmt"
 )
 
-type IParticipantsRepository interface {
-	GetParticipants() []*entities.Participant
-	FindParticipant(id int) (*entities.Participant, error)
-	AddParticipant(participant *entities.Participant) (int, error)
-	RemoveParticipant(id int) error
-	UpdateParticipant(participant *entities.Participant) error
-}
-
 type ParticipantsRepository struct {
 	participants []*entities.Participant
 }
