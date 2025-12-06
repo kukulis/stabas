@@ -4,13 +4,31 @@ import (
 	"darbelis.eu/stabas/di"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"html/template"
 	"io/fs"
 	"net/http"
 	"os"
+	"strings"
 )
 
 func main() {
+
+	// Load .env file
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Warning: .env file not found, using default values")
+	}
+
+	// Set CheckAuthorization from environment
+	checkAuthStr := strings.ToLower(os.Getenv("CHECK_AUTHORIZATION"))
+	if checkAuthStr == "true" {
+		di.AuthenticationManager.CheckAuthorization = true
+		fmt.Println("Authorization checking is ENABLED")
+	} else {
+		di.AuthenticationManager.CheckAuthorization = false
+		fmt.Println("Authorization checking is DISABLED")
+	}
 
 	// TODO check for certificates
 	// build if missing one

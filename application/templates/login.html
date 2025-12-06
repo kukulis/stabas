@@ -23,6 +23,17 @@
     </div>
 
     <script>
+        function generateToken(length) {
+            const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let token = '';
+            const randomValues = new Uint8Array(length);
+            crypto.getRandomValues(randomValues);
+            for (let i = 0; i < length; i++) {
+                token += charset[randomValues[i] % charset.length];
+            }
+            return token;
+        }
+
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -30,13 +41,15 @@
             const password = document.getElementById('password').value;
             const errorMessage = document.getElementById('errorMessage');
 
-            // TODO: Implement actual login API call
+            // Generate 32-character token
+            const token = generateToken(32);
+
             fetch('/api/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ username, password })
+                body: JSON.stringify({ username, password, token })
             })
             .then(response => {
                 if (response.ok) {
@@ -48,6 +61,9 @@
                 }
             })
             .then(data => {
+                // Save token to localStorage
+                localStorage.setItem('authToken', token);
+
                 // Successful login - redirect to main page
                 window.location.href = '/tasks';
             })

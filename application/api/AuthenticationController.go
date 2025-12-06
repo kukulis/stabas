@@ -2,22 +2,16 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
-	"math/rand"
 	"net/http"
-	"time"
 )
 
-const MAX_ADMIN_TOKENS = 3
-
 type AuthenticationController struct {
-	adminPassword string
-	adminTokens   []string
+	authManager *AuthenticationManager
 }
 
-func NewAuthenticationController() *AuthenticationController {
+func NewAuthenticationController(authManager *AuthenticationManager) *AuthenticationController {
 	return &AuthenticationController{
-		adminPassword: "",
-		adminTokens:   []string{},
+		authManager: authManager,
 	}
 }
 
@@ -31,20 +25,6 @@ type LoginResponse struct {
 	Token string `json:"token"`
 }
 
-func (controller *AuthenticationController) GenerateAdminPassword() string {
-	const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	const length = 10
-
-	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
-	password := make([]byte, length)
-	for i := range password {
-		password[i] = charset[rng.Intn(len(charset))]
-	}
-
-	controller.adminPassword = string(password)
-	return controller.adminPassword
-}
-
 func (controller *AuthenticationController) Login(c *gin.Context) {
 	var loginRequest LoginRequest
 
@@ -55,19 +35,11 @@ func (controller *AuthenticationController) Login(c *gin.Context) {
 
 	// Admin login
 	if loginRequest.Username == "admin" {
-		if loginRequest.Password != controller.adminPassword {
-			c.JSON(http.StatusUnauthorized, map[string]string{"error": "Invalid credentials"})
+		err := controller.authManager.ValidateAdminLogin(loginRequest.Password, loginRequest.Token)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, map[string]string{"error": err.Error()})
 			return
 		}
-
-		// Check if max tokens limit reached
-		if len(controller.adminTokens) >= MAX_ADMIN_TOKENS {
-			c.JSON(http.StatusUnauthorized, map[string]string{"error": "Maximum number of admin sessions reached"})
-			return
-		}
-
-		// Add token to adminTokens
-		controller.adminTokens = append(controller.adminTokens, loginRequest.Token)
 
 		c.JSON(http.StatusOK, LoginResponse{Token: loginRequest.Token})
 		return

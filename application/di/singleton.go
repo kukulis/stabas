@@ -10,13 +10,14 @@ var tasksRepository = NewTaskRepository()
 var participantsRepository = NewParticipantsRepository()
 var timeProvider = util.SimpleTimeProvider{}
 
+var AuthenticationManager = api.NewAuthenticationManager()
 var TaskControllerInstance = api.NewTaskController(tasksRepository, participantsRepository, timeProvider)
 var ParticipantsControllerInstance = api.NewParticipantController(participantsRepository)
 var AuthenticationControllerInstance = initAuthenticationController()
 
 func initAuthenticationController() *api.AuthenticationController {
-	controller := api.NewAuthenticationController()
-	adminPassword := controller.GenerateAdminPassword()
+	adminPassword := AuthenticationManager.GenerateAdminPassword()
 	fmt.Println("Admin password:", adminPassword)
+	controller := api.NewAuthenticationController(AuthenticationManager)
 	return controller
 }
