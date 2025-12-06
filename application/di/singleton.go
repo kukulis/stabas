@@ -11,8 +11,8 @@ var participantsRepository = NewParticipantsRepository()
 var timeProvider = util.SimpleTimeProvider{}
 
 var AuthenticationManager = api.NewAuthenticationManager()
-var TaskControllerInstance = api.NewTaskController(tasksRepository, participantsRepository, timeProvider)
-var ParticipantsControllerInstance = api.NewParticipantController(participantsRepository)
+var TaskControllerInstance = api.NewTaskController(tasksRepository, participantsRepository, timeProvider, AuthenticationManager)
+var ParticipantsControllerInstance = api.NewParticipantController(participantsRepository, AuthenticationManager)
 var AuthenticationControllerInstance = initAuthenticationController()
 
 func initAuthenticationController() *api.AuthenticationController {
