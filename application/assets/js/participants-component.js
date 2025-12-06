@@ -76,14 +76,15 @@ class ParticipantsComponent {
     renderParticipants() {
         let participantsDiv = document.createElement('div');
 
+        let addParticipantButton = document.createElement('button')
+        addParticipantButton.classList.add('add-participant')
+        addParticipantButton.appendChild(document.createTextNode('✚'))
+        addParticipantButton.addEventListener('click', (e) => this.addParticipantCalled(e))
+        participantsDiv.appendChild(addParticipantButton)
+
         for (let participant of this.participants) {
             participantsDiv.appendChild(participant.renderLine());
         }
-
-        let addParticipantButton = document.createElement('button')
-        addParticipantButton.appendChild(document.createTextNode('+'))
-        addParticipantButton.addEventListener('click', (e) => this.addParticipantCalled(e))
-        participantsDiv.appendChild(addParticipantButton)
 
         return participantsDiv;
     }

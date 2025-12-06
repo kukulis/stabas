@@ -243,3 +243,50 @@
 .task-group.expanded .task-line {
     display: block;
 }
+
+/* ------------------------------------------------
+ - Participants styles
+ -------------------------------------------------- */
+
+.participants-container {
+    overflow-y: scroll;
+    height: 90%;
+}
+
+.participant-line {
+    padding: 1pt 1pt 3pt 0.5pt;
+}
+
+.participant-line > * {
+    margin-left: 1pt;
+}
+
+.participant-line .delete-button {
+    width: 20pt;
+    float: left;
+    background-color: white;
+    color: red;
+    border: none;
+}
+
+.participant-line .participant-id {
+    width: 40pt;
+    float: left;
+}
+
+.participant-line .participant-name {
+    float: left;
+    min-width: 250pt;
+    cursor: pointer;
+}
+
+.participant-line .participant-name-input {
+    float: left;
+}
+
+.add-participant {
+    background-color: white;
+    color: limegreen;
+    border: none;
+    font-size: 2em;
+}

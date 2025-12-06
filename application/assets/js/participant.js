@@ -20,7 +20,9 @@ class Participant {
     }
 
     deleteLineCalled(event) {
-        this.dispatcher.dispatch('onDeleteParticipant', [event, this])
+        if (confirm('Are you sure you want to delete participant "' + this.name + '"?')) {
+            this.dispatcher.dispatch('onDeleteParticipant', [event, this])
+        }
     }
 
     getLineElementId() {
@@ -34,7 +36,7 @@ class Participant {
     renderLine() {
         let lineDiv = document.createElement('div');
         lineDiv.setAttribute('id', this.getLineElementId(this.getLineElementId()));
-        lineDiv.style['border'] = "solid thin black"
+        lineDiv.classList.add('participant-line')
 
         this.renderLineInside(lineDiv)
 
@@ -48,17 +50,14 @@ class Participant {
     renderLineInside(lineDiv, withEditor = false) {
         clearTag(lineDiv);
 
-        let deleteDiv = document.createElement('button');
-        deleteDiv.appendChild(document.createTextNode('-'))
-        deleteDiv.addEventListener('click', (e) => this.deleteLineCalled(e))
-        lineDiv.appendChild(deleteDiv)
-
         let idDiv = document.createElement('div');
+        idDiv.classList.add('participant-id')
         idDiv.appendChild(document.createTextNode(this.id.toString()));
         lineDiv.appendChild(idDiv)
 
         if (withEditor) {
             let nameInput = document.createElement('input');
+            nameInput.classList.add('participant-name-input')
             nameInput.value = this.name
 
             nameInput.addEventListener('keyup', (e) => {
@@ -75,10 +74,21 @@ class Participant {
             lineDiv.appendChild(nameInput)
         } else {
             let nameDiv = document.createElement('div');
+            nameDiv.classList.add('participant-name')
             nameDiv.appendChild(document.createTextNode(this.name));
             nameDiv.addEventListener('click', (e) => this.initiateEditParticipant(e))
             lineDiv.appendChild(nameDiv)
         }
+
+        let deleteDiv = document.createElement('button');
+        deleteDiv.classList.add('delete-button')
+        deleteDiv.appendChild(document.createTextNode('✕'))
+        deleteDiv.addEventListener('click', (e) => this.deleteLineCalled(e))
+        lineDiv.appendChild(deleteDiv)
+
+        let clearDiv = document.createElement('div');
+        clearDiv.classList.add('clear');
+        lineDiv.appendChild(clearDiv);
     }
 
     initiateEditParticipant(event) {
