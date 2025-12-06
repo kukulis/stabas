@@ -17,7 +17,7 @@ func NewTasksRepository() *dao.TasksRepository {
 		[]*entities.Task{
 			{
 				Id:        1,
-				Message:   "task1",
+				Message:   "Pranešti apie padėtį",
 				Result:    "result1",
 				Sender:    1,
 				Receivers: []int{2},
@@ -29,7 +29,7 @@ func NewTasksRepository() *dao.TasksRepository {
 			},
 			{
 				Id:        2,
-				Message:   "task2",
+				Message:   "Pranešti apie padėtį",
 				Result:    "result2",
 				Sender:    1,
 				Receivers: []int{3},
@@ -42,7 +42,7 @@ func NewTasksRepository() *dao.TasksRepository {
 
 			{
 				Id:        6,
-				Message:   "task22",
+				Message:   "Pranešti apie padėtį",
 				Result:    "result22",
 				Sender:    1,
 				Receivers: []int{3},
@@ -54,7 +54,7 @@ func NewTasksRepository() *dao.TasksRepository {
 			},
 			{
 				Id:        3,
-				Message:   "task3",
+				Message:   "Atsiųsti koordinates",
 				Result:    "result3",
 				Sender:    2,
 				Receivers: []int{1},
@@ -66,7 +66,7 @@ func NewTasksRepository() *dao.TasksRepository {
 			},
 			{
 				Id:        4,
-				Message:   "task4",
+				Message:   "Atsiųsti koordinates",
 				Result:    "result4",
 				Sender:    2,
 				Receivers: []int{3},
@@ -79,7 +79,7 @@ func NewTasksRepository() *dao.TasksRepository {
 			// 'sent' task, used to fail splitting test
 			{
 				Id:        7,
-				Message:   "task7",
+				Message:   "Atsiųsti pastiprinimą",
 				Result:    "result7",
 				Sender:    2,
 				Receivers: []int{3},
@@ -92,7 +92,7 @@ func NewTasksRepository() *dao.TasksRepository {
 			// new task, used for splitting test
 			{
 				Id:        8,
-				Message:   "task8",
+				Message:   "Atsiųsti šaudmenų",
 				Result:    "result8",
 				Sender:    2,
 				Receivers: []int{3},
@@ -110,9 +110,15 @@ func NewTasksRepository() *dao.TasksRepository {
 func NewParticipantsRepository() *dao.ParticipantsRepository {
 	return dao.NewParticipantsRepository(
 		[]*entities.Participant{
-			{Id: 1, Name: "Participant 1"},
-			{Id: 2, Name: "Participant 2"},
-			{Id: 3, Name: "Participant 3"},
+			{Id: 1, Name: "HQ"},
+			{Id: 2, Name: "KP1"},
+			{Id: 3, Name: "KP2"},
+			{Id: 4, Name: "KP3"},
+			{Id: 5, Name: "SK1"},
+			{Id: 6, Name: "SK2"},
+			{Id: 7, Name: "SK3"},
+			{Id: 8, Name: "SK4"},
+			{Id: 9, Name: "MED"},
 		},
 	)
 }

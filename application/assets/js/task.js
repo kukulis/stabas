@@ -178,8 +178,24 @@ class Task {
 
         let participantsDiv = document.createElement('div')
         participantsDiv.classList.add('task-participants')
-        // get participants names instead
-        participantsDiv.appendChild(document.createTextNode(this.sender+'-->'+  this.receivers.join(',')))
+
+        // Load participants and get names
+        let participants = participantLoader();
+        let participantsMap = new Map();
+        for (let participant of participants) {
+            participantsMap.set(participant.id, participant.name);
+        }
+
+        // Get sender name
+        let senderName = participantsMap.get(this.sender) || this.sender.toString();
+
+        // Get receiver names
+        let receiverNames = this.receivers.map(receiverId =>
+            participantsMap.get(receiverId) || receiverId.toString()
+        );
+
+        // Create text node with names
+        participantsDiv.appendChild(document.createTextNode(senderName + '-->' + receiverNames.join(',')))
         taskElement.appendChild(participantsDiv)
 
         let messageDiv = document.createElement('div')
@@ -764,7 +780,6 @@ class TaskGroup extends Task {
 
         if (this.children.length > 0) {
             let expandButton = document.createElement('button')
-            expandButton.appendChild(document.createTextNode('/'))
             expandButton.classList.add('expand-button')
             let thisTask = this;
             expandButton.addEventListener('click', (event) => thisTask.toggleExpandGroup())
