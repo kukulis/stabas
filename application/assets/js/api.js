@@ -1,6 +1,17 @@
 class ApiClient {
 
     /**
+     * Get headers with auth token from localStorage
+     * @returns {Object}
+     */
+    getHeaders() {
+        const authToken = localStorage.getItem('authToken');
+        return {
+            'auth_token': authToken || ''
+        };
+    }
+
+    /**
      * loadGroups is used lately.
      *
      * This endpoint may be useful still.
@@ -10,6 +21,7 @@ class ApiClient {
     async loadTasks() {
         let response = await fetch("/api/tasks", {
             method: "GET",
+            headers: this.getHeaders(),
         })
             .catch((error) => {
                 console.log('error fetching tasks', error)
@@ -31,6 +43,7 @@ class ApiClient {
     async loadGroups() {
         let response = await fetch("/api/groups", {
             method: "GET",
+            headers: this.getHeaders(),
         })
             .catch((error) => {
                 console.log('error fetching groups', error)
@@ -47,6 +60,7 @@ class ApiClient {
     async loadTask(id) {
         let response = await fetch("/api/tasks/" + id, {
             method: "GET",
+            headers: this.getHeaders(),
         })
             .catch((error) => {
                 console.log('error fetching tasks', error)
@@ -70,7 +84,10 @@ class ApiClient {
     }
 
     async deleteTask(taskId) {
-        await fetch('/api/tasks/' + taskId, {method: 'DELETE'}).catch((error) => {
+        await fetch('/api/tasks/' + taskId, {
+            method: 'DELETE',
+            headers: this.getHeaders(),
+        }).catch((error) => {
             console.log('error deleting task ' + taskId, error)
             return false
         })
@@ -86,6 +103,10 @@ class ApiClient {
     async createTask(taskData) {
         let response = await fetch('/api/tasks', {
             method: 'POST',
+            headers: {
+                ...this.getHeaders(),
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify(taskData)
         }).catch((error) => {
             console.log('backend error creating task', error)
@@ -108,6 +129,10 @@ class ApiClient {
     async updateTask(taskId, taskData) {
         let response = await fetch('/api/tasks/' + taskId, {
             method: 'PUT',
+            headers: {
+                ...this.getHeaders(),
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify(taskData)
         }).catch((error) => {
             console.log('error updating task to backend', error)
@@ -131,6 +156,7 @@ class ApiClient {
     async changeTaskStatus(taskId, newStatus) {
         return await fetch('/api/tasks/' + taskId + '/change-status?status=' + newStatus, {
             method: 'POST',
+            headers: this.getHeaders(),
         }).catch((error) => {
             console.log('error changing status', error)
             return undefined
@@ -144,6 +170,7 @@ class ApiClient {
     async loadParticipants() {
         let response = await fetch('/api/participants', {
             method: 'GET',
+            headers: this.getHeaders(),
         }).catch((error) => {
             console.log('error fetching participants', error)
             return undefined
@@ -165,6 +192,10 @@ class ApiClient {
     async createParticipant(participantData) {
         let response = await fetch('api/participants', {
             method: 'POST',
+            headers: {
+                ...this.getHeaders(),
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify(participantData)
         }).catch((error) => {
             console.log('Error adding participant to api', error)
@@ -188,6 +219,10 @@ class ApiClient {
     async updateParticipant(participantId, participantData) {
         return await fetch('/api/participants/' + participantId, {
             method: 'PUT',
+            headers: {
+                ...this.getHeaders(),
+                'Content-Type': 'application/json',
+            },
             body: JSON.stringify(participantData),
         }).catch((error) => {
             console.log('updating participant api error', error)
@@ -203,6 +238,7 @@ class ApiClient {
     async deleteParticipant(participantId) {
         return await fetch('/api/participants/' + participantId, {
             method: 'DELETE',
+            headers: this.getHeaders(),
         }).catch((error) => {
             console.log('error deleting participant', error)
             return undefined
