@@ -15,6 +15,10 @@
     padding: 1pt 1pt 3pt 0.5pt;
 }
 
+.task-line > * {
+    margin-left: 1pt;
+}
+
 .task-line.selected {
     border: solid thin black;
 }
@@ -140,7 +144,6 @@
     background-color: white;
     color: red;
     border: none;
-    margin-left: 3pt;
 }
 
 .add-task {
@@ -169,7 +172,9 @@
 .task-line .task-date {
     border: solid black thin;
     float: left;
-    width: 60pt;
+    width: 54pt;
+    text-align: right;
+    padding-right: 3pt;
 }
 
 
@@ -183,20 +188,26 @@
 
 .task-line .late-none {
     float: left;
-    width: 60pt;
+    width: 54pt;
+    text-align: right;
+    padding-right: 3pt;
 }
 
 .task-line .late-soft {
     background-color: yellow;
     float: left;
-    width: 60pt;
+    width: 54pt;
+    text-align: right;
+    padding-right: 3pt;
 }
 
 .task-line .late-severe {
     background-color: red;
     color: white;
     float: left;
-    width: 60pt;
+    width: 54pt;
+    text-align: right;
+    padding-right: 3pt;
 }
 
 .task-line .expand-button {
