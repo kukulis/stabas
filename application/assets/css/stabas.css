@@ -137,6 +137,29 @@
 .task-line .delete-button {
     width: 20pt;
     float: left;
+    background-color: white;
+    color: red;
+    border: none;
+    margin-left: 3pt;
+}
+
+.add-task {
+    background-color: white;
+    color: limegreen;
+    border: none;
+    font-size: 2em;
+}
+
+.reload-button {
+    background-color: white;
+    border: none;
+    font-size: 2em;
+    cursor: pointer;
+}
+
+.reload-button:active {
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.3);
+    transform: translateY(2px);
 }
 
 .task-line .change-status-button {
@@ -146,6 +169,7 @@
 .task-line .task-date {
     border: solid black thin;
     float: left;
+    width: 60pt;
 }
 
 
@@ -159,17 +183,20 @@
 
 .task-line .late-none {
     float: left;
+    width: 60pt;
 }
 
 .task-line .late-soft {
     background-color: yellow;
     float: left;
+    width: 60pt;
 }
 
 .task-line .late-severe {
     background-color: red;
     color: white;
     float: left;
+    width: 60pt;
 }
 
 .task-line .expand-button {
@@ -178,11 +205,11 @@
 }
 
 .expand-button::before {
-    content: '/';
+    content: '▸';
 }
 
 .expanded > .expand-button::before {
-    content: '\\';
+    content: '▾';
 }
 
 .task-line .child-prefix {

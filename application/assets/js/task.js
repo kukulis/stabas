@@ -258,7 +258,7 @@ class Task {
         taskElement.appendChild(timerDiv)
 
         let deleteButton = document.createElement('button');
-        deleteButton.appendChild(document.createTextNode('-'));
+        deleteButton.appendChild(document.createTextNode('✕'));
         deleteButton.addEventListener('click', (event) => {
                 thisTask.dispatcher.dispatch('deleteTaskPressed', [event, this.id])
             }
@@ -794,11 +794,15 @@ class TaskGroup extends Task {
         }
 
 
-        for (let childTask of this.children) {
+        for (let i = 0; i < this.children.length; i++) {
+            let childTask = this.children[i];
             let childTaskDiv = childTask.renderTaskLine(participantLoader, settings)
 
             let childArrow = document.createElement('span')
-            childArrow.appendChild(document.createTextNode('\u{21A6}'))
+            // Use └─ for last child, ├─ for others
+            let isLastChild = (i === this.children.length - 1);
+            let symbol = isLastChild ? '\u{2514}\u{2500}' : '\u{251C}\u{2500}';
+            childArrow.appendChild(document.createTextNode(symbol))
             childArrow.classList.add('child-prefix')
             childTaskDiv.insertBefore(childArrow, childTaskDiv.firstChild)
 
@@ -828,7 +832,7 @@ class TaskGroup extends Task {
      * @returns {TaskGroup}
      */
     static createFromDto(taskDTO) {
-        console.log('TaskGroup.createFromDTO called for ' + taskDTO.id)
+        // console.log('TaskGroup.createFromDTO called for ' + taskDTO.id)
         let taskGroup = new TaskGroup(taskDTO.message, taskDTO.id, parseDate(taskDTO.created_at))
 
         taskGroup.updateFromDTO(taskDTO)
@@ -846,7 +850,7 @@ class TaskGroup extends Task {
     }
 
     groupUpdateFromDTO(taskGroupDTO) {
-        console.log('TaskGroup.updateFromDTO called for ' + this.id)
+        // console.log('TaskGroup.updateFromDTO called for ' + this.id)
         super.updateFromDTO(taskGroupDTO);
 
         let previousChildrenMap = new Map();
