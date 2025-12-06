@@ -12,6 +12,24 @@ class ApiClient {
     }
 
     /**
+     * Handle response and check for 401 unauthorized
+     * @param {Response|undefined} response - Fetch response
+     * @returns {Response|null} - Returns response if valid, null if 401 or undefined
+     */
+    handleResponse(response) {
+        if (response === undefined) {
+            return null;
+        }
+
+        if (response.status === 401) {
+            window.location.href = '/login';
+            return null;
+        }
+
+        return response;
+    }
+
+    /**
      * loadGroups is used lately.
      *
      * This endpoint may be useful still.
@@ -27,8 +45,9 @@ class ApiClient {
                 console.log('error fetching tasks', error)
             });
 
-        if (response === undefined) {
-            console.log('loadTasks response is undefined')
+        response = this.handleResponse(response);
+        if (!response) {
+            console.log('loadTasks response is invalid')
             return;
         }
 
@@ -49,8 +68,9 @@ class ApiClient {
                 console.log('error fetching groups', error)
             });
 
-        if (response === undefined) {
-            console.log('loadGroups response is undefined')
+        response = this.handleResponse(response);
+        if (!response) {
+            console.log('loadGroups response is invalid')
             return null;
         }
 
@@ -66,8 +86,9 @@ class ApiClient {
                 console.log('error fetching tasks', error)
             });
 
-        if (response === undefined) {
-            console.log('loadTasks response is undefined')
+        response = this.handleResponse(response);
+        if (!response) {
+            console.log('loadTask response is invalid')
             return;
         }
 
@@ -84,13 +105,17 @@ class ApiClient {
     }
 
     async deleteTask(taskId) {
-        await fetch('/api/tasks/' + taskId, {
+        let response = await fetch('/api/tasks/' + taskId, {
             method: 'DELETE',
             headers: this.getHeaders(),
         }).catch((error) => {
             console.log('error deleting task ' + taskId, error)
-            return false
         })
+
+        response = this.handleResponse(response);
+        if (!response) {
+            return false;
+        }
 
         return true
     }
@@ -110,10 +135,10 @@ class ApiClient {
             body: JSON.stringify(taskData)
         }).catch((error) => {
             console.log('backend error creating task', error)
-            return undefined
         })
 
-        if (response === undefined) {
+        response = this.handleResponse(response);
+        if (!response) {
             return null
         }
 
@@ -136,10 +161,10 @@ class ApiClient {
             body: JSON.stringify(taskData)
         }).catch((error) => {
             console.log('error updating task to backend', error)
-            return undefined
         })
 
-        if (response === undefined) {
+        response = this.handleResponse(response);
+        if (!response) {
             return null
         }
 
@@ -154,13 +179,14 @@ class ApiClient {
      * @returns {Promise<Response>}
      */
     async changeTaskStatus(taskId, newStatus) {
-        return await fetch('/api/tasks/' + taskId + '/change-status?status=' + newStatus, {
+        let response = await fetch('/api/tasks/' + taskId + '/change-status?status=' + newStatus, {
             method: 'POST',
             headers: this.getHeaders(),
         }).catch((error) => {
             console.log('error changing status', error)
-            return undefined
         })
+
+        return this.handleResponse(response);
     }
 
     /**
@@ -173,11 +199,11 @@ class ApiClient {
             headers: this.getHeaders(),
         }).catch((error) => {
             console.log('error fetching participants', error)
-            return undefined
         })
 
-        if (response === undefined) {
-            console.log('loadParticipants response is undefined')
+        response = this.handleResponse(response);
+        if (!response) {
+            console.log('loadParticipants response is invalid')
             return null
         }
 
@@ -199,10 +225,10 @@ class ApiClient {
             body: JSON.stringify(participantData)
         }).catch((error) => {
             console.log('Error adding participant to api', error)
-            return undefined
         })
 
-        if (response === undefined) {
+        response = this.handleResponse(response);
+        if (!response) {
             return null
         }
 
@@ -217,7 +243,7 @@ class ApiClient {
      * @returns {Promise<Response>}
      */
     async updateParticipant(participantId, participantData) {
-        return await fetch('/api/participants/' + participantId, {
+        let response = await fetch('/api/participants/' + participantId, {
             method: 'PUT',
             headers: {
                 ...this.getHeaders(),
@@ -226,8 +252,9 @@ class ApiClient {
             body: JSON.stringify(participantData),
         }).catch((error) => {
             console.log('updating participant api error', error)
-            return undefined
         })
+
+        return this.handleResponse(response);
     }
 
     /**
@@ -236,12 +263,13 @@ class ApiClient {
      * @returns {Promise<Response>}
      */
     async deleteParticipant(participantId) {
-        return await fetch('/api/participants/' + participantId, {
+        let response = await fetch('/api/participants/' + participantId, {
             method: 'DELETE',
             headers: this.getHeaders(),
         }).catch((error) => {
             console.log('error deleting participant', error)
-            return undefined
         })
+
+        return this.handleResponse(response);
     }
 }
