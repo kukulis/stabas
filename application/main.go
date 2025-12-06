@@ -51,6 +51,9 @@ func main() {
 	router.GET("/login", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "login.html", nil)
 	})
+
+	router.POST("/api/login", func(c *gin.Context) { di.AuthenticationControllerInstance.Login(c) })
+
 	//api.NewTaskController()
 	router.GET("/api/tasks", func(c *gin.Context) { di.TaskControllerInstance.GetAllTasks(c) })
 	router.GET("/api/groups", func(c *gin.Context) { di.TaskControllerInstance.GetTasksGroups(c) })
