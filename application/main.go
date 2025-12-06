@@ -22,6 +22,7 @@ func main() {
 		"templates/tasks.html",
 		"templates/participants.html",
 		"templates/settings.html",
+		
 	)
 
 	templatesDir := os.DirFS("templates")
@@ -47,6 +48,16 @@ func main() {
 		c.HTML(http.StatusOK, "settings.html", gin.H{"menu": menuContentHtml})
 	})
 
+menuContentHtml})
+	})
+
+	router.GET("/login", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "login.html", nil)
+	})
+
+	//api.NewTaskController()
+	router.GET("/api/tasks", func(c *gin.Context) { di.TaskControllerInstance.GetAllTasks(c) })
+	router.GET("/api/groups", func(c *gin.Context) { di.TaskControllerInstan
 	//api.NewTaskController()
 	router.GET("/api/tasks", func(c *gin.Context) { di.TaskControllerInstance.GetAllTasks(c) })
 	router.GET("/api/groups", func(c *gin.Context) { di.TaskControllerInstance.GetTasksGroups(c) })

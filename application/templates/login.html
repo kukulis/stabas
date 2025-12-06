@@ -1,75 +1,23 @@
 <!DOCTYPE html>
-<html lang="lt">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Štabo konsolė: prisijungimas</title>
+    <title>Command Console: Login</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="stylesheet" type="text/css" href="/assets/css/stabas.css"/>
-    <style>
-        .login-container {
-            width: 300px;
-            margin: 100px auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .login-container h1 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .login-form {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .login-form label {
-            margin-bottom: 5px;
-            margin-top: 10px;
-        }
-
-        .login-form input {
-            padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 3px;
-        }
-
-        .login-form button {
-            padding: 10px;
-            margin-top: 15px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .login-form button:hover {
-            background-color: #45a049;
-        }
-
-        .error-message {
-            color: red;
-            text-align: center;
-            margin-top: 10px;
-            display: none;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="/assets/css/login.css"/>
 </head>
 <body>
     <div class="login-container">
-        <h1>Prisijungimas</h1>
+        <h1>Login</h1>
         <form class="login-form" id="loginForm">
-            <label for="username">Vartotojo vardas:</label>
+            <label for="username">Username:</label>
             <input type="text" id="username" name="username" required autofocus>
 
-            <label for="password">Slaptažodis:</label>
+            <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
 
-            <button type="submit">Prisijungti</button>
+            <button type="submit">Login</button>
         </form>
         <div class="error-message" id="errorMessage"></div>
     </div>
@@ -95,7 +43,7 @@
                     return response.json();
                 } else {
                     return response.json().then(data => {
-                        throw new Error(data.error || 'Prisijungimas nepavyko');
+                        throw new Error(data.error || 'Login failed');
                     });
                 }
             })
