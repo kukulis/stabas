@@ -22,7 +22,9 @@ func setupTestController() (*api.TaskController, *dao.TasksRepository) {
 	participantsRepository := NewParticipantsRepository()
 
 	timeProvider := util.FixedTimeProvider{Time: testableTime}
-	controller := api.NewTaskController(tasksRepository, participantsRepository, timeProvider)
+	authManager := api.NewAuthenticationManager()
+	authManager.CheckAuthorization = false
+	controller := api.NewTaskController(tasksRepository, participantsRepository, timeProvider, authManager)
 	return controller, tasksRepository
 }
 
