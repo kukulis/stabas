@@ -70,7 +70,10 @@
 
 .task-line .task-participants {
     float: left;
-    width: 60pt;
+    width: 90pt;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 

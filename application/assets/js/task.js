@@ -176,9 +176,6 @@ class Task {
             taskElement.classList.add('selected')
         }
 
-        let participantsDiv = document.createElement('div')
-        participantsDiv.classList.add('task-participants')
-
         // Load participants and get names
         let participants = participantLoader();
         let participantsMap = new Map();
@@ -195,7 +192,10 @@ class Task {
         );
 
         // Create text node with names
-        participantsDiv.appendChild(document.createTextNode(senderName + '-->' + receiverNames.join(',')))
+        let participantsDiv = document.createElement('div')
+        participantsDiv.classList.add('task-participants')
+
+        participantsDiv.appendChild(document.createTextNode(senderName + ' → ' + receiverNames.join(',')))
         taskElement.appendChild(participantsDiv)
 
         let messageDiv = document.createElement('div')
