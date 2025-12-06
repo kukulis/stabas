@@ -11,17 +11,27 @@ import (
 
 type ParticipantController struct {
 	participantsRepository *dao.ParticipantsRepository
+	authManager            *AuthenticationManager
 }
 
-func NewParticipantController(participantsRepository *dao.ParticipantsRepository) *ParticipantController {
-	return &ParticipantController{participantsRepository: participantsRepository}
+func NewParticipantController(participantsRepository *dao.ParticipantsRepository, authManager *AuthenticationManager) *ParticipantController {
+	return &ParticipantController{
+		participantsRepository: participantsRepository,
+		authManager:            authManager,
+	}
 }
 
 func (controller *ParticipantController) GetParticipants(c *gin.Context) {
+	if !controller.authManager.Authorize(c) {
+		return
+	}
 	c.JSON(http.StatusOK, controller.participantsRepository.GetParticipants())
 }
 
 func (controller *ParticipantController) GetParticipant(c *gin.Context) {
+	if !controller.authManager.Authorize(c) {
+		return
+	}
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 
@@ -40,6 +50,9 @@ func (controller *ParticipantController) GetParticipant(c *gin.Context) {
 }
 
 func (controller *ParticipantController) UpdateParticipant(c *gin.Context) {
+	if !controller.authManager.Authorize(c) {
+		return
+	}
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 

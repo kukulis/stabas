@@ -18,25 +18,34 @@ type TaskController struct {
 	tasksRepository        *dao.TasksRepository
 	participantsRepository *dao.ParticipantsRepository
 	timeProvider           util.TimeProvider
+	authManager            *AuthenticationManager
 }
 
 func NewTaskController(
 	tasksRepository *dao.TasksRepository,
 	participantsRepository *dao.ParticipantsRepository,
 	timeProvider util.TimeProvider,
+	authManager *AuthenticationManager,
 ) *TaskController {
 	return &TaskController{
 		tasksRepository:        tasksRepository,
 		participantsRepository: participantsRepository,
 		timeProvider:           timeProvider,
+		authManager:            authManager,
 	}
 }
 
 func (controller *TaskController) GetAllTasks(c *gin.Context) {
+	if !controller.authManager.Authorize(c) {
+		return
+	}
 	c.JSON(http.StatusOK, controller.tasksRepository.FindAll())
 }
 
 func (controller *TaskController) GetTasksGroups(c *gin.Context) {
+	if !controller.authManager.Authorize(c) {
+		return
+	}
 	// get available tasks from repository
 	tasks := controller.tasksRepository.FindAll()
 	tasksCopy := make([]*entities.Task, len(tasks))
@@ -55,6 +64,9 @@ func (controller *TaskController) GetTasksGroups(c *gin.Context) {
 }
 
 func (controller *TaskController) GetTask(c *gin.Context) {
+	if !controller.authManager.Authorize(c) {
+		return
+	}
 
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -75,6 +87,9 @@ func (controller *TaskController) GetTask(c *gin.Context) {
 }
 
 func (controller *TaskController) AddTask(c *gin.Context) {
+	if !controller.authManager.Authorize(c) {
+		return
+	}
 	buf, err := c.GetRawData()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{"error": "error reading buffer " + err.Error()})
@@ -103,6 +118,9 @@ func (controller *TaskController) AddTask(c *gin.Context) {
 
 // TODO cover controller with the test
 func (controller *TaskController) UpdateTask(c *gin.Context) {
+	if !controller.authManager.Authorize(c) {
+		return
+	}
 
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -229,6 +247,9 @@ func (controller *TaskController) validateTaskForUpdate(receivedTask *entities.T
 
 // DeleteTask Deletes task
 func (controller *TaskController) DeleteTask(c *gin.Context) {
+	if !controller.authManager.Authorize(c) {
+		return
+	}
 
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -247,6 +268,9 @@ func (controller *TaskController) DeleteTask(c *gin.Context) {
 }
 
 func (controller *TaskController) ChangeStatus(c *gin.Context) {
+	if !controller.authManager.Authorize(c) {
+		return
+	}
 	idStr := c.Param("id")
 	statusStr := c.Query("status")
 
