@@ -87,6 +87,9 @@ func (controller *ParticipantController) UpdateParticipant(c *gin.Context) {
 }
 
 func (controller *ParticipantController) AddParticipant(c *gin.Context) {
+	if !controller.authManager.Authorize(c) {
+		return
+	}
 	buf, err := c.GetRawData()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{"error": "error reading buffer " + err.Error()})
@@ -111,6 +114,9 @@ func (controller *ParticipantController) AddParticipant(c *gin.Context) {
 }
 
 func (controller *ParticipantController) DeleteParticipant(c *gin.Context) {
+	if !controller.authManager.Authorize(c) {
+		return
+	}
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 
