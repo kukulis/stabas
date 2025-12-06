@@ -287,6 +287,14 @@ func (controller *TaskController) ChangeStatus(c *gin.Context) {
 		return
 	}
 
+	// validate that NEW task has receivers before changing status
+	if task.Status == entities.STATUS_NEW {
+		if len(task.Receivers) == 0 {
+			c.JSON(http.StatusBadRequest, map[string]string{"error": "Cannot change status from NEW when the task has no receivers"})
+			return
+		}
+	}
+
 	taskCopy := *task
 	taskCopy.Status = status
 	taskCopy.Version = task.Version + 1

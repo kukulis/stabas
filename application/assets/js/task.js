@@ -503,6 +503,10 @@ class Task {
             selectField.appendChild(optionTag)
         }
 
+        if (this.status !== STATUS_NEW) {
+            selectField.disabled = true;
+        }
+
         selectField.addEventListener('input', (e) => dispatcher.dispatch('inputSender', [e, this.id]))
 
         tr.appendChild(tdLabel)
@@ -552,6 +556,10 @@ class Task {
             }
 
             selectField.appendChild(optionTag)
+        }
+
+        if (this.status !== STATUS_NEW) {
+            selectField.disabled = true;
         }
 
         selectField.addEventListener('input', (e) => dispatcher.dispatch('inputReceivers', [e, this.id]))

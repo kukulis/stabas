@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 	"time"
 )
@@ -563,5 +564,39 @@ func TestChangeStatus_TaskNotFound(t *testing.T) {
 
 	if w.Code != http.StatusBadRequest {
 		t.Errorf("Expected status %d, got %d", http.StatusBadRequest, w.Code)
+	}
+}
+
+func TestChangeStatus_NewTaskWithNoReceivers(t *testing.T) {
+	controller, repo := setupTestController()
+
+	// Create a NEW task with no receivers
+	newTask := entities.NewTask()
+	newTask.Message = "Task without receivers"
+	newTask.Sender = 1
+	newTask.Receivers = []int{}
+	newTask.Status = entities.STATUS_NEW
+	repo.AddTask(newTask)
+
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Params = gin.Params{gin.Param{Key: "id", Value: strconv.Itoa(newTask.Id)}}
+	c.Request = httptest.NewRequest("POST", "/tasks/"+strconv.Itoa(newTask.Id)+"/status?status="+strconv.Itoa(entities.STATUS_SENT), nil)
+
+	controller.ChangeStatus(c)
+
+	if w.Code != http.StatusBadRequest {
+		t.Errorf("Expected status %d when changing NEW task with no receivers to SENT, got %d", http.StatusBadRequest, w.Code)
+		return
+	}
+
+	var errorResponse map[string]string
+	err := json.Unmarshal(w.Body.Bytes(), &errorResponse)
+	if err != nil {
+		t.Fatalf("Failed to unmarshal error response: %v", err)
+	}
+
+	if errorResponse["error"] == "" {
+		t.Error("Expected error message in response")
 	}
 }

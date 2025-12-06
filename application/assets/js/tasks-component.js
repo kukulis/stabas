@@ -303,6 +303,25 @@ class TasksComponent {
             })
     }
 
+    handleChangeTaskStatus(task, newStatus) {
+        this.apiClient.changeTaskStatus(task.id, newStatus)
+            .then((response) => {
+                if (response.status === 200) {
+                    task.status = newStatus;
+                    return response.json().then((json) => {
+                        this.dispatcher.dispatch('afterChangeStatus', [null, task]);
+                    })
+                } else {
+                    return response.json().then((json) => {
+                        console.error('Error changing task status:', json)
+                        if (response.status === 400) {
+                            alert(json.error || 'Bad request')
+                        }
+                    })
+                }
+            })
+    }
+
     selectTask(task) {
         // unselect all tasks first TODO
         for ( let t of this.tasks ) {
