@@ -10,11 +10,11 @@ import (
 )
 
 type ParticipantController struct {
-	participantsRepository *dao.ParticipantsRepository
+	participantsRepository dao.IParticipantsRepository
 	authManager            *AuthenticationManager
 }
 
-func NewParticipantController(participantsRepository *dao.ParticipantsRepository, authManager *AuthenticationManager) *ParticipantController {
+func NewParticipantController(participantsRepository dao.IParticipantsRepository, authManager *AuthenticationManager) *ParticipantController {
 	return &ParticipantController{
 		participantsRepository: participantsRepository,
 		authManager:            authManager,

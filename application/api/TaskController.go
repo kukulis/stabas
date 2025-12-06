@@ -15,15 +15,15 @@ import (
 )
 
 type TaskController struct {
-	tasksRepository        *dao.TasksRepository
-	participantsRepository *dao.ParticipantsRepository
+	tasksRepository        dao.ITasksRepository
+	participantsRepository dao.IParticipantsRepository
 	timeProvider           util.TimeProvider
 	authManager            *AuthenticationManager
 }
 
 func NewTaskController(
-	tasksRepository *dao.TasksRepository,
-	participantsRepository *dao.ParticipantsRepository,
+	tasksRepository dao.ITasksRepository,
+	participantsRepository dao.IParticipantsRepository,
 	timeProvider util.TimeProvider,
 	authManager *AuthenticationManager,
 ) *TaskController {
