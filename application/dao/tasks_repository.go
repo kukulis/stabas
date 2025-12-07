@@ -11,10 +11,8 @@ type TasksRepository struct {
 	maxId int
 }
 
-func NewTasksRepository() *TasksRepository {
-
-	// TODO fill initial tasks list with groups for developement
-	return &TasksRepository{tasks: make([]*entities.Task, 0), maxId: 0}
+func NewTasksRepository(initialTasks []*entities.Task, maxId int) *TasksRepository {
+	return &TasksRepository{tasks: initialTasks, maxId: maxId}
 }
 
 func (repo *TasksRepository) FindById(id int) (*entities.Task, error) {
@@ -34,6 +32,9 @@ func (repo *TasksRepository) FindAll() []*entities.Task {
 func (repo *TasksRepository) AddTask(task *entities.Task) int {
 	repo.maxId++
 	task.Id = repo.maxId
+	if task.TaskGroup == 0 {
+		task.TaskGroup = repo.maxId
+	}
 
 	repo.tasks = append(repo.tasks, task)
 
@@ -59,6 +60,10 @@ func (repo *TasksRepository) UpdateTask(task *entities.Task) (*entities.Task, er
 	t.FinishedAt = task.FinishedAt
 	t.ClosedAt = task.ClosedAt
 	t.Version = task.Version
+
+	if task.TaskGroup != 0 {
+		t.TaskGroup = task.TaskGroup
+	}
 
 	return t, nil
 }
@@ -88,14 +93,6 @@ func (repo *TasksRepository) UpdateTaskWithValidation(task *entities.Task) (*ent
 	return repo.UpdateTask(task)
 }
 
-//func (repo *TasksRepository) UpdateTaskStatusAndVersion(id int, status int, version int) error {
-//	t, err := repo.FindById(id)
-//	if err != nil {
-//		return err
-//	}
-//
-//	t.Status = status
-//	t.Version = version
-//
-//	return nil
-//}
+func (repo *TasksRepository) GetCountWithSameGroup(groupId int) int {
+	return len(util.ArrayFilter(repo.tasks, func(t *entities.Task) bool { return t.TaskGroup == groupId && !t.Deleted }))
+}

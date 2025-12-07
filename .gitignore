@@ -3,3 +3,4 @@
 application/tls/
 # Ignore vscode launch configuration.
 .vscode/
+application/.env

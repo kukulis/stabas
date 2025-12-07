@@ -5,6 +5,7 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <script src="/assets/js/util.js"></script>
     <script src="/assets/js/task.js"></script>
+    <script src="/assets/js/api.js"></script>
     <script src="/assets/js/participants-component.js"></script>
     <script src="/assets/js/dispatcher.js"></script>
     <script src="/assets/js/participant.js"></script>
@@ -19,10 +20,11 @@
 
 <script type="application/javascript">
     let dispatcher = new Dispatcher();
+    let apiClient = new ApiClient();
     let participantsComponent = null
     let redrawParticipantsList = null
 
-    ParticipantsComponent.initialize(dispatcher).then(
+    ParticipantsComponent.initialize(dispatcher, apiClient).then(
         (pc) => {
             participantsComponent = pc
 

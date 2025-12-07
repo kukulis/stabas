@@ -5,6 +5,11 @@ class ParticipantsComponent {
     dispatcher = null;
 
     /**
+     * @type {ApiClient}
+     */
+    apiClient = null;
+
+    /**
      * @type {[Participant]}
      */
     participants = [];
@@ -12,14 +17,20 @@ class ParticipantsComponent {
     /**
      *
      * @param dispatcher {Dispatcher}
+     * @param apiClient {ApiClient}
      */
-    constructor(dispatcher) {
+    constructor(dispatcher, apiClient) {
         this.dispatcher = dispatcher;
+        this.apiClient = apiClient;
     }
 
     async loadParticipants() {
-        let response = await fetch('/api/participants')
-        let participantsDto = await response.json()
+        let participantsDto = await this.apiClient.loadParticipants()
+
+        if (participantsDto === null) {
+            throw new Error('Failed to load participants')
+        }
+
         // console.log('Loaded participants ' + participantsDto.length);
         this.participants = [];
 
@@ -43,23 +54,21 @@ class ParticipantsComponent {
         }
 
         // till here
-        fetch('api/participants', {
-            method: 'PUT',
-            body: JSON.stringify(participantData)
-        })
-            .then((response) => {
-                response.json().then((id) => {
-                        let participant = new Participant(Number.parseInt(id), participantData.name, this.dispatcher)
-                        this.participants.push(participant)
+        this.apiClient.createParticipant(participantData)
+            .then((result) => {
+                if (result === null) {
+                    throw new Error('Failed to create participant')
+                }
 
-                        this.dispatcher.dispatch('afterAddParticipant', [e, participant])
-                    }
-                ).catch((error) => {
-                    console.log('Error parsing response after adding new participant', error)
-                })
+                let { response, data } = result
+                let id = data
+                let participant = new Participant(Number.parseInt(id), participantData.name, this.dispatcher)
+                this.participants.push(participant)
+
+                this.dispatcher.dispatch('afterAddParticipant', [e, participant])
             })
             .catch((error) => {
-                console.log('Error adding participant to api', error)
+                console.log('Error adding participant', error)
             })
 
     }
@@ -67,20 +76,21 @@ class ParticipantsComponent {
     renderParticipants() {
         let participantsDiv = document.createElement('div');
 
+        let addParticipantButton = document.createElement('button')
+        addParticipantButton.classList.add('add-participant')
+        addParticipantButton.appendChild(document.createTextNode('✚'))
+        addParticipantButton.addEventListener('click', (e) => this.addParticipantCalled(e))
+        participantsDiv.appendChild(addParticipantButton)
+
         for (let participant of this.participants) {
             participantsDiv.appendChild(participant.renderLine());
         }
 
-        let addParticipantButton = document.createElement('button')
-        addParticipantButton.appendChild(document.createTextNode('+'))
-        addParticipantButton.addEventListener('click', (e) => this.addParticipantCalled(e))
-        participantsDiv.appendChild(addParticipantButton)
-
         return participantsDiv;
     }
 
-    static async initialize(dispatcher) {
-        let participantsComponent = new ParticipantsComponent(dispatcher)
+    static async initialize(dispatcher, apiClient) {
+        let participantsComponent = new ParticipantsComponent(dispatcher, apiClient)
         await participantsComponent.loadParticipants();
 
         return participantsComponent
@@ -89,17 +99,15 @@ class ParticipantsComponent {
     removeParticipant(id) {
         // this.participants = this.participants.filter((participant) => participant.id !== id)
 
-        fetch('/api/participants/' + id, {
-            method: 'DELETE',
-        })
-            .catch((error) => {
-                console.log('error deleting participant ', error)
-            })
+        this.apiClient.deleteParticipant(id)
             .then((response) => {
-                this.loadParticipants().then(() => {
-                        this.dispatcher.dispatch('afterDeletingParticipant')
-                    }
-                )
+                if (response === undefined) {
+                    throw new Error('Failed to delete participant')
+                }
+                return this.loadParticipants()
+            })
+            .then(() => {
+                this.dispatcher.dispatch('afterDeletingParticipant')
             })
     }
 }

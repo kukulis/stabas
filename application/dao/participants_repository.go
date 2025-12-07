@@ -11,8 +11,10 @@ type ParticipantsRepository struct {
 	participants []*entities.Participant
 }
 
-func NewParticipantsRepository() *ParticipantsRepository {
-	return &ParticipantsRepository{}
+func NewParticipantsRepository(initialParticipants []*entities.Participant) *ParticipantsRepository {
+	return &ParticipantsRepository{
+		participants: initialParticipants,
+	}
 }
 
 func (rep *ParticipantsRepository) GetParticipants() []*entities.Participant {

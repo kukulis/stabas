@@ -15,6 +15,14 @@
     padding: 1pt 1pt 3pt 0.5pt;
 }
 
+.task-line > * {
+    margin-left: 1pt;
+}
+
+.task-line.selected {
+    border: solid thin black;
+}
+
 .task-details {
     display: none;
     position: absolute;
@@ -58,6 +66,14 @@
 .status-closed .message {
     background-color: darkslategrey;
     color: white;
+}
+
+.task-line .task-participants {
+    float: left;
+    width: 90pt;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 
@@ -128,6 +144,28 @@
 .task-line .delete-button {
     width: 20pt;
     float: left;
+    background-color: white;
+    color: red;
+    border: none;
+}
+
+.add-task {
+    background-color: white;
+    color: limegreen;
+    border: none;
+    font-size: 2em;
+}
+
+.reload-button {
+    background-color: white;
+    border: none;
+    font-size: 2em;
+    cursor: pointer;
+}
+
+.reload-button:active {
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.3);
+    transform: translateY(2px);
 }
 
 .task-line .change-status-button {
@@ -137,6 +175,9 @@
 .task-line .task-date {
     border: solid black thin;
     float: left;
+    width: 54pt;
+    text-align: right;
+    padding-right: 3pt;
 }
 
 
@@ -150,15 +191,105 @@
 
 .task-line .late-none {
     float: left;
+    width: 54pt;
+    text-align: right;
+    padding-right: 3pt;
 }
 
 .task-line .late-soft {
     background-color: yellow;
     float: left;
+    width: 54pt;
+    text-align: right;
+    padding-right: 3pt;
 }
 
 .task-line .late-severe {
     background-color: red;
     color: white;
     float: left;
+    width: 54pt;
+    text-align: right;
+    padding-right: 3pt;
+}
+
+.task-line .expand-button {
+    float: left;
+    width: 15pt;
+}
+
+.expand-button::before {
+    content: '▸';
+}
+
+.expanded > .expand-button::before {
+    content: '▾';
+}
+
+.task-line .child-prefix {
+    float: left;
+    width: 25pt;
+    text-align: right;
+    padding-right: 5pt;
+}
+
+.task-line .childless-prefix {
+    float: left;
+    width: 15pt;
+}
+
+
+.task-group .task-line {
+    display: none;
+}
+
+.task-group.expanded .task-line {
+    display: block;
+}
+
+/* ------------------------------------------------
+ - Participants styles
+ -------------------------------------------------- */
+
+.participants-container {
+    overflow-y: scroll;
+    height: 90%;
+}
+
+.participant-line {
+    padding: 1pt 1pt 3pt 0.5pt;
+}
+
+.participant-line > * {
+    margin-left: 1pt;
+}
+
+.participant-line .delete-button {
+    width: 20pt;
+    float: left;
+    background-color: white;
+    color: red;
+    border: none;
+}
+
+.participant-line .participant-id {
+    width: 40pt;
+    float: left;
+}
+
+.participant-line .participant-name {
+    float: left;
+    min-width: 250pt;
+    cursor: pointer;
+}
+
+.participant-line .participant-name-input {
+    float: left;
+}
+
+.add-participant {
+    background-color: white;
+    color: limegreen;
+    border: none;
+    font-size: 2em;
 }

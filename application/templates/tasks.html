@@ -26,11 +26,11 @@
     let redrawTasksList = null;
     let tasksComponent = null;
     let apiClient = new ApiClient();
+    let reloadAndRedrawTasksList = null;
 
     TasksComponent.initialize(dispatcher, apiClient).then(
         (tc) => {
             tasksComponent = tc;
-
 
             // console.log('tasks.html[28], tasks amount', tasksComponent.tasks.length )
             redrawTasksList = () => {
@@ -38,6 +38,13 @@
                 clearTag(tasksListDiv);
                 tasksListDiv.appendChild(tasksComponent.renderTasks());
             }
+
+            reloadAndRedrawTasksList = () => tasksComponent.reloadSettings().then(() =>
+                tasksComponent.reloadParticipants().then(() =>
+                    tasksComponent.reloadTasks().then(() => redrawTasksList())
+                )
+            )
+
             redrawTasksList();
             initializeListeners(tasksComponent)
         }
@@ -46,9 +53,12 @@
     // =================== events initialization ===================================
     function initializeListeners(tasksComponent) {
         const taskDetailsOuterDiv = document.getElementById('taskDetails2')
+
         dispatcher.addListener('taskSaved', (task) => {
-            console.log('Task saved ' + task.id)
+            // console.log('Task saved ' + task.id)
             redrawTasksList()
+            let taskDetailsDiv = task.renderTaskDetailsFull(null, () => tasksComponent.participants);
+            dispatcher.dispatch('taskDetailsRendered', taskDetailsDiv)
             tasksComponent.disableSaveButton();
         })
 
@@ -70,7 +80,7 @@
 
         dispatcher.addListener('deleteTaskPressed', ([e, taskId]) => tasksComponent.deleteTask(e, taskId))
 
-        dispatcher.addListener('onAddTask', () => {
+        dispatcher.addListener('afterAddTask', () => {
             redrawTasksList();
             clearTag(taskDetailsOuterDiv)
         })
@@ -122,10 +132,26 @@
             if (tasksComponent.settings.reloadTasksOnTimer) {
                 tasksComponent.reloadSettings().then(() =>
                     tasksComponent.reloadParticipants().then(() =>
-                        tasksComponent.reloadTasks().then(() => redrawTasksList())
+                        tasksComponent.loadTasks().then(() => redrawTasksList())
                     )
                 )
             }
+        })
+
+        dispatcher.addListener('onChangeTaskStatus', ([task, newStatus]) => {
+            tasksComponent.handleChangeTaskStatus(task, newStatus)
+        })
+
+        dispatcher.addListener('onSaveTask', ([e, task, myVersionDto]) => {
+            tasksComponent.handleUpdateTask(e,task, myVersionDto)
+        })
+
+        dispatcher.addListener('taskSelected', (task) => {
+            tasksComponent.selectTask(task)
+        })
+
+        dispatcher.addListener('reloadPressed', () => {
+            reloadAndRedrawTasksList()
         })
     }
 
