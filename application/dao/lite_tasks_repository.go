@@ -23,7 +23,7 @@ func NewLiteTaskRepository(database *db.Database) (*LiteTaskRepository, error) {
 }
 
 func (repo *LiteTaskRepository) initSchema() error {
-	db, err := repo.database.GetDB()
+	dbConn, err := repo.database.GetDB()
 	if err != nil {
 		return err
 	}
@@ -47,7 +47,7 @@ func (repo *LiteTaskRepository) initSchema() error {
 		task_group INTEGER
 	);
 	`
-	_, err = db.Exec(schema)
+	_, err = dbConn.Exec(schema)
 	return err
 }
 
@@ -182,7 +182,7 @@ func (repo *LiteTaskRepository) scanTasks(rows *sql.Rows) ([]*entities.Task, err
 }
 
 func (repo *LiteTaskRepository) FindById(id int) (*entities.Task, error) {
-	db, err := repo.database.GetDB()
+	dbConn, err := repo.database.GetDB()
 	if err != nil {
 		return nil, err
 	}
@@ -195,7 +195,7 @@ func (repo *LiteTaskRepository) FindById(id int) (*entities.Task, error) {
 		WHERE id = ?
 	`
 
-	row := db.QueryRow(query, id)
+	row := dbConn.QueryRow(query, id)
 	task, err := repo.scanTask(row)
 	if err == sql.ErrNoRows {
 		return nil, errors.New("task not found")
@@ -204,7 +204,7 @@ func (repo *LiteTaskRepository) FindById(id int) (*entities.Task, error) {
 }
 
 func (repo *LiteTaskRepository) FindAll() []*entities.Task {
-	db, err := repo.database.GetDB()
+	dbConn, err := repo.database.GetDB()
 	if err != nil {
 		return []*entities.Task{}
 	}
@@ -217,7 +217,7 @@ func (repo *LiteTaskRepository) FindAll() []*entities.Task {
 		WHERE deleted = 0
 	`
 
-	rows, err := db.Query(query)
+	rows, err := dbConn.Query(query)
 	if err != nil {
 		return []*entities.Task{}
 	}
@@ -232,7 +232,7 @@ func (repo *LiteTaskRepository) FindAll() []*entities.Task {
 }
 
 func (repo *LiteTaskRepository) AddTask(task *entities.Task) int {
-	db, err := repo.database.GetDB()
+	dbConn, err := repo.database.GetDB()
 	if err != nil {
 		return 0
 	}
@@ -246,7 +246,7 @@ func (repo *LiteTaskRepository) AddTask(task *entities.Task) int {
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
 
-	result, err := db.Exec(query,
+	result, err := dbConn.Exec(query,
 		task.Message,
 		task.Result,
 		task.Sender,
@@ -277,14 +277,14 @@ func (repo *LiteTaskRepository) AddTask(task *entities.Task) int {
 	// If TaskGroup is 0, set it to the task ID
 	if task.TaskGroup == 0 {
 		task.TaskGroup = task.Id
-		db.Exec("UPDATE tasks SET task_group = ? WHERE id = ?", task.TaskGroup, task.Id)
+		dbConn.Exec("UPDATE tasks SET task_group = ? WHERE id = ?", task.TaskGroup, task.Id)
 	}
 
 	return task.Id
 }
 
 func (repo *LiteTaskRepository) UpdateTask(task *entities.Task) (*entities.Task, error) {
-	db, err := repo.database.GetDB()
+	dbConn, err := repo.database.GetDB()
 	if err != nil {
 		return nil, err
 	}
@@ -310,7 +310,7 @@ func (repo *LiteTaskRepository) UpdateTask(task *entities.Task) (*entities.Task,
 		taskGroup = existingTask.TaskGroup
 	}
 
-	_, err = db.Exec(query,
+	_, err = dbConn.Exec(query,
 		task.Message,
 		task.Result,
 		task.Sender,
@@ -335,13 +335,13 @@ func (repo *LiteTaskRepository) UpdateTask(task *entities.Task) (*entities.Task,
 }
 
 func (repo *LiteTaskRepository) DeleteTask(id int) error {
-	db, err := repo.database.GetDB()
+	dbConn, err := repo.database.GetDB()
 	if err != nil {
 		return err
 	}
 
 	query := "UPDATE tasks SET deleted = 1 WHERE id = ?"
-	result, err := db.Exec(query, id)
+	result, err := dbConn.Exec(query, id)
 	if err != nil {
 		return err
 	}
@@ -372,14 +372,14 @@ func (repo *LiteTaskRepository) UpdateTaskWithValidation(task *entities.Task) (*
 }
 
 func (repo *LiteTaskRepository) GetCountWithSameGroup(groupId int) int {
-	db, err := repo.database.GetDB()
+	dbConn, err := repo.database.GetDB()
 	if err != nil {
 		return 0
 	}
 
 	query := "SELECT COUNT(*) FROM tasks WHERE task_group = ? AND deleted = 0"
 	var count int
-	err = db.QueryRow(query, groupId).Scan(&count)
+	err = dbConn.QueryRow(query, groupId).Scan(&count)
 	if err != nil {
 		return 0
 	}
