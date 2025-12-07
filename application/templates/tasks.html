@@ -55,7 +55,7 @@
         const taskDetailsOuterDiv = document.getElementById('taskDetails2')
 
         dispatcher.addListener('taskSaved', (task) => {
-            console.log('Task saved ' + task.id)
+            // console.log('Task saved ' + task.id)
             redrawTasksList()
             let taskDetailsDiv = task.renderTaskDetailsFull(null, () => tasksComponent.participants);
             dispatcher.dispatch('taskDetailsRendered', taskDetailsDiv)

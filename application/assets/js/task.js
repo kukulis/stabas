@@ -97,7 +97,6 @@ class Task {
      * @returns {Task}
      */
     updateFromDTO(taskDTO) {
-        console.log('Task.updateFromDTO called')
         this.setStatus(taskDTO.status)
         this.setSender(taskDTO.sender)
         this.setReceivers(taskDTO.receivers)
@@ -921,7 +920,7 @@ class TaskGroup extends Task {
     }
 
     toggleExpandGroup() {
-        console.log('toggle expand group called')
+        // console.log('toggle expand group called')
 
         this.expanded = !this.expanded
 
