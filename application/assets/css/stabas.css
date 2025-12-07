@@ -35,6 +35,39 @@
     background-color: white;
     z-index: 1002;
     overflow: auto;
+    resize: both;
+    min-width: 200px;
+    min-height: 150px;
+}
+
+.task-details-drag-handle {
+    background-color: #ff8c00;
+    color: white;
+    padding: 5px 10px;
+    cursor: move;
+    user-select: none;
+    font-weight: bold;
+    margin: -3px -3px 5px -3px;
+}
+
+.task-details-drag-handle:hover {
+    background-color: #ff7700;
+}
+
+.task-details-minimize-button {
+    float: right;
+    background-color: transparent;
+    color: white;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0 5px;
+    line-height: 1;
+}
+
+.task-details-minimize-button:hover {
+    background-color: rgba(0, 0, 0, 0.2);
 }
 
 .task-line .message {

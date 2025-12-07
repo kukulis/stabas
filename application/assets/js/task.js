@@ -322,6 +322,20 @@ class Task {
     renderTaskDetailsFull(event, participantsLoader) {
         let innerDetailsDiv = document.createElement('div')
 
+        // Add drag handle header
+        let dragHandle = document.createElement('div')
+        dragHandle.className = 'task-details-drag-handle'
+        dragHandle.appendChild(document.createTextNode('Task Details'))
+
+        // Add minimize button to drag handle
+        let minimizeButton = document.createElement('button')
+        minimizeButton.className = 'task-details-minimize-button'
+        minimizeButton.appendChild(document.createTextNode('−'))
+        minimizeButton.addEventListener('click', (event) => dispatcher.dispatch('hideDetailsPressed', event))
+        dragHandle.appendChild(minimizeButton)
+
+        innerDetailsDiv.appendChild(dragHandle)
+
         // clearTag(parentDiv);
         let tableDiv = document.createElement('table');
         // parentDiv.appendChild(tableDiv);

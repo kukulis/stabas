@@ -50,6 +50,38 @@
         }
     );
 
+    // =================== Make task details draggable ===================================
+    function makeDraggable(outerDiv) {
+        let dragHandle = outerDiv.querySelector('.task-details-drag-handle');
+        if (!dragHandle) return;
+
+        let isDragging = false;
+        let currentX, currentY, initialX, initialY;
+
+        dragHandle.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            initialX = e.clientX - outerDiv.offsetLeft;
+            initialY = e.clientY - outerDiv.offsetTop;
+            dragHandle.style.cursor = 'grabbing';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+
+            e.preventDefault();
+            currentX = e.clientX - initialX;
+            currentY = e.clientY - initialY;
+
+            outerDiv.style.left = currentX + 'px';
+            outerDiv.style.top = currentY + 'px';
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            dragHandle.style.cursor = 'move';
+        });
+    }
+
     // =================== events initialization ===================================
     function initializeListeners(tasksComponent) {
         const taskDetailsOuterDiv = document.getElementById('taskDetails2')
@@ -76,6 +108,7 @@
             clearTag(taskDetailsOuterDiv)
             taskDetailsOuterDiv.appendChild(taskInnerDiv)
             taskDetailsOuterDiv.style.display = 'block';
+            makeDraggable(taskDetailsOuterDiv);
         })
 
         dispatcher.addListener('deleteTaskPressed', ([e, taskId]) => tasksComponent.deleteTask(e, taskId))
