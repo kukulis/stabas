@@ -1,6 +1,7 @@
 package api
 
 import (
+	"darbelis.eu/stabas/dao"
 	"errors"
 	"github.com/gin-gonic/gin"
 	"math/rand"
@@ -10,16 +11,18 @@ import (
 const MAX_ADMIN_TOKENS = 3
 
 type AuthenticationManager struct {
-	adminPassword      string
-	adminTokens        []string
-	CheckAuthorization bool
+	adminPassword         string
+	adminTokens           []string
+	CheckAuthorization    bool
+	participantRepository dao.IParticipantsRepository
 }
 
-func NewAuthenticationManager() *AuthenticationManager {
+func NewAuthenticationManager(participantRepository dao.IParticipantsRepository) *AuthenticationManager {
 	return &AuthenticationManager{
-		adminPassword:      "",
-		adminTokens:        []string{},
-		CheckAuthorization: false,
+		adminPassword:         "",
+		adminTokens:           []string{},
+		CheckAuthorization:    false,
+		participantRepository: participantRepository,
 	}
 }
 

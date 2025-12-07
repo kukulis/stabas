@@ -25,6 +25,8 @@ func (controller *ParticipantController) GetParticipants(c *gin.Context) {
 	if !controller.authManager.Authorize(c) {
 		return
 	}
+
+	//  TODO hide token and password from each participant
 	c.JSON(http.StatusOK, controller.participantsRepository.GetParticipants())
 }
 
@@ -45,6 +47,8 @@ func (controller *ParticipantController) GetParticipant(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 		return
 	}
+
+	// TODO hide token and password, unless the user is admin
 
 	c.JSON(http.StatusOK, participant)
 }
