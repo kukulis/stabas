@@ -7,6 +7,7 @@ class Participant {
      */
     dispatcher;
 
+    passwordHidden = true;
 
     /**
      * @param id {number}
@@ -41,6 +42,10 @@ class Participant {
         this.renderLineInside(lineDiv)
 
         return lineDiv;
+    }
+
+    getHiddenFieldsDivId() {
+        return 'participant-hidden-fields-' + this.id;
     }
 
     /**
@@ -80,6 +85,20 @@ class Participant {
             lineDiv.appendChild(nameDiv)
         }
 
+
+        let displayFieldsButton = document.createElement('button')
+        displayFieldsButton.appendChild(document.createTextNode('v'))
+        displayFieldsButton.classList.add('display-participant-fields-button')
+        displayFieldsButton.addEventListener('click', () => { this.toggleDisplayHiddenFields() })
+        lineDiv.appendChild(displayFieldsButton)
+
+        let hiddenFieldsDiv = document.createElement('div')
+        hiddenFieldsDiv.id = this.getHiddenFieldsDivId()
+        hiddenFieldsDiv.classList.add('participant-hidden-fields')
+        // hiddenFieldsDiv.classList.add('hidden')
+
+        lineDiv.appendChild(hiddenFieldsDiv)
+
         let deleteDiv = document.createElement('button');
         deleteDiv.classList.add('delete-button')
         deleteDiv.appendChild(document.createTextNode('✕'))
@@ -91,6 +110,47 @@ class Participant {
         lineDiv.appendChild(clearDiv);
     }
 
+    toggleDisplayHiddenFields() {
+        let hiddenFieldsDiv = document.getElementById(this.getHiddenFieldsDivId())
+        clearTag(hiddenFieldsDiv)
+
+        let thisParticipant = this
+        if ( this.passwordHidden ) {
+            const loadParticipantHiddenFields = (participantDto) => {
+                if ( participantDto === null ) {
+                    console.log ('failed to reload participant '+thisParticipant.id )
+                    return
+                }
+                let tokenSpan = document.createElement('span')
+                tokenSpan.classList.add('participant-token')
+                let token = participantDto.token
+                // if ( token == '' ) token = '-'
+                tokenSpan.appendChild(document.createTextNode(token))
+
+                hiddenFieldsDiv.appendChild(tokenSpan)
+
+                let passwordSpan = document.createElement('participant-password')
+                passwordSpan.classList.add('participant-password')
+                let password = participantDto.password
+                // if ( password == '' ) password = '-'
+                passwordSpan.appendChild(document.createTextNode(password))
+                hiddenFieldsDiv.appendChild(passwordSpan)
+
+                let regenerateButton = document.createElement('button')
+                regenerateButton.appendChild(document.createTextNode('regenerate'))
+                regenerateButton.classList.add('participant-regenerate-button')
+                hiddenFieldsDiv.appendChild(regenerateButton)
+            }
+            this.dispatcher.dispatch('loadParticipantFields', [thisParticipant, loadParticipantHiddenFields])
+
+            this.passwordHidden = false
+        }
+        else {
+            // hiddenFieldsDiv.classList.add('hidden')
+            this.passwordHidden = true
+        }
+    }
+
     initiateEditParticipant(event) {
         let lineDiv = document.getElementById(this.getLineElementId())
         this.renderLineInside(lineDiv, true)
@@ -100,7 +160,7 @@ class Participant {
         this.name = event.target.value
 
         let dataToUpdate = {
-            id: Number.parseInt( this.id ),
+            id: Number.parseInt(this.id),
             name: this.name,
         }
 

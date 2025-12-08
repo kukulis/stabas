@@ -82,6 +82,7 @@ func main() {
 	router.DELETE("/api/tasks/:id", func(c *gin.Context) { di.TaskControllerInstance.DeleteTask(c) })
 
 	router.GET("/api/participants", func(c *gin.Context) { di.ParticipantsControllerInstance.GetParticipants(c) })
+	router.GET("/api/participants/:id", func(c *gin.Context) { di.ParticipantsControllerInstance.GetParticipant(c) })
 	router.PUT("/api/participants/:id", func(c *gin.Context) { di.ParticipantsControllerInstance.UpdateParticipant(c) })
 	router.POST("/api/participants", func(c *gin.Context) { di.ParticipantsControllerInstance.AddParticipant(c) })
 	router.DELETE("/api/participants/:id", func(c *gin.Context) { di.ParticipantsControllerInstance.DeleteParticipant(c) })

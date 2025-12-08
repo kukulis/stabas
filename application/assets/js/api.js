@@ -211,6 +211,28 @@ class ApiClient {
     }
 
     /**
+     * Load a single participant by ID
+     * @param {number} id - Participant ID
+     * @returns {Promise<any>}
+     */
+    async loadParticipant(id) {
+        let response = await fetch('/api/participants/' + id, {
+            method: 'GET',
+            headers: this.getHeaders(),
+        }).catch((error) => {
+            console.log('error fetching participant', error)
+        })
+
+        response = this.handleResponse(response);
+        if (!response) {
+            console.log('loadParticipant response is invalid')
+            return null
+        }
+
+        return await response.json()
+    }
+
+    /**
      * Create a new participant
      * @param {Object} participantData - Participant data to create
      * @returns {Promise<{response: Response, data: any}>}

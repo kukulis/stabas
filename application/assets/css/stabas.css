@@ -326,3 +326,35 @@
     border: none;
     font-size: 2em;
 }
+
+.participant-line .display-participant-fields-button {
+    float: left;
+}
+.participant-line  .participant-hidden-fields {
+    float: left;
+}
+
+.hidden {
+    display: none;
+}
+
+.participant-hidden-fields .participant-token {
+    margin-left: 1pt;
+    margin-right: 1pt;
+    min-width: 200pt;
+    border: darkorange solid thin;
+    display: inline-block;
+}
+
+.participant-hidden-fields .participant-password {
+    margin-left: 1pt;
+    margin-right: 1pt;
+    min-width: 65pt;
+    border: darkorange solid thin;
+    display: inline-block;
+}
+
+.participant-hidden-fields .participant-regenerate-button {
+    margin-left: 1pt;
+    margin-right: 1pt;
+}

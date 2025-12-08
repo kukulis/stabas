@@ -9,7 +9,7 @@
     <script src="/assets/js/participants-component.js"></script>
     <script src="/assets/js/dispatcher.js"></script>
     <script src="/assets/js/participant.js"></script>
-    <link rel="stylesheet" type="text/css" href="/assets/css/stabas.css" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/stabas.css"/>
 </head>
 <body>
 {{ .menu}}
@@ -51,6 +51,12 @@
     dispatcher.addListener('afterDeletingParticipant', () => {
         // console.log('afterDeletingParticipant listener called')
         redrawParticipantsList();
+    })
+
+    dispatcher.addListener('loadParticipantFields', ([participant, loadCallback]) => {
+        apiClient.loadParticipant(participant.id).then(
+            (participantDto) => loadCallback(participantDto)
+        )
     })
 
 
