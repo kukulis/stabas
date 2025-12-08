@@ -107,6 +107,14 @@ func (manager *AuthenticationManager) Authorize(c *gin.Context) bool {
 		}
 	}
 
+	// TODO call specific method with a token value
+	participants := manager.participantRepository.GetParticipants()
+	for _, participant := range participants {
+		if participant.Token == authToken {
+			return true
+		}
+	}
+
 	c.JSON(401, gin.H{"error": "Invalid authentication token"})
 	return false
 }
