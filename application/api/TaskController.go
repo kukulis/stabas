@@ -40,7 +40,7 @@ func (controller *TaskController) GetAllTasks(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	if !controller.authManager.Authorize(userName, "GetAllTasks", nil) {
+	if !controller.authManager.Authorize(c, userName, "GetAllTasks", nil) {
 		return
 	}
 	c.JSON(http.StatusOK, controller.tasksRepository.FindAll())
@@ -51,7 +51,7 @@ func (controller *TaskController) GetTasksGroups(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	if !controller.authManager.Authorize(userName, "GetTasksGroups", nil) {
+	if !controller.authManager.Authorize(c, userName, "GetTasksGroups", nil) {
 		return
 	}
 	// get available tasks from repository
@@ -76,7 +76,7 @@ func (controller *TaskController) GetTask(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	if !controller.authManager.Authorize(userName, "GetTask", nil) {
+	if !controller.authManager.Authorize(c, userName, "GetTask", nil) {
 		return
 	}
 
@@ -117,7 +117,7 @@ func (controller *TaskController) AddTask(c *gin.Context) {
 		return
 	}
 
-	if !controller.authManager.Authorize(userName, "AddTask", task) {
+	if !controller.authManager.Authorize(c, userName, "AddTask", task) {
 		return
 	}
 
@@ -171,7 +171,11 @@ func (controller *TaskController) UpdateTask(c *gin.Context) {
 		return
 	}
 
-	if !controller.authManager.Authorize(userName, "UpdateTask", existingTask) {
+	if !controller.authManager.Authorize(c, userName, "UpdateTask", existingTask) {
+		return
+	}
+
+	if !controller.authManager.Authorize(c, userName, "UpdateTask", receivedTask) {
 		return
 	}
 
@@ -271,7 +275,7 @@ func (controller *TaskController) DeleteTask(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	if !controller.authManager.Authorize(userName, "DeleteTask", nil) {
+	if !controller.authManager.Authorize(c, userName, "DeleteTask", nil) {
 		return
 	}
 
@@ -296,7 +300,7 @@ func (controller *TaskController) ChangeStatus(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	if !controller.authManager.Authorize(userName, "ChangeStatus", nil) {
+	if !controller.authManager.Authorize(c, userName, "ChangeStatus", nil) {
 		return
 	}
 	idStr := c.Param("id")

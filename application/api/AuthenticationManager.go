@@ -7,10 +7,15 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 const MAX_ADMIN_TOKENS = 3
 const ADMIN_LOGIN = "admin"
+
+type JSONResponder interface {
+	JSON(code int, obj any)
+}
 
 type AuthenticationManager struct {
 	adminPassword         string
@@ -88,7 +93,17 @@ func (manager *AuthenticationManager) tryLogin(loginRequest LoginRequest) error 
 	return nil
 }
 
-func (manager *AuthenticationManager) Authorize(userName string, action string, context any) bool {
+func (manager *AuthenticationManager) Authorize(responder JSONResponder, userName string, action string, context any) bool {
+	authorized := manager.authorize(userName, action, context)
+
+	if !authorized {
+		responder.JSON(http.StatusForbidden, map[string]string{"error": "Not authorized to [" + action + "] of this task"})
+	}
+
+	return authorized
+}
+
+func (manager *AuthenticationManager) authorize(userName string, action string, context any) bool {
 	if userName == ADMIN_LOGIN {
 		return true
 	}

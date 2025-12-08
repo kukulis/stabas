@@ -27,7 +27,7 @@ func (controller *ParticipantController) GetParticipants(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	if !controller.authManager.Authorize(userName, "GetParticipants", nil) {
+	if !controller.authManager.Authorize(c, userName, "GetParticipants", nil) {
 		return
 	}
 
@@ -40,7 +40,7 @@ func (controller *ParticipantController) GetParticipant(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	if !controller.authManager.Authorize(userName, "GetParticipant", nil) {
+	if !controller.authManager.Authorize(c, userName, "GetParticipant", nil) {
 		return
 	}
 	idStr := c.Param("id")
@@ -67,7 +67,7 @@ func (controller *ParticipantController) UpdateParticipant(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	if !controller.authManager.Authorize(userName, "UpdateParticipant", nil) {
+	if !controller.authManager.Authorize(c, userName, "UpdateParticipant", nil) {
 		return
 	}
 	idStr := c.Param("id")
@@ -110,7 +110,7 @@ func (controller *ParticipantController) AddParticipant(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	if !controller.authManager.Authorize(userName, "AddParticipant", nil) {
+	if !controller.authManager.Authorize(c, userName, "AddParticipant", nil) {
 		return
 	}
 	buf, err := c.GetRawData()
@@ -141,7 +141,7 @@ func (controller *ParticipantController) DeleteParticipant(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	if !controller.authManager.Authorize(userName, "DeleteParticipant", nil) {
+	if !controller.authManager.Authorize(c, userName, "DeleteParticipant", nil) {
 		return
 	}
 	idStr := c.Param("id")
@@ -168,7 +168,7 @@ func (controller *ParticipantController) RegeneratePassword(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	if !controller.authManager.Authorize(userName, "RegeneratePassword", nil) {
+	if !controller.authManager.Authorize(c, userName, "RegeneratePassword", nil) {
 		return
 	}
 	idStr := c.Param("id")
