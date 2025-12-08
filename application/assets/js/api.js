@@ -112,12 +112,7 @@ class ApiClient {
             console.log('error deleting task ' + taskId, error)
         })
 
-        response = this.handleResponse(response);
-        if (!response) {
-            return false;
-        }
-
-        return true
+        return this.handleResponse(response);
     }
 
     /**
@@ -293,5 +288,26 @@ class ApiClient {
         })
 
         return this.handleResponse(response);
+    }
+
+    /**
+     * Regenerate password for a participant
+     * @param {number} participantId - Participant ID
+     * @returns {Promise<any>}
+     */
+    async regenerateParticipantPassword(participantId) {
+        let response = await fetch('/api/participants/' + participantId + '/regenerate-password', {
+            method: 'POST',
+            headers: this.getHeaders(),
+        }).catch((error) => {
+            console.log('error regenerating password', error)
+        })
+
+        response = this.handleResponse(response);
+        if (!response) {
+            return null
+        }
+
+        return await response.json()
     }
 }

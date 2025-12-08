@@ -59,6 +59,14 @@
         )
     })
 
+    dispatcher.addListener('regenerateParticipantPassword', ([participant, loadCallback]) => {
+        apiClient.regenerateParticipantPassword(participant.id).then(
+            (participantDto) => loadCallback(participantDto)
+        )
+    })
+
+
+
 
 </script>
 

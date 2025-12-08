@@ -344,14 +344,16 @@
     min-width: 200pt;
     border: darkorange solid thin;
     display: inline-block;
+    padding-left: 1pt;
 }
 
 .participant-hidden-fields .participant-password {
     margin-left: 1pt;
     margin-right: 1pt;
-    min-width: 65pt;
+    min-width: 50pt;
     border: darkorange solid thin;
     display: inline-block;
+    padding-left: 2pt;
 }
 
 .participant-hidden-fields .participant-regenerate-button {

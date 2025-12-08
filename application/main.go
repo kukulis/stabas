@@ -83,6 +83,7 @@ func main() {
 
 	router.GET("/api/participants", func(c *gin.Context) { di.ParticipantsControllerInstance.GetParticipants(c) })
 	router.GET("/api/participants/:id", func(c *gin.Context) { di.ParticipantsControllerInstance.GetParticipant(c) })
+	router.POST("/api/participants/:id/regenerate-password", func(c *gin.Context) { di.ParticipantsControllerInstance.RegeneratePassword(c) })
 	router.PUT("/api/participants/:id", func(c *gin.Context) { di.ParticipantsControllerInstance.UpdateParticipant(c) })
 	router.POST("/api/participants", func(c *gin.Context) { di.ParticipantsControllerInstance.AddParticipant(c) })
 	router.DELETE("/api/participants/:id", func(c *gin.Context) { di.ParticipantsControllerInstance.DeleteParticipant(c) })

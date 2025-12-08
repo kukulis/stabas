@@ -3,6 +3,7 @@ package api
 import (
 	"darbelis.eu/stabas/dao"
 	"darbelis.eu/stabas/entities"
+	"darbelis.eu/stabas/util"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/codec/json"
 	"net/http"
@@ -136,4 +137,44 @@ func (controller *ParticipantController) DeleteParticipant(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, strconv.Itoa(id))
+}
+
+// RegeneratePassword clears the participant's token and generates a new 5-character password
+// Returns the updated participant as JSON
+func (controller *ParticipantController) RegeneratePassword(c *gin.Context) {
+	if !controller.authManager.Authorize(c) {
+		return
+	}
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]string{"error": "Id must be numeric " + err.Error()})
+		return
+	}
+
+	participant, err := controller.participantsRepository.FindParticipant(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return
+	}
+
+	newPassword := util.StringGenerator(util.UPPER_CASE_LETTERS_AND_DIGITS, 5)
+
+	err = controller.participantsRepository.UpdateParticipantToken(id, "")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]string{"error": "error clearing token " + err.Error()})
+		return
+	}
+
+	err = controller.participantsRepository.UpdateParticipantPassword(id, newPassword)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, map[string]string{"error": "error updating password " + err.Error()})
+		return
+	}
+
+	participant.Token = ""
+	participant.Password = newPassword
+
+	c.JSON(http.StatusOK, participant)
 }

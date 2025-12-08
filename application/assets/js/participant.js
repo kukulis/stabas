@@ -20,12 +20,20 @@ class Participant {
         this.dispatcher = dispatcher;
     }
 
+    /**
+     * Handles delete button click, shows confirmation and dispatches delete event
+     * @param {Event} event - Click event
+     */
     deleteLineCalled(event) {
         if (confirm('Are you sure you want to delete participant "' + this.name + '"?')) {
             this.dispatcher.dispatch('onDeleteParticipant', [event, this])
         }
     }
 
+    /**
+     * Returns the DOM element ID for this participant's line
+     * @returns {string}
+     */
     getLineElementId() {
         return 'participant-id-' + this.id
     }
@@ -44,6 +52,10 @@ class Participant {
         return lineDiv;
     }
 
+    /**
+     * Returns the DOM element ID for this participant's hidden fields container
+     * @returns {string}
+     */
     getHiddenFieldsDivId() {
         return 'participant-hidden-fields-' + this.id;
     }
@@ -89,7 +101,9 @@ class Participant {
         let displayFieldsButton = document.createElement('button')
         displayFieldsButton.appendChild(document.createTextNode('v'))
         displayFieldsButton.classList.add('display-participant-fields-button')
-        displayFieldsButton.addEventListener('click', () => { this.toggleDisplayHiddenFields() })
+        displayFieldsButton.addEventListener('click', () => {
+            this.toggleDisplayHiddenFields()
+        })
         lineDiv.appendChild(displayFieldsButton)
 
         let hiddenFieldsDiv = document.createElement('div')
@@ -110,52 +124,87 @@ class Participant {
         lineDiv.appendChild(clearDiv);
     }
 
+    /**
+     * Loads and displays the participant's token and password in the hidden fields area
+     * @param {Object} participantDto - Participant data with token and password
+     */
+    loadParticipantHiddenFields(participantDto) {
+        let hiddenFieldsDiv = document.getElementById(this.getHiddenFieldsDivId())
+        clearTag(hiddenFieldsDiv)
+
+        if (participantDto === null) {
+            console.log('failed to reload participant password and token' + this.id)
+            return
+        }
+        let tokenSpan = document.createElement('span')
+        tokenSpan.classList.add('participant-token')
+        let token = participantDto.token
+        tokenSpan.appendChild(document.createTextNode(token))
+
+        hiddenFieldsDiv.appendChild(tokenSpan)
+
+        let passwordSpan = document.createElement('participant-password')
+        passwordSpan.classList.add('participant-password')
+        let password = participantDto.password
+        passwordSpan.appendChild(document.createTextNode(password))
+        hiddenFieldsDiv.appendChild(passwordSpan)
+
+        let regenerateButton = document.createElement('button')
+        regenerateButton.appendChild(document.createTextNode('regenerate'))
+        regenerateButton.classList.add('participant-regenerate-button')
+        regenerateButton.addEventListener('click', () => {
+            this.handleRegenerate()
+        })
+        hiddenFieldsDiv.appendChild(regenerateButton)
+    }
+
+    /**
+     * Toggles the visibility of hidden fields (token and password)
+     * Dispatches event to load participant fields when showing
+     */
     toggleDisplayHiddenFields() {
         let hiddenFieldsDiv = document.getElementById(this.getHiddenFieldsDivId())
         clearTag(hiddenFieldsDiv)
 
         let thisParticipant = this
-        if ( this.passwordHidden ) {
-            const loadParticipantHiddenFields = (participantDto) => {
-                if ( participantDto === null ) {
-                    console.log ('failed to reload participant '+thisParticipant.id )
-                    return
-                }
-                let tokenSpan = document.createElement('span')
-                tokenSpan.classList.add('participant-token')
-                let token = participantDto.token
-                // if ( token == '' ) token = '-'
-                tokenSpan.appendChild(document.createTextNode(token))
-
-                hiddenFieldsDiv.appendChild(tokenSpan)
-
-                let passwordSpan = document.createElement('participant-password')
-                passwordSpan.classList.add('participant-password')
-                let password = participantDto.password
-                // if ( password == '' ) password = '-'
-                passwordSpan.appendChild(document.createTextNode(password))
-                hiddenFieldsDiv.appendChild(passwordSpan)
-
-                let regenerateButton = document.createElement('button')
-                regenerateButton.appendChild(document.createTextNode('regenerate'))
-                regenerateButton.classList.add('participant-regenerate-button')
-                hiddenFieldsDiv.appendChild(regenerateButton)
-            }
-            this.dispatcher.dispatch('loadParticipantFields', [thisParticipant, loadParticipantHiddenFields])
+        if (this.passwordHidden) {
+            this.dispatcher.dispatch('loadParticipantFields',
+                [thisParticipant, (participantDto) => this.loadParticipantHiddenFields(participantDto)]
+            )
 
             this.passwordHidden = false
-        }
-        else {
+        } else {
             // hiddenFieldsDiv.classList.add('hidden')
             this.passwordHidden = true
         }
     }
 
+    /**
+     * Handles password regeneration request, shows confirmation and dispatches regenerate event
+     */
+    handleRegenerate() {
+        if (!confirm('Do you want to regenerate password for a participant ' + this.id + '?')) {
+            return
+        }
+
+        this.dispatcher.dispatch('regenerateParticipantPassword',
+            [this, (participantDto) => this.loadParticipantHiddenFields(participantDto)]
+        );
+    }
+
+    /**
+     * Initiates edit mode for the participant name, renders line with input field
+     * @param {Event} event - Click event
+     */
     initiateEditParticipant(event) {
         let lineDiv = document.getElementById(this.getLineElementId())
         this.renderLineInside(lineDiv, true)
     }
 
+    /**
+     * Finishes editing participant name, saves changes via API and re-renders line
+     * @param {Event} event - Input blur or keyup event
+     */
     initiateFinishEditParticipant(event) {
         this.name = event.target.value
 
