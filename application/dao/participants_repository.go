@@ -66,3 +66,33 @@ func (rep *ParticipantsRepository) UpdateParticipant(participant *entities.Parti
 
 	return nil
 }
+
+func (rep *ParticipantsRepository) FindParticipantByName(name string) *entities.Participant {
+	for _, participant := range rep.participants {
+		if participant.Name == name {
+			return participant
+		}
+	}
+
+	return nil
+}
+
+func (rep *ParticipantsRepository) UpdateParticipantToken(id int, token string) error {
+	participant, err := rep.FindParticipant(id)
+	if err != nil {
+		return err
+	}
+	participant.Token = token
+
+	return nil
+}
+
+func (rep *ParticipantsRepository) UpdateParticipantPassword(id int, password string) error {
+	participant, err := rep.FindParticipant(id)
+	if err != nil {
+		return err
+	}
+	participant.Password = password
+
+	return nil
+}

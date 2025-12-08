@@ -8,6 +8,7 @@ import (
 )
 
 const MAX_ADMIN_TOKENS = 3
+const ADMIN_LOGIN = "admin"
 
 type AuthenticationManager struct {
 	adminPassword         string
@@ -35,9 +36,9 @@ func (manager *AuthenticationManager) GenerateAdminPassword() string {
 	return manager.adminPassword
 }
 
-// ValidateAdminLogin validates admin credentials and adds the token to active sessions
+// tryAdminLogin validates admin credentials and adds the token to active sessions
 // Returns an error if credentials are invalid or maximum sessions limit is reached
-func (manager *AuthenticationManager) ValidateAdminLogin(password string, token string) error {
+func (manager *AuthenticationManager) tryAdminLogin(password string, token string) error {
 	if password != manager.adminPassword {
 		return errors.New("Invalid credentials")
 	}
@@ -47,6 +48,41 @@ func (manager *AuthenticationManager) ValidateAdminLogin(password string, token 
 	}
 
 	manager.adminTokens = append(manager.adminTokens, token)
+	return nil
+}
+
+func (manager *AuthenticationManager) tryLogin(loginRequest LoginRequest) error {
+	if loginRequest.Username == ADMIN_LOGIN {
+		err := manager.tryAdminLogin(loginRequest.Password, loginRequest.Token)
+
+		if err != nil {
+			return err
+		}
+
+		return nil
+	}
+
+	participant := manager.participantRepository.FindParticipantByName(loginRequest.Username)
+
+	if participant == nil {
+		return errors.New("participant " + loginRequest.Username + " not found")
+	}
+
+	if participant.Token != "" {
+		return errors.New("user already logged in")
+	}
+
+	if participant.Password != loginRequest.Password {
+		return errors.New("wrong password")
+	}
+
+	participant.Token = loginRequest.Token
+
+	err := manager.participantRepository.UpdateParticipantToken(participant.Id, loginRequest.Token)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

@@ -8,4 +8,7 @@ type IParticipantsRepository interface {
 	AddParticipant(participant *entities.Participant) (int, error)
 	RemoveParticipant(id int) error
 	UpdateParticipant(participant *entities.Participant) error
+	FindParticipantByName(name string) *entities.Participant
+	UpdateParticipantToken(id int, token string) error
+	UpdateParticipantPassword(id int, token string) error
 }

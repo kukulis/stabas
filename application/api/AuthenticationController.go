@@ -28,23 +28,18 @@ type LoginResponse struct {
 func (controller *AuthenticationController) Login(c *gin.Context) {
 	var loginRequest LoginRequest
 
-	if err := c.ShouldBindJSON(&loginRequest); err != nil {
+	err := c.ShouldBindJSON(&loginRequest)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request format"})
 		return
 	}
 
-	// Admin login
-	if loginRequest.Username == "admin" {
-		err := controller.authManager.ValidateAdminLogin(loginRequest.Password, loginRequest.Token)
-		if err != nil {
-			c.JSON(http.StatusUnauthorized, map[string]string{"error": err.Error()})
-			return
-		}
-
-		c.JSON(http.StatusOK, LoginResponse{Token: loginRequest.Token})
+	err = controller.authManager.tryLogin(loginRequest)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, map[string]string{"error": err.Error()})
 		return
 	}
 
-	// TODO: Implement authentication for other users
-	c.JSON(http.StatusUnauthorized, map[string]string{"error": "Authentication not implemented for non-admin users"})
+	c.JSON(http.StatusOK, LoginResponse{Token: loginRequest.Token})
+	return
 }
