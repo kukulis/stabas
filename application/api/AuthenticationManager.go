@@ -2,6 +2,7 @@ package api
 
 import (
 	"darbelis.eu/stabas/dao"
+	"darbelis.eu/stabas/entities"
 	"darbelis.eu/stabas/util"
 	"errors"
 	"fmt"
@@ -117,25 +118,41 @@ func (manager *AuthenticationManager) Authorize(userName string, action string, 
 	case "GetTask":
 		return true
 	case "AddTask":
-		return true
+		return manager.checkSender(userName, context)
 	case "UpdateTask":
-		// TODO depends on context
-		//task := context
-		//if task.Sender == userName {
-		//	return true
-		//}
-
-		return true
+		return manager.checkSenderOrReceiver(userName, context)
 	case "DeleteTask":
-		// TODO depends on context
-		return true
+		return manager.checkSenderOrReceiver(userName, context)
 	case "ChangeStatus":
-		// TODO depends on context
-		return true
+		return manager.checkSenderOrReceiver(userName, context)
 	default:
 		_ = fmt.Errorf("AuthenticationManager.authorize: No permission to authorize %s", action)
 		return false
 	}
+}
+
+func (manager *AuthenticationManager) checkSenderOrReceiver(userName string, context any) bool {
+	task, ok := context.(*entities.Task)
+	if !ok || task == nil {
+		return false
+	}
+	participant := manager.participantRepository.FindParticipantByName(userName)
+	if participant == nil {
+		return false
+	}
+	return task.HasSenderOrReceiver(participant.Id)
+}
+
+func (manager *AuthenticationManager) checkSender(userName string, context any) bool {
+	task, ok := context.(*entities.Task)
+	if !ok || task == nil {
+		return false
+	}
+	participant := manager.participantRepository.FindParticipantByName(userName)
+	if participant == nil {
+		return false
+	}
+	return task.HasSender(participant.Id)
 }
 
 func (manager *AuthenticationManager) Authenticate(c *gin.Context) (string, error) {

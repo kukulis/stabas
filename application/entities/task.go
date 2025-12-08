@@ -152,6 +152,24 @@ func (task *Task) GetStatusTime() *time.Time {
 	return nil
 }
 
-//func (task *Task) CopyFields(other *Task) {
-//
-//}
+// hasSenderOrReceiver checks if the given participantId is either the sender
+// or the first receiver of the task
+func (task *Task) HasSenderOrReceiver(participantId int) bool {
+	if task.Sender == participantId {
+		return true
+	}
+	//if task.Receivers == nil {
+	//	return false
+	//}
+	if len(task.Receivers) > 0 && task.Receivers[0] == participantId {
+		return true
+	}
+	return false
+}
+
+func (task *Task) HasSender(participantId int) bool {
+	if task.Sender == participantId {
+		return true
+	}
+	return false
+}

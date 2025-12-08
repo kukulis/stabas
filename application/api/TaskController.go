@@ -103,9 +103,6 @@ func (controller *TaskController) AddTask(c *gin.Context) {
 	if err != nil {
 		return
 	}
-	if !controller.authManager.Authorize(userName, "AddTask", nil) {
-		return
-	}
 	buf, err := c.GetRawData()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{"error": "error reading buffer " + err.Error()})
@@ -117,6 +114,10 @@ func (controller *TaskController) AddTask(c *gin.Context) {
 	err = json.API.Unmarshal(buf, &task)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{"error": "error parsing json" + err.Error()})
+		return
+	}
+
+	if !controller.authManager.Authorize(userName, "AddTask", task) {
 		return
 	}
 

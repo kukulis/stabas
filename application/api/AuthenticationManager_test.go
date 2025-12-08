@@ -2,12 +2,38 @@ package api
 
 import (
 	"darbelis.eu/stabas/entities"
+	"darbelis.eu/stabas/my_tests"
 	"testing"
 )
 
 // Tests with task.Sender = 1
+func TestAuthorize_AddTask_WithSender1(t *testing.T) {
+	manager := NewAuthenticationManager(my_tests.NewParticipantsRepository())
+	task := &entities.Task{
+		Sender: 1,
+	}
+
+	result := manager.Authorize("HQ", "AddTask", task)
+
+	if !result {
+		t.Errorf("Expected Authorize to return true for UpdateTask with Sender=1, got false")
+	}
+}
+func TestAuthorize_AddTask_WithSender2(t *testing.T) {
+	manager := NewAuthenticationManager(my_tests.NewParticipantsRepository())
+	task := &entities.Task{
+		Sender: 2,
+	}
+
+	result := manager.Authorize("HQ", "AddTask", task)
+
+	if result {
+		t.Errorf("Expected Authorize to return false for UpdateTask with Sender=1, got true")
+	}
+}
+
 func TestAuthorize_UpdateTask_WithSender1(t *testing.T) {
-	manager := &AuthenticationManager{}
+	manager := NewAuthenticationManager(my_tests.NewParticipantsRepository())
 	task := &entities.Task{
 		Sender: 1,
 	}
@@ -20,7 +46,7 @@ func TestAuthorize_UpdateTask_WithSender1(t *testing.T) {
 }
 
 func TestAuthorize_DeleteTask_WithSender1(t *testing.T) {
-	manager := &AuthenticationManager{}
+	manager := NewAuthenticationManager(my_tests.NewParticipantsRepository())
 	task := &entities.Task{
 		Sender: 1,
 	}
@@ -33,7 +59,7 @@ func TestAuthorize_DeleteTask_WithSender1(t *testing.T) {
 }
 
 func TestAuthorize_ChangeStatus_WithSender1(t *testing.T) {
-	manager := &AuthenticationManager{}
+	manager := NewAuthenticationManager(my_tests.NewParticipantsRepository())
 	task := &entities.Task{
 		Sender: 1,
 	}
@@ -47,7 +73,7 @@ func TestAuthorize_ChangeStatus_WithSender1(t *testing.T) {
 
 // Tests with task.Sender = 2
 func TestAuthorize_UpdateTask_WithSender2(t *testing.T) {
-	manager := &AuthenticationManager{}
+	manager := NewAuthenticationManager(my_tests.NewParticipantsRepository())
 	task := &entities.Task{
 		Sender: 2,
 	}
@@ -60,7 +86,7 @@ func TestAuthorize_UpdateTask_WithSender2(t *testing.T) {
 }
 
 func TestAuthorize_DeleteTask_WithSender2(t *testing.T) {
-	manager := &AuthenticationManager{}
+	manager := NewAuthenticationManager(my_tests.NewParticipantsRepository())
 	task := &entities.Task{
 		Sender: 2,
 	}
@@ -73,7 +99,7 @@ func TestAuthorize_DeleteTask_WithSender2(t *testing.T) {
 }
 
 func TestAuthorize_ChangeStatus_WithSender2(t *testing.T) {
-	manager := &AuthenticationManager{}
+	manager := NewAuthenticationManager(my_tests.NewParticipantsRepository())
 	task := &entities.Task{
 		Sender: 2,
 	}
@@ -87,7 +113,7 @@ func TestAuthorize_ChangeStatus_WithSender2(t *testing.T) {
 
 // Tests with task.Receivers = [1]
 func TestAuthorize_UpdateTask_WithReceivers1(t *testing.T) {
-	manager := &AuthenticationManager{}
+	manager := NewAuthenticationManager(my_tests.NewParticipantsRepository())
 	task := &entities.Task{
 		Receivers: []int{1},
 	}
@@ -100,7 +126,7 @@ func TestAuthorize_UpdateTask_WithReceivers1(t *testing.T) {
 }
 
 func TestAuthorize_DeleteTask_WithReceivers1(t *testing.T) {
-	manager := &AuthenticationManager{}
+	manager := NewAuthenticationManager(my_tests.NewParticipantsRepository())
 	task := &entities.Task{
 		Receivers: []int{1},
 	}
@@ -113,7 +139,7 @@ func TestAuthorize_DeleteTask_WithReceivers1(t *testing.T) {
 }
 
 func TestAuthorize_ChangeStatus_WithReceivers1(t *testing.T) {
-	manager := &AuthenticationManager{}
+	manager := NewAuthenticationManager(my_tests.NewParticipantsRepository())
 	task := &entities.Task{
 		Receivers: []int{1},
 	}
@@ -127,7 +153,7 @@ func TestAuthorize_ChangeStatus_WithReceivers1(t *testing.T) {
 
 // Tests with task.Receivers = [2]
 func TestAuthorize_UpdateTask_WithReceivers2(t *testing.T) {
-	manager := &AuthenticationManager{}
+	manager := NewAuthenticationManager(my_tests.NewParticipantsRepository())
 	task := &entities.Task{
 		Receivers: []int{2},
 	}
@@ -140,7 +166,7 @@ func TestAuthorize_UpdateTask_WithReceivers2(t *testing.T) {
 }
 
 func TestAuthorize_DeleteTask_WithReceivers2(t *testing.T) {
-	manager := &AuthenticationManager{}
+	manager := NewAuthenticationManager(my_tests.NewParticipantsRepository())
 	task := &entities.Task{
 		Receivers: []int{2},
 	}
@@ -153,7 +179,7 @@ func TestAuthorize_DeleteTask_WithReceivers2(t *testing.T) {
 }
 
 func TestAuthorize_ChangeStatus_WithReceivers2(t *testing.T) {
-	manager := &AuthenticationManager{}
+	manager := NewAuthenticationManager(my_tests.NewParticipantsRepository())
 	task := &entities.Task{
 		Receivers: []int{2},
 	}
