@@ -9,6 +9,7 @@ type IParticipantsRepository interface {
 	RemoveParticipant(id int) error
 	UpdateParticipant(participant *entities.Participant) error
 	FindParticipantByName(name string) *entities.Participant
+	FindParticipantByToken(token string) *entities.Participant
 	UpdateParticipantToken(id int, token string) error
 	UpdateParticipantPassword(id int, token string) error
 }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Command Console: Login</title>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico">
     <link rel="stylesheet" type="text/css" href="/assets/css/stabas.css"/>
     <link rel="stylesheet" type="text/css" href="/assets/css/login.css"/>
 </head>
@@ -65,7 +65,7 @@
                 localStorage.setItem('authToken', token);
 
                 // Successful login - redirect to main page
-                window.location.href = '/tasks';
+                window.location.href = '/';
             })
             .catch(error => {
                 errorMessage.textContent = error.message;

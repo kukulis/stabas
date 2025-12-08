@@ -71,6 +71,7 @@ func main() {
 	})
 
 	router.POST("/api/login", func(c *gin.Context) { di.AuthenticationControllerInstance.Login(c) })
+	router.GET("/api/user", func(c *gin.Context) { di.AuthenticationControllerInstance.User(c) })
 
 	//api.NewTaskController()
 	router.GET("/api/tasks", func(c *gin.Context) { di.TaskControllerInstance.GetAllTasks(c) })

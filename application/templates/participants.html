@@ -21,6 +21,9 @@
 <script type="application/javascript">
     let dispatcher = new Dispatcher();
     let apiClient = new ApiClient();
+    apiClient.callback401 = (response) => {
+        dispatcher.dispatch('handle401', response)
+    }
     let participantsComponent = null
     let redrawParticipantsList = null
     let verboseConsole = false
@@ -85,6 +88,15 @@
         })
     })
 
+    dispatcher.addListener('handle401', (response)=>{
+        console.log('dispatcher handling 401', response)
+        response.json().then((data)=> {
+            // console.log('dispatcher 401 response content:', data)
+            let message = data.error || "Unauthenticated request"
+            alert (message)
+            window.location.href = '/login';
+        })
+    })
 </script>
 
 </body>

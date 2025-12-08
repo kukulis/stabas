@@ -54,10 +54,10 @@ class TasksComponent {
             return Math.max(prev, curr.id);
         }, 0)
 
-        console.log('newTask, maxId', maxId)
+        console.log('TaskComponent.newTask, maxId', maxId)
         let taskDto = await this.apiClient.createTask({
             message: 'Task ' + (maxId + 1),
-            sender: 1,
+            sender: 1, // TODO change sender to this user id
             receivers: [],
         })
 
@@ -296,6 +296,11 @@ class TasksComponent {
                 }
                 if (taskResponse.status === 400) {
                     alert('Error updating task ' + task.id + ' : ' + data.error)
+                    return
+                }
+
+                if ( taskResponse.status === 403 ) {
+                    alert('Authorization error updating task ' + task.id + ' : ' + data.error)
                     return
                 }
                 alert('Unhandled error ' + taskResponse.status + ' updating task ' + task.id)

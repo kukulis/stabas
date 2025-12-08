@@ -1,5 +1,8 @@
 class ApiClient {
 
+    callback401 = (response)=> {
+        console.log('401 response received', response)
+    }
     /**
      * Get headers with auth token from localStorage
      * @returns {Object}
@@ -22,7 +25,8 @@ class ApiClient {
         }
 
         if (response.status === 401) {
-            window.location.href = '/login';
+            // console.log('ApiClient.handleResponse status 401', response)
+            this.callback401(response)
             return null;
         }
 
@@ -306,6 +310,22 @@ class ApiClient {
             headers: this.getHeaders(),
         }).catch((error) => {
             console.log('error regenerating password', error)
+        })
+
+        response = this.handleResponse(response);
+        if (!response) {
+            return null
+        }
+
+        return await response.json()
+    }
+
+    async getUser() {
+        let response = await fetch('/api/user', {
+            method: 'GET',
+            headers: this.getHeaders(),
+        }).catch((error) => {
+            console.log('getting user', error)
         })
 
         response = this.handleResponse(response);

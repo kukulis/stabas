@@ -76,6 +76,15 @@ func (rep *ParticipantsRepository) FindParticipantByName(name string) *entities.
 
 	return nil
 }
+func (rep *ParticipantsRepository) FindParticipantByToken(token string) *entities.Participant {
+	for _, participant := range rep.participants {
+		if participant.Token == token {
+			return participant
+		}
+	}
+
+	return nil
+}
 
 func (rep *ParticipantsRepository) UpdateParticipantToken(id int, token string) error {
 	participant, err := rep.FindParticipant(id)

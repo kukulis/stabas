@@ -188,14 +188,25 @@ func (manager *AuthenticationManager) Authenticate(c *gin.Context) (string, erro
 		}
 	}
 
-	// TODO call specific method to the repository with a token value
-	participants := manager.participantRepository.GetParticipants()
-	for _, participant := range participants {
-		if participant.Token == authToken {
-			return participant.Name, nil
-		}
+	participant := manager.participantRepository.FindParticipantByToken(authToken)
+	if participant != nil {
+		return participant.Name, nil
 	}
 
-	c.JSON(401, gin.H{"error": "Invalid authentication token"})
+	c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authentication token"})
+
 	return "", errors.New("invalid authentication token")
+}
+
+func (manager *AuthenticationManager) GetUserId(userName string) int {
+	if userName == ADMIN_LOGIN {
+		return 0
+	}
+
+	participant := manager.participantRepository.FindParticipantByName(userName)
+	if participant != nil {
+		return participant.Id
+	}
+
+	return -1
 }

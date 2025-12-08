@@ -29,6 +29,28 @@
     let reloadAndRedrawTasksList = null;
     let verboseConsole = false
 
+    // TODO move this block to a separate js file from here
+    apiClient.callback401 = (response)=> {
+        dispatcher.dispatch('handle401', response)
+    }
+
+    dispatcher.addListener('handle401', (response)=>{
+        console.log('dispatcher handling 401', response)
+        response.json().then((data)=> {
+            // console.log('dispatcher 401 response content:', data)
+            let message = data.error || "Unauthenticated request"
+            alert (message)
+            window.location.href = '/login';
+        })
+    })
+
+    apiClient.getUser().then((userData)=> {
+        let userDataElement = document.getElementById('current-user-data')
+        clearTag(userDataElement)
+        userDataElement.appendChild(document.createTextNode(userData.id+': '+userData.name ))
+    })
+    // TILL here
+
     TasksComponent.initialize(dispatcher, apiClient).then(
         (tc) => {
             tasksComponent = tc;
@@ -206,6 +228,7 @@
         dispatcher.addListener('reloadPressed', () => {
             reloadAndRedrawTasksList()
         })
+
     }
 
     // =============================================================================

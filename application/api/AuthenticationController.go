@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 type AuthenticationController struct {
@@ -42,4 +43,17 @@ func (controller *AuthenticationController) Login(c *gin.Context) {
 
 	c.JSON(http.StatusOK, LoginResponse{Token: loginRequest.Token})
 	return
+}
+
+func (controller *AuthenticationController) User(c *gin.Context) {
+	userName, err := controller.authManager.Authenticate(c)
+
+	if err != nil {
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]string{
+		"id":   strconv.Itoa(controller.authManager.GetUserId(userName)),
+		"name": userName,
+	})
 }
