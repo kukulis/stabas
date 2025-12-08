@@ -2,10 +2,9 @@ package api
 
 import (
 	"darbelis.eu/stabas/dao"
+	"darbelis.eu/stabas/util"
 	"errors"
 	"github.com/gin-gonic/gin"
-	"math/rand"
-	"time"
 )
 
 const MAX_ADMIN_TOKENS = 3
@@ -17,6 +16,8 @@ type AuthenticationManager struct {
 	participantRepository dao.IParticipantsRepository
 }
 
+// NewAuthenticationManager creates and initializes a new AuthenticationManager instance
+// with the provided participant repository
 func NewAuthenticationManager(participantRepository dao.IParticipantsRepository) *AuthenticationManager {
 	return &AuthenticationManager{
 		adminPassword:         "",
@@ -26,20 +27,16 @@ func NewAuthenticationManager(participantRepository dao.IParticipantsRepository)
 	}
 }
 
+// GenerateAdminPassword generates a random 10-character admin password
+// using uppercase letters and digits, stores it, and returns it
 func (manager *AuthenticationManager) GenerateAdminPassword() string {
-	const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-	const length = 10
+	manager.adminPassword = util.StringGenerator(util.UPPER_CASE_LETTERS_AND_DIGITS, 10)
 
-	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
-	password := make([]byte, length)
-	for i := range password {
-		password[i] = charset[rng.Intn(len(charset))]
-	}
-
-	manager.adminPassword = string(password)
 	return manager.adminPassword
 }
 
+// ValidateAdminLogin validates admin credentials and adds the token to active sessions
+// Returns an error if credentials are invalid or maximum sessions limit is reached
 func (manager *AuthenticationManager) ValidateAdminLogin(password string, token string) error {
 	if password != manager.adminPassword {
 		return errors.New("Invalid credentials")
@@ -53,6 +50,9 @@ func (manager *AuthenticationManager) ValidateAdminLogin(password string, token 
 	return nil
 }
 
+// Authorize checks if the request is authorized by validating the auth_token header
+// Returns true if authorized or if CheckAuthorization is disabled, false otherwise
+// Sends a 401 JSON response if authentication fails
 func (manager *AuthenticationManager) Authorize(c *gin.Context) bool {
 	if !manager.CheckAuthorization {
 		return true
