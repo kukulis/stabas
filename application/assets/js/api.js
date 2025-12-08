@@ -257,7 +257,7 @@ class ApiClient {
      * Update an existing participant
      * @param {number} participantId - Participant ID to update
      * @param {Object} participantData - Updated participant data
-     * @returns {Promise<Response>}
+     * @returns {Promise<any>}
      */
     async updateParticipant(participantId, participantData) {
         let response = await fetch('/api/participants/' + participantId, {
@@ -271,7 +271,12 @@ class ApiClient {
             console.log('updating participant api error', error)
         })
 
-        return this.handleResponse(response);
+        response = this.handleResponse(response);
+        if (!response) {
+            return null
+        }
+
+        return await response.json()
     }
 
     /**

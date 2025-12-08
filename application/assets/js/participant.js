@@ -213,26 +213,18 @@ class Participant {
             name: this.name,
         }
 
-        // TODO use ApiClient.updateParticipant() through Dispatcher
-        fetch('/api/participants/' + this.id, {
-            method: 'PUT',
-            body: JSON.stringify(dataToUpdate),
-        })
-            .then((response) => {
-                if (response.status !== 200) {
-                    console.log('updating participant api returned status ' + response.status)
-                    response.text().then((text) => console.log('failed update participant response text ' + text))
-                    return
-                }
-                response.json()
-                    .then((data) =>
-                        this.dispatcher.dispatch('afterUpdateParticipant', data)
-                    )
-                    .catch((jsonError) => console.log('updating participant json error', jsonError))
-            })
-            .catch((updateError) => console.log('updating participant api error', updateError))
+        let thisParticipant = this
 
-        let lineDiv = document.getElementById(this.getLineElementId())
-        this.renderLineInside(lineDiv, false)
+        const callBackAfterUpdate = () => {
+            let lineDiv = document.getElementById(thisParticipant.getLineElementId())
+            thisParticipant.renderLineInside(lineDiv, false)
+        }
+
+        this.dispatcher.dispatch('onUpdateParticipant', [
+            event,
+            thisParticipant,
+            dataToUpdate,
+            callBackAfterUpdate
+        ])
     }
 }

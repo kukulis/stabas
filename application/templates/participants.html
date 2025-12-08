@@ -72,6 +72,19 @@
         )
     })
 
+    dispatcher.addListener('onUpdateParticipant', ([event, participant, dataToUpdate, callbackAfterUpdate]) => {
+        if ( verboseConsole ) {
+            console.log ( 'onUpdateParticipant called', event, participant)
+        }
+        apiClient.updateParticipant(participant.id, dataToUpdate).then((participantDto) => {
+            if (participantDto) {
+                participant.name = participantDto.name
+            }
+
+            callbackAfterUpdate()
+        })
+    })
+
 </script>
 
 </body>

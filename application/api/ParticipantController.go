@@ -88,7 +88,9 @@ func (controller *ParticipantController) UpdateParticipant(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, "OK")
+	updatedParticipant, _ := controller.participantsRepository.FindParticipant(id)
+
+	c.JSON(http.StatusOK, updatedParticipant)
 }
 
 func (controller *ParticipantController) AddParticipant(c *gin.Context) {
