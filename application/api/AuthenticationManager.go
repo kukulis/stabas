@@ -122,7 +122,7 @@ func (manager *AuthenticationManager) Authorize(userName string, action string, 
 	case "UpdateTask":
 		return manager.checkSenderOrReceiver(userName, context)
 	case "DeleteTask":
-		return manager.checkSenderOrReceiver(userName, context)
+		return manager.checkSender(userName, context)
 	case "ChangeStatus":
 		return manager.checkSenderOrReceiver(userName, context)
 	default:
