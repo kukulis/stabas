@@ -99,7 +99,7 @@ class Participant {
 
 
         let displayFieldsButton = document.createElement('button')
-        displayFieldsButton.appendChild(document.createTextNode('v'))
+        displayFieldsButton.appendChild(document.createTextNode('👁'))
         displayFieldsButton.classList.add('display-participant-fields-button')
         displayFieldsButton.addEventListener('click', () => {
             this.toggleDisplayHiddenFields()
