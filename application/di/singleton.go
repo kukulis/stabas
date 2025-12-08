@@ -6,8 +6,14 @@ import (
 	"fmt"
 )
 
+// TODO different calls depending on DIEnvironment value
+//
+//	if ( DIEnvironment == 'dev' ) {
+//		// TODO
+//	}
 var tasksRepository = NewTaskRepository()
 var participantsRepository = NewParticipantsRepository()
+
 var timeProvider = util.SimpleTimeProvider{}
 
 var AuthenticationManager = api.NewAuthenticationManager(participantsRepository)

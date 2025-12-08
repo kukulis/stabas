@@ -9,6 +9,10 @@ import (
 
 // other values are "empty", "prod"
 // TODO read values from an .env file
+
+var DIEnvironment = "dev"
+
+// deprecated, use DIEnvironment instead
 var tasksRepositoryConfig = "testing"
 
 func NewTaskRepository() *dao.TasksRepository {
@@ -34,4 +38,5 @@ func NewParticipantsRepository() *dao.ParticipantsRepository {
 	panic("wrong config for participants repository creation")
 }
 
+// TODO move to di.go
 var SettingsControllerInstance = api.NewSettingsController(&dao.SettingsRepository{})
