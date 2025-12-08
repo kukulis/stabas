@@ -96,11 +96,46 @@ func (manager *AuthenticationManager) Authorize(userName string, action string, 
 		return true
 	}
 
-	// TODO handle actions
+	// user is not admin at this point
+	switch action {
+	case "GetParticipants":
+		return true
+	case "GetParticipant":
+		return true
+	case "UpdateParticipant":
+		return false
+	case "AddParticipant":
+		return false
+	case "DeleteParticipant":
+		return false
+	case "RegeneratePassword":
+		return false
+	case "GetAllTasks":
+		return true
+	case "GetTasksGroups":
+		return true
+	case "GetTask":
+		return true
+	case "AddTask":
+		return true
+	case "UpdateTask":
+		// TODO depends on context
+		//task := context
+		//if task.Sender == userName {
+		//	return true
+		//}
 
-	_ = fmt.Errorf("AuthenticationManager.authorize: No permission to authorize %s", action)
-
-	return false
+		return true
+	case "DeleteTask":
+		// TODO depends on context
+		return true
+	case "ChangeStatus":
+		// TODO depends on context
+		return true
+	default:
+		_ = fmt.Errorf("AuthenticationManager.authorize: No permission to authorize %s", action)
+		return false
+	}
 }
 
 func (manager *AuthenticationManager) Authenticate(c *gin.Context) (string, error) {

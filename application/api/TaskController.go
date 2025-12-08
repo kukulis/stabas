@@ -131,14 +131,9 @@ func (controller *TaskController) AddTask(c *gin.Context) {
 }
 
 // UpdateTask updates task
-
-// TODO cover controller with the test
 func (controller *TaskController) UpdateTask(c *gin.Context) {
 	userName, err := controller.authManager.Authenticate(c)
 	if err != nil {
-		return
-	}
-	if !controller.authManager.Authorize(userName, "UpdateTask", nil) {
 		return
 	}
 
@@ -169,9 +164,13 @@ func (controller *TaskController) UpdateTask(c *gin.Context) {
 
 	_ = receivedTask.SetStatusDateIfNil(time.Now())
 
-	err = controller.validateTaskForUpdate(receivedTask)
+	existingTask, err := controller.validateTaskForUpdate(receivedTask)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return
+	}
+
+	if !controller.authManager.Authorize(userName, "UpdateTask", existingTask) {
 		return
 	}
 
@@ -236,18 +235,18 @@ func (controller *TaskController) UpdateTask(c *gin.Context) {
 
 }
 
-func (controller *TaskController) validateTaskForUpdate(receivedTask *entities.Task) error {
+func (controller *TaskController) validateTaskForUpdate(receivedTask *entities.Task) (*entities.Task, error) {
 	existingTask, err := controller.tasksRepository.FindById(receivedTask.Id)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	if existingTask.Status != entities.STATUS_NEW {
 		if existingTask.Sender != receivedTask.Sender {
-			return errors.New("Can't modify sender if task is NOT new")
+			return nil, errors.New("Can't modify sender if task is NOT new")
 		}
 		if !reflect.DeepEqual(existingTask.Receivers, receivedTask.Receivers) {
-			return errors.New("Can't modify receivers if task is NOT new")
+			return nil, errors.New("Can't modify receivers if task is NOT new")
 		}
 	}
 
@@ -255,14 +254,14 @@ func (controller *TaskController) validateTaskForUpdate(receivedTask *entities.T
 		countWithSameGroup := controller.tasksRepository.GetCountWithSameGroup(existingTask.TaskGroup)
 		if countWithSameGroup > 1 {
 			if existingTask.TaskGroup == existingTask.Id {
-				return errors.New("Can't add more receivers as the task has children tasks")
+				return nil, errors.New("Can't add more receivers as the task has children tasks")
 			} else {
-				return errors.New("Can't add more receivers as the task has parent task")
+				return nil, errors.New("Can't add more receivers as the task has parent task")
 			}
 		}
 	}
 
-	return nil
+	return existingTask, nil
 }
 
 // DeleteTask Deletes task
