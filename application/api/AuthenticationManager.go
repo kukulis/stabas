@@ -4,6 +4,7 @@ import (
 	"darbelis.eu/stabas/dao"
 	"darbelis.eu/stabas/util"
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 )
 
@@ -86,35 +87,48 @@ func (manager *AuthenticationManager) tryLogin(loginRequest LoginRequest) error 
 	return nil
 }
 
-// Authorize checks if the request is authorized by validating the auth_token header
-// Returns true if authorized or if CheckAuthorization is disabled, false otherwise
-// Sends a 401 JSON response if authentication fails
-func (manager *AuthenticationManager) Authorize(c *gin.Context) bool {
-	if !manager.CheckAuthorization {
+func (manager *AuthenticationManager) Authorize(userName string, action string, context any) bool {
+	if userName == ADMIN_LOGIN {
 		return true
+	}
+
+	if action == "" {
+		return true
+	}
+
+	// TODO handle actions
+
+	_ = fmt.Errorf("AuthenticationManager.authorize: No permission to authorize %s", action)
+
+	return false
+}
+
+func (manager *AuthenticationManager) Authenticate(c *gin.Context) (string, error) {
+	if !manager.CheckAuthorization {
+		return ADMIN_LOGIN, nil
 	}
 
 	authToken := c.GetHeader("auth_token")
 	if authToken == "" {
 		c.JSON(401, gin.H{"error": "Missing authentication token"})
-		return false
+		return "", errors.New("missing authentication token")
 	}
 
 	// Check if token exists in adminTokens
 	for _, token := range manager.adminTokens {
 		if token == authToken {
-			return true
+			return ADMIN_LOGIN, nil
 		}
 	}
 
-	// TODO call specific method with a token value
+	// TODO call specific method to the repository with a token value
 	participants := manager.participantRepository.GetParticipants()
 	for _, participant := range participants {
 		if participant.Token == authToken {
-			return true
+			return participant.Name, nil
 		}
 	}
 
 	c.JSON(401, gin.H{"error": "Invalid authentication token"})
-	return false
+	return "", errors.New("invalid authentication token")
 }

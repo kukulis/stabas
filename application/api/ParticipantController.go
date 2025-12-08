@@ -23,7 +23,11 @@ func NewParticipantController(participantsRepository dao.IParticipantsRepository
 }
 
 func (controller *ParticipantController) GetParticipants(c *gin.Context) {
-	if !controller.authManager.Authorize(c) {
+	userName, err := controller.authManager.Authenticate(c)
+	if err != nil {
+		return
+	}
+	if !controller.authManager.Authorize(userName, "GetParticipants", nil) {
 		return
 	}
 
@@ -32,7 +36,11 @@ func (controller *ParticipantController) GetParticipants(c *gin.Context) {
 }
 
 func (controller *ParticipantController) GetParticipant(c *gin.Context) {
-	if !controller.authManager.Authorize(c) {
+	userName, err := controller.authManager.Authenticate(c)
+	if err != nil {
+		return
+	}
+	if !controller.authManager.Authorize(userName, "GetParticipant", nil) {
 		return
 	}
 	idStr := c.Param("id")
@@ -55,7 +63,11 @@ func (controller *ParticipantController) GetParticipant(c *gin.Context) {
 }
 
 func (controller *ParticipantController) UpdateParticipant(c *gin.Context) {
-	if !controller.authManager.Authorize(c) {
+	userName, err := controller.authManager.Authenticate(c)
+	if err != nil {
+		return
+	}
+	if !controller.authManager.Authorize(userName, "UpdateParticipant", nil) {
 		return
 	}
 	idStr := c.Param("id")
@@ -94,7 +106,11 @@ func (controller *ParticipantController) UpdateParticipant(c *gin.Context) {
 }
 
 func (controller *ParticipantController) AddParticipant(c *gin.Context) {
-	if !controller.authManager.Authorize(c) {
+	userName, err := controller.authManager.Authenticate(c)
+	if err != nil {
+		return
+	}
+	if !controller.authManager.Authorize(userName, "AddParticipant", nil) {
 		return
 	}
 	buf, err := c.GetRawData()
@@ -121,7 +137,11 @@ func (controller *ParticipantController) AddParticipant(c *gin.Context) {
 }
 
 func (controller *ParticipantController) DeleteParticipant(c *gin.Context) {
-	if !controller.authManager.Authorize(c) {
+	userName, err := controller.authManager.Authenticate(c)
+	if err != nil {
+		return
+	}
+	if !controller.authManager.Authorize(userName, "DeleteParticipant", nil) {
 		return
 	}
 	idStr := c.Param("id")
@@ -144,7 +164,11 @@ func (controller *ParticipantController) DeleteParticipant(c *gin.Context) {
 // RegeneratePassword clears the participant's token and generates a new 5-character password
 // Returns the updated participant as JSON
 func (controller *ParticipantController) RegeneratePassword(c *gin.Context) {
-	if !controller.authManager.Authorize(c) {
+	userName, err := controller.authManager.Authenticate(c)
+	if err != nil {
+		return
+	}
+	if !controller.authManager.Authorize(userName, "RegeneratePassword", nil) {
 		return
 	}
 	idStr := c.Param("id")

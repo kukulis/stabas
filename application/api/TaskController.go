@@ -36,14 +36,22 @@ func NewTaskController(
 }
 
 func (controller *TaskController) GetAllTasks(c *gin.Context) {
-	if !controller.authManager.Authorize(c) {
+	userName, err := controller.authManager.Authenticate(c)
+	if err != nil {
+		return
+	}
+	if !controller.authManager.Authorize(userName, "GetAllTasks", nil) {
 		return
 	}
 	c.JSON(http.StatusOK, controller.tasksRepository.FindAll())
 }
 
 func (controller *TaskController) GetTasksGroups(c *gin.Context) {
-	if !controller.authManager.Authorize(c) {
+	userName, err := controller.authManager.Authenticate(c)
+	if err != nil {
+		return
+	}
+	if !controller.authManager.Authorize(userName, "GetTasksGroups", nil) {
 		return
 	}
 	// get available tasks from repository
@@ -64,7 +72,11 @@ func (controller *TaskController) GetTasksGroups(c *gin.Context) {
 }
 
 func (controller *TaskController) GetTask(c *gin.Context) {
-	if !controller.authManager.Authorize(c) {
+	userName, err := controller.authManager.Authenticate(c)
+	if err != nil {
+		return
+	}
+	if !controller.authManager.Authorize(userName, "GetTask", nil) {
 		return
 	}
 
@@ -87,7 +99,11 @@ func (controller *TaskController) GetTask(c *gin.Context) {
 }
 
 func (controller *TaskController) AddTask(c *gin.Context) {
-	if !controller.authManager.Authorize(c) {
+	userName, err := controller.authManager.Authenticate(c)
+	if err != nil {
+		return
+	}
+	if !controller.authManager.Authorize(userName, "AddTask", nil) {
 		return
 	}
 	buf, err := c.GetRawData()
@@ -118,7 +134,11 @@ func (controller *TaskController) AddTask(c *gin.Context) {
 
 // TODO cover controller with the test
 func (controller *TaskController) UpdateTask(c *gin.Context) {
-	if !controller.authManager.Authorize(c) {
+	userName, err := controller.authManager.Authenticate(c)
+	if err != nil {
+		return
+	}
+	if !controller.authManager.Authorize(userName, "UpdateTask", nil) {
 		return
 	}
 
@@ -247,7 +267,11 @@ func (controller *TaskController) validateTaskForUpdate(receivedTask *entities.T
 
 // DeleteTask Deletes task
 func (controller *TaskController) DeleteTask(c *gin.Context) {
-	if !controller.authManager.Authorize(c) {
+	userName, err := controller.authManager.Authenticate(c)
+	if err != nil {
+		return
+	}
+	if !controller.authManager.Authorize(userName, "DeleteTask", nil) {
 		return
 	}
 
@@ -268,7 +292,11 @@ func (controller *TaskController) DeleteTask(c *gin.Context) {
 }
 
 func (controller *TaskController) ChangeStatus(c *gin.Context) {
-	if !controller.authManager.Authorize(c) {
+	userName, err := controller.authManager.Authenticate(c)
+	if err != nil {
+		return
+	}
+	if !controller.authManager.Authorize(userName, "ChangeStatus", nil) {
 		return
 	}
 	idStr := c.Param("id")
