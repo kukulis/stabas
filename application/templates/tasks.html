@@ -1,7 +1,7 @@
 <html lang="lt">
 <head>
     <title>Štabo konsolė: užduotys</title>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico">
     <script src="/assets/js/util.js"></script>
     <script src="/assets/js/task.js"></script>
     <script src="/assets/js/tasks-component.js"></script>
@@ -27,6 +27,7 @@
     let tasksComponent = null;
     let apiClient = new ApiClient();
     let reloadAndRedrawTasksList = null;
+    let verboseConsole = false
 
     TasksComponent.initialize(dispatcher, apiClient).then(
         (tc) => {
@@ -119,36 +120,52 @@
         })
 
         dispatcher.addListener('afterDeleteTask', (taskId) => {
+            if (verboseConsole) {
+                console.log('afterDeleteTask listener is called with taskId=' + taskId)
+            }
             redrawTasksList();
             clearTag(taskDetailsOuterDiv)
         })
 
         dispatcher.addListener('inputReceivers', ([e, taskId]) => {
-            // console.log('task ' + taskId + ' receivers input', e)
+            if (verboseConsole) {
+                console.log('task ' + taskId + ' receivers input', e)
+            }
             tasksComponent.enableSaveButton()
         })
 
         dispatcher.addListener('inputSender', ([e, taskId]) => {
-            // console.log('task ' + taskId + ' sender input', e)
+            if (verboseConsole) {
+                console.log('task ' + taskId + ' sender input', e)
+            }
             tasksComponent.enableSaveButton()
         })
 
         dispatcher.addListener('inputStatus', ([e, taskId]) => {
-            // console.log('task ' + taskId + ' status input', e)
+            if (verboseConsole) {
+                console.log('task ' + taskId + ' status input', e)
+            }
             tasksComponent.enableSaveButton()
         })
 
         dispatcher.addListener('inputMessage', ([e, taskId]) => {
-            // console.log('task ' + taskId + ' message input', e)
+            if (verboseConsole) {
+                console.log('task ' + taskId + ' message input', e)
+            }
             tasksComponent.enableSaveButton()
         })
 
         dispatcher.addListener('inputResult', ([e, taskId]) => {
-            // console.log('task ' + taskId + ' result input', e)
+            if (verboseConsole) {
+                console.log('task ' + taskId + ' result input', e)
+            }
             tasksComponent.enableSaveButton()
         });
 
         dispatcher.addListener('afterChangeStatus', ([e, task]) => {
+            if (verboseConsole) {
+                console.log('afterChangeStatus called with ', e, task)
+            }
             // may be reloading function is better inside a Task ..
             tasksComponent.reloadSingleTask(task).then(() => {
                 redrawTasksList()
@@ -156,6 +173,9 @@
         });
 
         dispatcher.addListener('hideDetailsPressed', (e) => {
+            if (verboseConsole) {
+                console.log('hideDetailsPressed ', e)
+            }
             taskDetailsOuterDiv.style.display = 'none'
         });
 
@@ -176,7 +196,7 @@
         })
 
         dispatcher.addListener('onSaveTask', ([e, task, myVersionDto]) => {
-            tasksComponent.handleUpdateTask(e,task, myVersionDto)
+            tasksComponent.handleUpdateTask(e, task, myVersionDto)
         })
 
         dispatcher.addListener('taskSelected', (task) => {

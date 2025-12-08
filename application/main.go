@@ -91,9 +91,9 @@ func main() {
 	router.GET("/api/settings", func(c *gin.Context) { di.SettingsControllerInstance.GetSettings(c) })
 	router.POST("/api/settings", func(c *gin.Context) { di.SettingsControllerInstance.UpdateSettings(c) })
 
-	router.StaticFile("/favicon.ico", "./assets/favicon.ico")
 	router.Static("/assets/js", "./assets/js")
 	router.Static("/assets/css", "./assets/css")
+	router.Static("/assets/img", "./assets/img")
 
 	err = router.RunTLS(":8443", "./tls/server.crt", "./tls/server.key")
 

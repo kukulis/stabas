@@ -2,7 +2,7 @@
 <head>
     <title>Participants</title>
 
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="/assets/img/favicon.ico">
     <script src="/assets/js/util.js"></script>
     <script src="/assets/js/task.js"></script>
     <script src="/assets/js/api.js"></script>
@@ -23,6 +23,7 @@
     let apiClient = new ApiClient();
     let participantsComponent = null
     let redrawParticipantsList = null
+    let verboseConsole = false
 
     ParticipantsComponent.initialize(dispatcher, apiClient).then(
         (pc) => {
@@ -42,10 +43,16 @@
     )
 
     dispatcher.addListener('afterAddParticipant', ([e, participant]) => {
+        if ( verboseConsole ) {
+            console.log ( 'afterAddParticipant called', e, participant)
+        }
         redrawParticipantsList();
     })
 
     dispatcher.addListener('onDeleteParticipant', ([e, participant]) => {
+        if ( verboseConsole ) {
+            console.log ( 'onDeleteParticipant called', e, participant)
+        }
         participantsComponent.removeParticipant(participant.id)
     })
     dispatcher.addListener('afterDeletingParticipant', () => {
@@ -64,9 +71,6 @@
             (participantDto) => loadCallback(participantDto)
         )
     })
-
-
-
 
 </script>
 
