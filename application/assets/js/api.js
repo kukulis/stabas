@@ -99,15 +99,6 @@ class ApiClient {
         return await response.json().catch((error) => console.log('Json error', error));
     }
 
-    /**
-     *
-     * @returns {Promise<Settings>}
-     */
-    async loadSettings() {
-        // TODO load from api
-        return new Settings(0, 5, 15)
-    }
-
     async deleteTask(taskId) {
         let response = await fetch('/api/tasks/' + taskId, {
             method: 'DELETE',
@@ -332,6 +323,50 @@ class ApiClient {
             headers: this.getHeaders(),
         }).catch((error) => {
             console.log('getting user', error)
+        })
+
+        response = this.handleResponse(response);
+        if (!response) {
+            return null
+        }
+
+        return await response.json()
+    }
+
+    /**
+     * Update settings
+     * @param {Object} settingsData - Settings data to update
+     * @returns {Promise<any>}
+     */
+    async updateSettings(settingsData) {
+        let response = await fetch('/api/settings', {
+            method: 'POST',
+            headers: {
+                ...this.getHeaders(),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(settingsData)
+        }).catch((error) => {
+            console.log('Error saving settings:', error)
+        })
+
+        response = this.handleResponse(response);
+        if (!response) {
+            return null
+        }
+
+        return await response.json()
+    }
+
+    async loadSettings() {
+        let response = await fetch('/api/settings', {
+            method: 'GET',
+            headers: {
+                ...this.getHeaders(),
+                'Content-Type': 'application/json'
+            },
+        }).catch((error) => {
+            console.log('Error loading settings:', error)
         })
 
         response = this.handleResponse(response);

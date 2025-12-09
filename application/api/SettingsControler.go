@@ -11,20 +11,36 @@ import (
 
 type SettingsController struct {
 	settingsRepository *dao.SettingsRepository
+	authManager        *AuthenticationManager
 }
 
-func NewSettingsController(settingsRepository *dao.SettingsRepository) *SettingsController {
-	return &SettingsController{settingsRepository: settingsRepository}
+func NewSettingsController(settingsRepository *dao.SettingsRepository, manager *AuthenticationManager) *SettingsController {
+	return &SettingsController{settingsRepository: settingsRepository, authManager: manager}
 }
 
 // Get the one and only settings enitity.
 func (controller *SettingsController) GetSettings(c *gin.Context) {
+	userName, err := controller.authManager.Authenticate(c)
+	if err != nil {
+		return
+	}
+	if !controller.authManager.Authorize(c, userName, "GetSettings", nil) {
+		return
+	}
+
 	c.JSON(http.StatusOK, controller.settingsRepository.GetSettings())
 }
 
 // Update the one and only settings entity
 func (controller *SettingsController) UpdateSettings(c *gin.Context) {
 
+	userName, err := controller.authManager.Authenticate(c)
+	if err != nil {
+		return
+	}
+	if !controller.authManager.Authorize(c, userName, "UpdateSettings", nil) {
+		return
+	}
 	// Read args.
 	buf, err := c.GetRawData()
 	if err != nil {

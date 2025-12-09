@@ -29,5 +29,5 @@ func InitializeSingletons(environment string) {
 	TaskControllerInstance = api.NewTaskController(tasksRepository, participantsRepository, timeProvider, AuthenticationManager)
 	ParticipantsControllerInstance = api.NewParticipantController(participantsRepository, AuthenticationManager)
 	AuthenticationControllerInstance = initAuthenticationController()
-	SettingsControllerInstance = api.NewSettingsController(&dao.SettingsRepository{})
+	SettingsControllerInstance = api.NewSettingsController(&dao.SettingsRepository{}, AuthenticationManager)
 }

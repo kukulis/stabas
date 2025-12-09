@@ -5,7 +5,6 @@ function clearTag(tag) {
 }
 
 /**
- * TODO move to utils
  *
  * @type map {Map}
  */

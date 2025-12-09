@@ -16,7 +16,19 @@ class Settings {
     finishedStatusDelaySevere = 120;
     reloadTasksOnTimer = false;
 
+    /**
+     * @type {Dispatcher}
+     */
+    dispatcher = null;
+
     // other settings values
+
+    /**
+     * @param dispatcher {Dispatcher}
+     */
+    constructor(dispatcher) {
+        this.dispatcher = dispatcher;
+    }
 
     calculateCriticality(delay, status) {
         let delayMinutes = delay / (1000 * 60)
@@ -234,19 +246,6 @@ class Settings {
             reloadTasksOnTimer: document.getElementById('reloadTasksOnTimerInput').checked
         };
 
-        fetch('/api/settings', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(settingsData)
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Settings saved successfully:', data);
-        })
-        .catch(error => {
-            console.error('Error saving settings:', error);
-        });
+        this.dispatcher.dispatch('onSaveSettings', settingsData);
     }
 }
