@@ -1,42 +1,30 @@
 package di
 
 import (
-	"darbelis.eu/stabas/api"
 	"darbelis.eu/stabas/dao"
 	"darbelis.eu/stabas/entities"
 	"darbelis.eu/stabas/my_tests"
 )
 
-// other values are "empty", "prod"
-// TODO read values from an .env file
-
-var DIEnvironment = "dev"
-
-// deprecated, use DIEnvironment instead
-var tasksRepositoryConfig = "testing"
-
-func NewTaskRepository() *dao.TasksRepository {
-	if tasksRepositoryConfig == "testing" {
+func NewTaskRepository(environment string) *dao.TasksRepository {
+	if environment == "dev" {
 		return my_tests.NewTasksRepository()
 	}
 
-	if tasksRepositoryConfig == "empty" {
+	if environment == "empty" {
 		return dao.NewTasksRepository([]*entities.Task{}, 1)
 	}
 
 	panic("wrong config for tasks repository creation")
 }
 
-func NewParticipantsRepository() *dao.ParticipantsRepository {
-	if tasksRepositoryConfig == "testing" {
+func NewParticipantsRepository(environment string) *dao.ParticipantsRepository {
+	if environment == "dev" {
 		return my_tests.NewParticipantsRepository()
 	}
-	if tasksRepositoryConfig == "empty" {
+	if environment == "empty" {
 		return dao.NewParticipantsRepository([]*entities.Participant{})
 	}
 
 	panic("wrong config for participants repository creation")
 }
-
-// TODO move to di.go
-var SettingsControllerInstance = api.NewSettingsController(&dao.SettingsRepository{})

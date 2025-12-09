@@ -20,6 +20,14 @@ func main() {
 		fmt.Println("Warning: .env file not found, using default values")
 	}
 
+	env := os.Getenv("ENVIRONMENT")
+	if env == "" {
+		env = "dev"
+	}
+	fmt.Println("Environment: " + env)
+
+	di.InitializeSingletons(env)
+
 	// Set CheckAuthorization from environment
 	checkAuthStr := strings.ToLower(os.Getenv("CHECK_AUTHORIZATION"))
 	if checkAuthStr == "true" {
