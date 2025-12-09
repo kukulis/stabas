@@ -9,8 +9,61 @@ import (
 	"io/fs"
 	"net/http"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"strings"
 )
+
+func ensureTLSCertificates(tlsDir, certFile, keyFile string) error {
+	certPath := filepath.Join(tlsDir, certFile)
+	keyPath := filepath.Join(tlsDir, keyFile)
+
+	// Check if both certificate files exist
+	certExists := true
+	keyExists := true
+
+	if _, err := os.Stat(certPath); os.IsNotExist(err) {
+		certExists = false
+	}
+	if _, err := os.Stat(keyPath); os.IsNotExist(err) {
+		keyExists = false
+	}
+
+	// If both files exist, no need to generate
+	if certExists && keyExists {
+		fmt.Println("TLS certificates found")
+		return nil
+	}
+
+	fmt.Println("TLS certificates not found, generating new certificates...")
+
+	// Create tls directory if it doesn't exist
+	if err := os.MkdirAll(tlsDir, 0755); err != nil {
+		return fmt.Errorf("failed to create tls directory: %v", err)
+	}
+
+	// Generate private key: openssl genrsa -out server.key 2048
+	fmt.Println("Generating private key...")
+	keyCmd := exec.Command("openssl", "genrsa", "-out", keyPath, "2048")
+	if output, err := keyCmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("failed to generate private key: %v\nOutput: %s", err, string(output))
+	}
+
+	// Generate certificate: openssl req -new -x509 -sha256 -key server.key -out server.crt -days 3650 -nodes -subj "/C=LT/ST=Lietuva/L=Kaunas/O=Darbelis/OU=stabas/CN=stabas"
+	fmt.Println("Generating certificate...")
+	certCmd := exec.Command("openssl", "req", "-new", "-x509", "-sha256",
+		"-key", keyPath,
+		"-out", certPath,
+		"-days", "3650",
+		"-nodes",
+		"-subj", "/C=LT/ST=Lietuva/L=Kaunas/O=Darbelis/OU=stabas/CN=stabas")
+	if output, err := certCmd.CombinedOutput(); err != nil {
+		return fmt.Errorf("failed to generate certificate: %v\nOutput: %s", err, string(output))
+	}
+
+	fmt.Println("TLS certificates generated successfully")
+	return nil
+}
 
 func main() {
 
@@ -38,8 +91,11 @@ func main() {
 		fmt.Println("Authorization checking is DISABLED")
 	}
 
-	// TODO check for certificates
-	// build if missing one
+	// Check for certificates and generate if missing
+	if err := ensureTLSCertificates("./tls", "server.crt", "server.key"); err != nil {
+		fmt.Printf("Error ensuring TLS certificates: %v\n", err)
+		os.Exit(1)
+	}
 
 	router := gin.Default()
 

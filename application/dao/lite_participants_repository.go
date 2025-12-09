@@ -51,7 +51,7 @@ func (repo *LiteParticipantsRepository) GetParticipants() []*entities.Participan
 	}
 
 	query := `
-		SELECT id, name, deleted, token, password
+		SELECT id, name, deleted, COALESCE(token, ''), COALESCE(password, '')
 		FROM participants
 		WHERE deleted = 0
 	`
@@ -88,7 +88,7 @@ func (repo *LiteParticipantsRepository) FindParticipant(id int) (*entities.Parti
 	}
 
 	query := `
-		SELECT id, name, deleted, token, password
+		SELECT id, name, deleted, COALESCE(token, ''), COALESCE(password, '')
 		FROM participants
 		WHERE id = ?
 	`
@@ -190,7 +190,7 @@ func (repo *LiteParticipantsRepository) FindParticipantByName(name string) *enti
 	}
 
 	query := `
-		SELECT id, name, deleted, token, password
+		SELECT id, name, deleted, COALESCE(token, ''), COALESCE(password, '')
 		FROM participants
 		WHERE name = ? AND deleted = 0
 	`
@@ -218,7 +218,7 @@ func (repo *LiteParticipantsRepository) FindParticipantByToken(token string) *en
 	}
 
 	query := `
-		SELECT id, name, deleted, token, password
+		SELECT id, name, deleted, COALESCE(token, ''), COALESCE(password, '')
 		FROM participants
 		WHERE token = ? AND deleted = 0
 	`

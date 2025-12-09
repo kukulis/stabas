@@ -12,9 +12,9 @@ import (
 func TestAddParticipant(t *testing.T) {
 	rep := &dao.ParticipantsRepository{}
 
-	rep.AddParticipant(&entities.Participant{Name: "first"})
-	rep.AddParticipant(&entities.Participant{Name: "second"})
-	rep.AddParticipant(&entities.Participant{Name: "third"})
+	_, _ = rep.AddParticipant(&entities.Participant{Name: "first"})
+	_, _ = rep.AddParticipant(&entities.Participant{Name: "second"})
+	_, _ = rep.AddParticipant(&entities.Participant{Name: "third"})
 
 	got := rep.GetParticipants()
 	want := []*entities.Participant{
@@ -28,11 +28,11 @@ func TestAddParticipant(t *testing.T) {
 func TestUpdateParticipant(t *testing.T) {
 	rep := &dao.ParticipantsRepository{}
 
-	rep.AddParticipant(&entities.Participant{Name: "first"})
-	rep.AddParticipant(&entities.Participant{Name: "second"})
-	rep.AddParticipant(&entities.Participant{Name: "third"})
-	rep.UpdateParticipant(&entities.Participant{Id: 1, Name: "first modified"})
-	rep.RemoveParticipant(2)
+	_, _ = rep.AddParticipant(&entities.Participant{Name: "first"})
+	_, _ = rep.AddParticipant(&entities.Participant{Name: "second"})
+	_, _ = rep.AddParticipant(&entities.Participant{Name: "third"})
+	_ = rep.UpdateParticipant(&entities.Participant{Id: 1, Name: "first modified"})
+	_ = rep.RemoveParticipant(2)
 
 	got := rep.GetParticipants()
 	want := []*entities.Participant{
