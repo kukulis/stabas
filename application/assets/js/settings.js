@@ -55,41 +55,141 @@ class Settings {
         console.log("render settings line :)" + this)
         let lineDiv = document.createElement('div');
         lineDiv.setAttribute('id', "settings-div");
-        lineDiv.style['border'] = "solid thin black";
+        lineDiv.classList.add('settings-div')
 
         clearTag(lineDiv);
 
-        let idDiv = document.createElement('div');
-        idDiv.appendChild(document.createTextNode("Nustatymai"));
-        lineDiv.appendChild(idDiv);
+        let settingsTitleDiv = document.createElement('div');
+        settingsTitleDiv.appendChild(document.createTextNode("Settings"));
+        lineDiv.appendChild(settingsTitleDiv);
 
-        lineDiv.appendChild(document.createElement("br"))
+        
 
-        lineDiv.appendChild(document.createTextNode("newStatusDelay"));
+        let dl = document.createElement('dl');
+
+        let dtNewStatusDelay = document.createElement('dt');
+        dtNewStatusDelay.appendChild(document.createTextNode("New status delay"));
+        dl.appendChild(dtNewStatusDelay);
+
+        let ddNewStatusDelay = document.createElement('dd');
         let newStatusDelayInput = document.createElement('input');
+        newStatusDelayInput.id = 'newStatusDelayInput';
         newStatusDelayInput.value = this.newStatusDelay.toString();
-        lineDiv.appendChild(newStatusDelayInput)
+        ddNewStatusDelay.appendChild(newStatusDelayInput);
+        dl.appendChild(ddNewStatusDelay);
 
-        lineDiv.appendChild(document.createElement("br"))
+        let dtNewStatusDelaySevere = document.createElement('dt');
+        dtNewStatusDelaySevere.appendChild(document.createTextNode("New status delay severe"));
+        dl.appendChild(dtNewStatusDelaySevere);
 
-        lineDiv.appendChild(document.createTextNode("newStatusDelaySevere"));
+        let ddNewStatusDelaySevere = document.createElement('dd');
         let newStatusDelaySevereInput = document.createElement('input');
+        newStatusDelaySevereInput.id = 'newStatusDelaySevereInput';
         newStatusDelaySevereInput.value = this.newStatusDelaySevere.toString();
-        lineDiv.appendChild(newStatusDelaySevereInput)
+        ddNewStatusDelaySevere.appendChild(newStatusDelaySevereInput);
+        dl.appendChild(ddNewStatusDelaySevere);
 
-        lineDiv.appendChild(document.createElement("br"))
+        let dtSentStatusDelay = document.createElement('dt');
+        dtSentStatusDelay.appendChild(document.createTextNode("Sent status delay"));
+        dl.appendChild(dtSentStatusDelay);
 
-        lineDiv.appendChild(document.createTextNode("sentStatusDelay"));
+        let ddSentStatusDelay = document.createElement('dd');
         let sentStatusDelayInput = document.createElement('input');
+        sentStatusDelayInput.id = 'sentStatusDelayInput';
         sentStatusDelayInput.value = this.sentStatusDelay.toString();
-        lineDiv.appendChild(sentStatusDelayInput)
+        ddSentStatusDelay.appendChild(sentStatusDelayInput);
+        dl.appendChild(ddSentStatusDelay);
 
-        lineDiv.appendChild(document.createElement("br"))
+        let dtSentStatusDelaySevere = document.createElement('dt');
+        dtSentStatusDelaySevere.appendChild(document.createTextNode("Sent status delay severe"));
+        dl.appendChild(dtSentStatusDelaySevere);
 
-        lineDiv.appendChild(document.createTextNode("sentStatusDelaySevere"));
+        let ddSentStatusDelaySevere = document.createElement('dd');
         let sentStatusDelaySevereInput = document.createElement('input');
+        sentStatusDelaySevereInput.id = 'sentStatusDelaySevereInput';
         sentStatusDelaySevereInput.value = this.sentStatusDelaySevere.toString();
-        lineDiv.appendChild(sentStatusDelaySevereInput)
+        ddSentStatusDelaySevere.appendChild(sentStatusDelaySevereInput);
+        dl.appendChild(ddSentStatusDelaySevere);
+
+        let dtReceivedStatusDelay = document.createElement('dt');
+        dtReceivedStatusDelay.appendChild(document.createTextNode("Received status delay"));
+        dl.appendChild(dtReceivedStatusDelay);
+
+        let ddReceivedStatusDelay = document.createElement('dd');
+        let receivedStatusDelayInput = document.createElement('input');
+        receivedStatusDelayInput.id = 'receivedStatusDelayInput';
+        receivedStatusDelayInput.value = this.receivedStatusDelay.toString();
+        ddReceivedStatusDelay.appendChild(receivedStatusDelayInput);
+        dl.appendChild(ddReceivedStatusDelay);
+
+        let dtReceivedStatusDelaySevere = document.createElement('dt');
+        dtReceivedStatusDelaySevere.appendChild(document.createTextNode("Received status delay severe"));
+        dl.appendChild(dtReceivedStatusDelaySevere);
+
+        let ddReceivedStatusDelaySevere = document.createElement('dd');
+        let receivedStatusDelaySevereInput = document.createElement('input');
+        receivedStatusDelaySevereInput.id = 'receivedStatusDelaySevereInput';
+        receivedStatusDelaySevereInput.value = this.receivedStatusDelaySevere.toString();
+        ddReceivedStatusDelaySevere.appendChild(receivedStatusDelaySevereInput);
+        dl.appendChild(ddReceivedStatusDelaySevere);
+
+        let dtExecutingStatusDelay = document.createElement('dt');
+        dtExecutingStatusDelay.appendChild(document.createTextNode("Executing status delay"));
+        dl.appendChild(dtExecutingStatusDelay);
+
+        let ddExecutingStatusDelay = document.createElement('dd');
+        let executingStatusDelayInput = document.createElement('input');
+        executingStatusDelayInput.id = 'executingStatusDelayInput';
+        executingStatusDelayInput.value = this.executingStatusDelay.toString();
+        ddExecutingStatusDelay.appendChild(executingStatusDelayInput);
+        dl.appendChild(ddExecutingStatusDelay);
+
+        let dtExecutingStatusDelaySevere = document.createElement('dt');
+        dtExecutingStatusDelaySevere.appendChild(document.createTextNode("Executing status delay severe"));
+        dl.appendChild(dtExecutingStatusDelaySevere);
+
+        let ddExecutingStatusDelaySevere = document.createElement('dd');
+        let executingStatusDelaySevereInput = document.createElement('input');
+        executingStatusDelaySevereInput.id = 'executingStatusDelaySevereInput';
+        executingStatusDelaySevereInput.value = this.executingStatusDelaySevere.toString();
+        ddExecutingStatusDelaySevere.appendChild(executingStatusDelaySevereInput);
+        dl.appendChild(ddExecutingStatusDelaySevere);
+
+        let dtFinishedStatusDelay = document.createElement('dt');
+        dtFinishedStatusDelay.appendChild(document.createTextNode("Finished status delay"));
+        dl.appendChild(dtFinishedStatusDelay);
+
+        let ddFinishedStatusDelay = document.createElement('dd');
+        let finishedStatusDelayInput = document.createElement('input');
+        finishedStatusDelayInput.id = 'finishedStatusDelayInput';
+        finishedStatusDelayInput.value = this.finishedStatusDelay.toString();
+        ddFinishedStatusDelay.appendChild(finishedStatusDelayInput);
+        dl.appendChild(ddFinishedStatusDelay);
+
+        let dtFinishedStatusDelaySevere = document.createElement('dt');
+        dtFinishedStatusDelaySevere.appendChild(document.createTextNode("Finished status delay severe"));
+        dl.appendChild(dtFinishedStatusDelaySevere);
+
+        let ddFinishedStatusDelaySevere = document.createElement('dd');
+        let finishedStatusDelaySevereInput = document.createElement('input');
+        finishedStatusDelaySevereInput.id = 'finishedStatusDelaySevereInput';
+        finishedStatusDelaySevereInput.value = this.finishedStatusDelaySevere.toString();
+        ddFinishedStatusDelaySevere.appendChild(finishedStatusDelaySevereInput);
+        dl.appendChild(ddFinishedStatusDelaySevere);
+
+        let dtReloadTasksOnTimer = document.createElement('dt');
+        dtReloadTasksOnTimer.appendChild(document.createTextNode("Reload tasks on timer"));
+        dl.appendChild(dtReloadTasksOnTimer);
+
+        let ddReloadTasksOnTimer = document.createElement('dd');
+        let reloadTasksOnTimerInput = document.createElement('input');
+        reloadTasksOnTimerInput.id = 'reloadTasksOnTimerInput';
+        reloadTasksOnTimerInput.type = 'checkbox';
+        reloadTasksOnTimerInput.checked = this.reloadTasksOnTimer;
+        ddReloadTasksOnTimer.appendChild(reloadTasksOnTimerInput);
+        dl.appendChild(ddReloadTasksOnTimer);
+
+        lineDiv.appendChild(dl);
 
         let saveButton = document.createElement('button')
         saveButton.appendChild(document.createTextNode('save settings'))

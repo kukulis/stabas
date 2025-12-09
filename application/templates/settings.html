@@ -9,6 +9,8 @@
     <script src="/assets/js/dispatcher.js"></script>
     <script src="/assets/js/settings.js"></script>
     <script src="/assets/js/util.js"></script>
+    <link rel="stylesheet" type="text/css" href="/assets/css/settings.css"/>
+
 </head>
 
 <body>
@@ -25,9 +27,7 @@
     SettingsComponent.initialize(dispatcher).then(
         (sc) => {
             settingsComponent = sc
-
             console.log('settingsComponent', settingsComponent)
-
 
             redrawSettingsList = () => {
                 let settingsDiv = document.getElementById('settings-app');
