@@ -193,6 +193,9 @@ class Settings {
 
         let saveButton = document.createElement('button')
         saveButton.appendChild(document.createTextNode('save settings'))
+        saveButton.addEventListener('click', (event)=> {
+            this.handleSaveSettings(event)
+        })
         lineDiv.appendChild(saveButton)
 
         return lineDiv;
@@ -213,5 +216,37 @@ class Settings {
         this.reloadTasksOnTimer = settingsDto.reloadTasksOnTimer;
 
         return this;
+    }
+
+    handleSaveSettings(event) {
+        let settingsData = {
+            id: this.id,
+            newStatusDelay: parseInt(document.getElementById('newStatusDelayInput').value),
+            newStatusDelaySevere: parseInt(document.getElementById('newStatusDelaySevereInput').value),
+            sentStatusDelay: parseInt(document.getElementById('sentStatusDelayInput').value),
+            sentStatusDelaySevere: parseInt(document.getElementById('sentStatusDelaySevereInput').value),
+            receivedStatusDelay: parseInt(document.getElementById('receivedStatusDelayInput').value),
+            receivedStatusDelaySevere: parseInt(document.getElementById('receivedStatusDelaySevereInput').value),
+            executingStatusDelay: parseInt(document.getElementById('executingStatusDelayInput').value),
+            executingStatusDelaySevere: parseInt(document.getElementById('executingStatusDelaySevereInput').value),
+            finishedStatusDelay: parseInt(document.getElementById('finishedStatusDelayInput').value),
+            finishedStatusDelaySevere: parseInt(document.getElementById('finishedStatusDelaySevereInput').value),
+            reloadTasksOnTimer: document.getElementById('reloadTasksOnTimerInput').checked
+        };
+
+        fetch('/api/settings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(settingsData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Settings saved successfully:', data);
+        })
+        .catch(error => {
+            console.error('Error saving settings:', error);
+        });
     }
 }

@@ -53,6 +53,6 @@ func (controller *SettingsController) UpdateSettings(c *gin.Context) {
 	}
 
 	// b) If yes: update this settings entity.
-	controller.settingsRepository.UpdateSetting(receivedSetting)
-	c.JSON(http.StatusOK, receivedSetting)
+	s, _ := controller.settingsRepository.UpdateSetting(receivedSetting)
+	c.JSON(http.StatusOK, s)
 }
