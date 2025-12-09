@@ -197,6 +197,17 @@ class Task {
         participantsDiv.appendChild(document.createTextNode(senderName + ' → ' + receiverNames.join(',')))
         taskElement.appendChild(participantsDiv)
 
+        let displayTaskDetailsButton = document.createElement('button')
+        displayTaskDetailsButton.appendChild(document.createTextNode('👁'))
+        displayTaskDetailsButton.classList.add('display-task-details-button')
+        displayTaskDetailsButton.addEventListener('click', (e) => {
+            let taskDetailsDiv = this.renderTaskDetailsFull(e, participantLoader);
+            this.dispatcher.dispatch('taskDetailsRendered', taskDetailsDiv)
+            this.dispatcher.dispatch('taskSelected', thisTask)
+            this.dispatcher.dispatch('onViewTaskDetails', taskDetailsDiv)
+        })
+        taskElement.appendChild(displayTaskDetailsButton)
+
         let messageDiv = document.createElement('div')
         messageDiv.setAttribute('class', 'message')
         messageDiv.appendChild(document.createTextNode('' + this.id + ': ' + this.message))
@@ -207,7 +218,6 @@ class Task {
         });
 
         taskElement.appendChild(messageDiv);
-
 
         if (this.status < 6) {
             let newStatus = getNextStatus(this.status);

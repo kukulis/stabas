@@ -30,24 +30,24 @@
     let verboseConsole = false
 
     // TODO move this block to a separate js file from here
-    apiClient.callback401 = (response)=> {
+    apiClient.callback401 = (response) => {
         dispatcher.dispatch('handle401', response)
     }
 
-    dispatcher.addListener('handle401', (response)=>{
+    dispatcher.addListener('handle401', (response) => {
         console.log('dispatcher handling 401', response)
-        response.json().then((data)=> {
+        response.json().then((data) => {
             // console.log('dispatcher 401 response content:', data)
             let message = data.error || "Unauthenticated request"
-            alert (message)
+            alert(message)
             window.location.href = '/login';
         })
     })
 
-    apiClient.getUser().then((userData)=> {
+    apiClient.getUser().then((userData) => {
         let userDataElement = document.getElementById('current-user-data')
         clearTag(userDataElement)
-        userDataElement.appendChild(document.createTextNode(userData.id+': '+userData.name ))
+        userDataElement.appendChild(document.createTextNode(userData.id + ': ' + userData.name))
     })
     // TILL here
 
@@ -130,9 +130,13 @@
         dispatcher.addListener('taskDetailsRendered', (taskInnerDiv) => {
             clearTag(taskDetailsOuterDiv)
             taskDetailsOuterDiv.appendChild(taskInnerDiv)
-            taskDetailsOuterDiv.style.display = 'block';
             makeDraggable(taskDetailsOuterDiv);
         })
+
+        dispatcher.addListener('onViewTaskDetails', () => {
+            taskDetailsOuterDiv.style.display = 'block'
+        })
+
 
         dispatcher.addListener('deleteTaskPressed', ([e, taskId]) => tasksComponent.deleteTask(e, taskId))
 

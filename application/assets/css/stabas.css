@@ -76,27 +76,31 @@
     float: left;
 }
 
+.task-line .display-task-details-button {
+    float: left;
+}
+
 /* ------------------------------------------------
  - colors
  -------------------------------------------------- */
 
-.status-sent .message {
+.status-sent > .message {
     background-color: #EEE0D5;
 }
 
-.status-received .message {
+.status-received > .message {
     background-color: #E0B8C8;
 }
 
-.status-executing .message {
+.status-executing > .message {
     background-color: lightgreen;
 }
 
-.status-finished .message {
+.status-finished > .message {
     background-color: darkgreen;
     color: white;
 }
-.status-closed .message {
+.status-closed > .message {
     background-color: darkslategrey;
     color: white;
 }
