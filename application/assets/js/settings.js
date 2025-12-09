@@ -14,22 +14,9 @@ class Settings {
     executingStatusDelaySevere = 20;
     finishedStatusDelay = 60;
     finishedStatusDelaySevere = 120;
-
     reloadTasksOnTimer = false;
 
     // other settings values
-
-    /**
-     * TODO remove newStatusDelay and newStatusDelaySevere from constructor
-     *
-     * @param id {number}
-     * @param newStatusDelay {number}
-     */
-    constructor(id, newStatusDelay, newStatusDelaySevere) {
-        this.id = id;
-        this.newStatusDelay = newStatusDelay;
-        this.newStatusDelaySevere = newStatusDelaySevere;
-    }
 
     calculateCriticality(delay, status) {
         let delayMinutes = delay / (1000 * 60)
@@ -65,9 +52,6 @@ class Settings {
      * @returns {HTMLDivElement}
      */
     renderLine() {
-        // 1. Render a editable line which displays any text
-        // 2. pass any column of table to it?
-        
         console.log("render settings line :)" + this)
         let lineDiv = document.createElement('div');
         lineDiv.setAttribute('id', "settings-div");
@@ -79,46 +63,55 @@ class Settings {
         idDiv.appendChild(document.createTextNode("Nustatymai"));
         lineDiv.appendChild(idDiv);
 
-        idDiv.appendChild(document.createElement("br"))
+        lineDiv.appendChild(document.createElement("br"))
 
-        idDiv.appendChild(document.createTextNode("newStatusDelay"));
+        lineDiv.appendChild(document.createTextNode("newStatusDelay"));
         let newStatusDelayInput = document.createElement('input');
-        newStatusDelayInput.value = this.newStatusDelay;
-        idDiv.appendChild(newStatusDelayInput)
+        newStatusDelayInput.value = this.newStatusDelay.toString();
+        lineDiv.appendChild(newStatusDelayInput)
 
-        idDiv.appendChild(document.createElement("br"))
+        lineDiv.appendChild(document.createElement("br"))
 
-        idDiv.appendChild(document.createTextNode("newStatusDelaySevere"));
+        lineDiv.appendChild(document.createTextNode("newStatusDelaySevere"));
         let newStatusDelaySevereInput = document.createElement('input');
-        newStatusDelaySevereInput.value = this.newStatusDelaySevere;
-        idDiv.appendChild(newStatusDelaySevereInput)
+        newStatusDelaySevereInput.value = this.newStatusDelaySevere.toString();
+        lineDiv.appendChild(newStatusDelaySevereInput)
 
-        idDiv.appendChild(document.createElement("br"))
+        lineDiv.appendChild(document.createElement("br"))
 
-        idDiv.appendChild(document.createTextNode("sentStatusDelay"));
+        lineDiv.appendChild(document.createTextNode("sentStatusDelay"));
         let sentStatusDelayInput = document.createElement('input');
-        sentStatusDelayInput.value = this.sentStatusDelay;
-        idDiv.appendChild(sentStatusDelayInput)
+        sentStatusDelayInput.value = this.sentStatusDelay.toString();
+        lineDiv.appendChild(sentStatusDelayInput)
 
-        idDiv.appendChild(document.createElement("br"))
+        lineDiv.appendChild(document.createElement("br"))
 
-        idDiv.appendChild(document.createTextNode("sentStatusDelaySevere"));
+        lineDiv.appendChild(document.createTextNode("sentStatusDelaySevere"));
         let sentStatusDelaySevereInput = document.createElement('input');
-        sentStatusDelaySevereInput.value = this.sentStatusDelaySevere;
-        idDiv.appendChild(sentStatusDelaySevereInput)
+        sentStatusDelaySevereInput.value = this.sentStatusDelaySevere.toString();
+        lineDiv.appendChild(sentStatusDelaySevereInput)
 
-    //         receivedStatusDelay = 5;
-    // receivedStatusDelaySevere = 15;
-    // executingStatusDelay = 10;
-    // executingStatusDelaySevere = 20;
-    // finishedStatusDelay = 60;
-    // finishedStatusDelaySevere = 120;
-
-    
+        let saveButton = document.createElement('button')
+        saveButton.appendChild(document.createTextNode('save settings'))
+        lineDiv.appendChild(saveButton)
 
         return lineDiv;
     }
 
+    copyFromDto(settingsDto) {
+        this.id = settingsDto.id;
+        this.newStatusDelay = settingsDto.newStatusDelay;
+        this.newStatusDelaySevere = settingsDto.newStatusDelaySevere;
+        this.sentStatusDelay = settingsDto.sentStatusDelay;
+        this.sentStatusDelaySevere = settingsDto.sentStatusDelaySevere;
+        this.receivedStatusDelay = settingsDto.receivedStatusDelay;
+        this.receivedStatusDelaySevere = settingsDto.receivedStatusDelaySevere;
+        this.executingStatusDelay = settingsDto.executingStatusDelay;
+        this.executingStatusDelaySevere = settingsDto.executingStatusDelaySevere;
+        this.finishedStatusDelay = settingsDto.finishedStatusDelay;
+        this.finishedStatusDelaySevere = settingsDto.finishedStatusDelaySevere;
+        this.reloadTasksOnTimer = settingsDto.reloadTasksOnTimer;
 
-
+        return this;
+    }
 }

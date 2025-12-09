@@ -18,27 +18,11 @@ class SettingsComponent {
     }
 
     async loadSettings() {
+        // TODO move fetch to the ApiClient
         let response = await fetch('/api/settings')
         let settingsDto = await response.json()
-        console.log('Loaded settings ' + settingsDto.id, settingsDto.newStatusDelay);
-        // this.settings;
-
-        // for (let settingDto of settingsDto) {
-        // TODO taip neveiks, konstruktoriuje nėra tiek parametrų,
-        //  Norint paimti duomenis iš settingsDto reiktų vietoj konstruktoriaus naudoti funkciją su vienu parametru, kuris būtų settingsDTO
-        this.settings = new Settings(
-            settingsDto.id,
-            settingsDto.newStatusDelay,
-            settingsDto.newStatusDelaySevere,
-            settingsDto.sentStatusDelay,
-            settingsDto.sentStatusDelaySevere,
-            settingsDto.receivedStatusDelay,
-            settingsDto.receivedStatusDelaySevere,
-            settingsDto.executingStatusDelay,
-            settingsDto.executingStatusDelaySevere,
-            settingsDto.finishedStatusDelaySevere,
-            settingsDto.finishedStatusDelaySevere,
-        )
+        console.log('Loaded settings ' + settingsDto.id);
+        this.settings = (new Settings()).copyFromDto(settingsDto)
         dispatcher.dispatch('afterLoadSettings')
     }
 

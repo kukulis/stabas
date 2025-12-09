@@ -2,50 +2,43 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <title>Nustatymai</title>
+    <meta charset="UTF-8">
+    <title>Nustatymai</title>
 
-  <script src="/assets/js/settings-component.js"></script>
-
-  <script src="/assets/js/dispatcher.js"></script>
-
+    <script src="/assets/js/settings-component.js"></script>
+    <script src="/assets/js/dispatcher.js"></script>
     <script src="/assets/js/settings.js"></script>
-
     <script src="/assets/js/util.js"></script>
-
 </head>
 
 <body>
+{{ .menu}}
 
-  <div class="settings_container" id="settings-app">
+<div class="settings_container" id="settings-app">
+</div>
 
-  </div>
-  {{ .menu}}
-
-  <script type="application/javascript">
+<script type="application/javascript">
     let dispatcher = new Dispatcher();
     let settingsComponent = null
     let redrawSettingsList = null
 
     SettingsComponent.initialize(dispatcher).then(
-      (sc) => {
-        settingsComponent = sc
+        (sc) => {
+            settingsComponent = sc
 
-        console.log('settingsComponent', settingsComponent)
+            console.log('settingsComponent', settingsComponent)
 
 
-        redrawSettings = () => {
-          let settingsDiv = document.getElementById('settings-app');
-          clearTag(settingsDiv);
-          settingsDiv.appendChild(settingsComponent.renderSettings());
+            redrawSettingsList = () => {
+                let settingsDiv = document.getElementById('settings-app');
+                clearTag(settingsDiv);
+                settingsDiv.appendChild(settingsComponent.renderSettings());
+            }
+
+            redrawSettingsList();
         }
-
-        redrawSettings();
-      }
     )
-
-  </script>
+</script>
 
 </body>
-
 </html>
