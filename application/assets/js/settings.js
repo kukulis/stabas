@@ -20,6 +20,8 @@ class Settings {
     // other settings values
 
     /**
+     * TODO remove newStatusDelay and newStatusDelaySevere from constructor
+     *
      * @param id {number}
      * @param newStatusDelay {number}
      */
@@ -57,6 +59,7 @@ class Settings {
 
         return LATE_SEVERE
     }
+
     /**
      *
      * @returns {HTMLDivElement}

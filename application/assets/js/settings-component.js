@@ -5,7 +5,7 @@ class SettingsComponent {
     dispatcher = null;
 
     /**
-     * @type {[Settings]}
+     * @type {Settings}
      */
     settings;
 
@@ -21,10 +21,12 @@ class SettingsComponent {
         let response = await fetch('/api/settings')
         let settingsDto = await response.json()
         console.log('Loaded settings ' + settingsDto.id, settingsDto.newStatusDelay);
-        this.settings;
+        // this.settings;
 
         // for (let settingDto of settingsDto) {
-        this.settings = (new Settings(
+        // TODO taip neveiks, konstruktoriuje nėra tiek parametrų,
+        //  Norint paimti duomenis iš settingsDto reiktų vietoj konstruktoriaus naudoti funkciją su vienu parametru, kuris būtų settingsDTO
+        this.settings = new Settings(
             settingsDto.id,
             settingsDto.newStatusDelay,
             settingsDto.newStatusDelaySevere,
@@ -36,7 +38,7 @@ class SettingsComponent {
             settingsDto.executingStatusDelaySevere,
             settingsDto.finishedStatusDelaySevere,
             settingsDto.finishedStatusDelaySevere,
-        ))
+        )
         dispatcher.dispatch('afterLoadSettings')
     }
 

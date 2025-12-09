@@ -105,7 +105,7 @@ class ApiClient {
      */
     async loadSettings() {
         // TODO load from api
-        return new Settings()
+        return new Settings(0, 5, 15)
     }
 
     async deleteTask(taskId) {

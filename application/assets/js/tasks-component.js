@@ -50,14 +50,26 @@ class TasksComponent {
      * @returns {Promise<Task|null>}
      */
     async newTask() {
+        if ( this.participants.length === 0) {
+            alert('Create participants first')
+            return null
+        }
+
         let maxId = this.tasks.reduce((prev, curr) => {
             return Math.max(prev, curr.id);
         }, 0)
 
         console.log('TaskComponent.newTask, maxId', maxId)
+        let userData = await this.apiClient.getUser();
+        let sender = parseInt( userData.id )
+
+        if ( sender === 0 ) {
+            sender = this.participants[0].id;
+        }
+
         let taskDto = await this.apiClient.createTask({
             message: 'Task ' + (maxId + 1),
-            sender: 1, // TODO change sender to this user id
+            sender: sender,
             receivers: [],
         })
 
