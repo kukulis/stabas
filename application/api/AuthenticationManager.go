@@ -104,8 +104,6 @@ func (manager *AuthenticationManager) Authorize(responder JSONResponder, userNam
 }
 
 func (manager *AuthenticationManager) authorize(userName string, action string, context any) bool {
-	fmt.Printf("AuthenticationManager.authorize: userName = %s action=%s \n", userName, action)
-
 	if userName == ADMIN_LOGIN {
 		return true
 	}
