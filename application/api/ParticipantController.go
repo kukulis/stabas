@@ -48,6 +48,7 @@ func (controller *ParticipantController) GetParticipants(c *gin.Context) {
 		participants = participantsCopy
 	}
 
+	//fmt.Printf("participants %v \n", participants)
 	c.JSON(http.StatusOK, participants)
 }
 

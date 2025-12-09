@@ -77,6 +77,16 @@ func TestLiteGetParticipants(t *testing.T) {
 		}
 	}
 }
+func TestLiteGetEmptyParticipants(t *testing.T) {
+	repo := setupLiteTestDB(t)
+	defer func() { _ = repo.Close() }()
+
+	participants := repo.GetParticipants()
+
+	if len(participants) != 0 {
+		t.Errorf("Expected 0 participants, got %d", len(participants))
+	}
+}
 
 func TestLiteGetParticipantsExcludesDeleted(t *testing.T) {
 	repo := setupLiteTestDB(t)

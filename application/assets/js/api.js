@@ -206,7 +206,13 @@ class ApiClient {
             return null
         }
 
-        return await response.json()
+        let data = await response.json()
+
+        if ( data == null ) {
+            return []
+        }
+
+        return data
     }
 
     /**
