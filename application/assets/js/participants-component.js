@@ -61,8 +61,14 @@ class ParticipantsComponent {
                 }
 
                 let { response, data } = result
-                let id = data
-                let participant = new Participant(Number.parseInt(id), participantData.name, this.dispatcher)
+
+                if ( response.status === 403 ) {
+                    alert('Not authorized to create new participant')
+                    return
+                }
+                let participantDao = data
+
+                let participant = new Participant(Number.parseInt(participantDao.id), participantDao.name, this.dispatcher)
                 this.participants.push(participant)
 
                 this.dispatcher.dispatch('afterAddParticipant', [e, participant])

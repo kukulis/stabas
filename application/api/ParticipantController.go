@@ -31,8 +31,24 @@ func (controller *ParticipantController) GetParticipants(c *gin.Context) {
 		return
 	}
 
-	//  TODO hide token and password from each participant
-	c.JSON(http.StatusOK, controller.participantsRepository.GetParticipants())
+	//  hide token and password from each participant if the current login is not admin
+	participants := controller.participantsRepository.GetParticipants()
+
+	if userName != ADMIN_LOGIN {
+		participantsCopy := make([]*entities.Participant, 0)
+
+		for _, participant := range participants {
+			participantCopy := entities.Participant{}
+			participantCopy = *participant
+			participantCopy.Token = ""
+			participantCopy.Password = ""
+			participantsCopy = append(participantsCopy, &participantCopy)
+		}
+
+		participants = participantsCopy
+	}
+
+	c.JSON(http.StatusOK, participants)
 }
 
 func (controller *ParticipantController) GetParticipant(c *gin.Context) {
@@ -57,7 +73,15 @@ func (controller *ParticipantController) GetParticipant(c *gin.Context) {
 		return
 	}
 
-	// TODO hide token and password, unless the user is admin
+	// hide token and password, unless the user is admin
+	if userName != ADMIN_LOGIN {
+
+		participantCopy := entities.Participant{}
+		participantCopy = *participant
+
+		participant = &participantCopy
+
+	}
 
 	c.JSON(http.StatusOK, participant)
 }
@@ -127,13 +151,13 @@ func (controller *ParticipantController) AddParticipant(c *gin.Context) {
 		return
 	}
 
-	id, err := controller.participantsRepository.AddParticipant(participantDto)
+	participant, err := controller.participantsRepository.AddParticipant(participantDto)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, map[string]string{"error": "error updating participant" + err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, strconv.Itoa(id))
+	c.JSON(http.StatusOK, participant)
 }
 
 func (controller *ParticipantController) DeleteParticipant(c *gin.Context) {

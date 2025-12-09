@@ -31,7 +31,9 @@ func (repo *LiteParticipantsRepository) initSchema() error {
 	CREATE TABLE IF NOT EXISTS participants (
 		id INTEGER PRIMARY KEY AUTOINCREMENT,
 		name TEXT NOT NULL,
-		deleted BOOLEAN DEFAULT 0
+		deleted BOOLEAN DEFAULT 0,
+		token VARCHAR(255),
+		password VARCHAR(32)
 	);
 	`
 	_, err = db.Exec(schema)
@@ -49,7 +51,7 @@ func (repo *LiteParticipantsRepository) GetParticipants() []*entities.Participan
 	}
 
 	query := `
-		SELECT id, name, deleted
+		SELECT id, name, deleted, token, password
 		FROM participants
 		WHERE deleted = 0
 	`
@@ -67,6 +69,8 @@ func (repo *LiteParticipantsRepository) GetParticipants() []*entities.Participan
 			&participant.Id,
 			&participant.Name,
 			&participant.Deleted,
+			&participant.Token,
+			&participant.Password,
 		)
 		if err != nil {
 			continue
@@ -84,7 +88,7 @@ func (repo *LiteParticipantsRepository) FindParticipant(id int) (*entities.Parti
 	}
 
 	query := `
-		SELECT id, name, deleted
+		SELECT id, name, deleted, token, password
 		FROM participants
 		WHERE id = ?
 	`
@@ -94,6 +98,8 @@ func (repo *LiteParticipantsRepository) FindParticipant(id int) (*entities.Parti
 		&participant.Id,
 		&participant.Name,
 		&participant.Deleted,
+		&participant.Token,
+		&participant.Password,
 	)
 
 	if err == sql.ErrNoRows {
@@ -106,10 +112,10 @@ func (repo *LiteParticipantsRepository) FindParticipant(id int) (*entities.Parti
 	return &participant, nil
 }
 
-func (repo *LiteParticipantsRepository) AddParticipant(participant *entities.Participant) (int, error) {
+func (repo *LiteParticipantsRepository) AddParticipant(participant *entities.Participant) (*entities.Participant, error) {
 	db, err := repo.database.GetDB()
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
 	query := `
@@ -119,16 +125,16 @@ func (repo *LiteParticipantsRepository) AddParticipant(participant *entities.Par
 
 	result, err := db.Exec(query, participant.Name, participant.Deleted)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
 	id, err := result.LastInsertId()
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
 	participant.Id = int(id)
-	return participant.Id, nil
+	return participant, nil
 }
 
 func (repo *LiteParticipantsRepository) RemoveParticipant(id int) error {
@@ -174,5 +180,95 @@ func (repo *LiteParticipantsRepository) UpdateParticipant(participant *entities.
 	`
 
 	_, err = db.Exec(query, participant.Name, participant.Id)
+	return err
+}
+
+func (repo *LiteParticipantsRepository) FindParticipantByName(name string) *entities.Participant {
+	db, err := repo.database.GetDB()
+	if err != nil {
+		return nil
+	}
+
+	query := `
+		SELECT id, name, deleted, token, password
+		FROM participants
+		WHERE name = ? AND deleted = 0
+	`
+
+	var participant entities.Participant
+	err = db.QueryRow(query, name).Scan(
+		&participant.Id,
+		&participant.Name,
+		&participant.Deleted,
+		&participant.Token,
+		&participant.Password,
+	)
+
+	if err != nil {
+		return nil
+	}
+
+	return &participant
+}
+
+func (repo *LiteParticipantsRepository) FindParticipantByToken(token string) *entities.Participant {
+	db, err := repo.database.GetDB()
+	if err != nil {
+		return nil
+	}
+
+	query := `
+		SELECT id, name, deleted, token, password
+		FROM participants
+		WHERE token = ? AND deleted = 0
+	`
+
+	var participant entities.Participant
+	err = db.QueryRow(query, token).Scan(
+		&participant.Id,
+		&participant.Name,
+		&participant.Deleted,
+		&participant.Token,
+		&participant.Password,
+	)
+
+	if err != nil {
+		return nil
+	}
+
+	return &participant
+}
+
+func (repo *LiteParticipantsRepository) UpdateParticipantToken(id int, token string) error {
+	db, err := repo.database.GetDB()
+	if err != nil {
+		return err
+	}
+
+	// Check if participant exists
+	_, err = repo.FindParticipant(id)
+	if err != nil {
+		return err
+	}
+
+	query := "UPDATE participants SET token = ? WHERE id = ?"
+	_, err = db.Exec(query, token, id)
+	return err
+}
+
+func (repo *LiteParticipantsRepository) UpdateParticipantPassword(id int, password string) error {
+	db, err := repo.database.GetDB()
+	if err != nil {
+		return err
+	}
+
+	// Check if participant exists
+	_, err = repo.FindParticipant(id)
+	if err != nil {
+		return err
+	}
+
+	query := "UPDATE participants SET password = ? WHERE id = ?"
+	_, err = db.Exec(query, password, id)
 	return err
 }

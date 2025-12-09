@@ -39,14 +39,14 @@ func (rep *ParticipantsRepository) getMaxId() int {
 	})
 }
 
-func (rep *ParticipantsRepository) AddParticipant(participant *entities.Participant) (int, error) {
+func (rep *ParticipantsRepository) AddParticipant(participant *entities.Participant) (*entities.Participant, error) {
 	if participant.Id == 0 {
 		participant.Id = rep.getMaxId() + 1
 	}
 
 	rep.participants = append(rep.participants, participant)
 
-	return participant.Id, nil
+	return participant, nil
 }
 
 func (rep *ParticipantsRepository) RemoveParticipant(id int) error {
