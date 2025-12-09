@@ -50,8 +50,6 @@ func TestGetAllTasks(t *testing.T) {
 	if len(tasks) == 0 {
 		t.Error("Expected non-empty tasks list")
 	}
-
-	// TODO assert that received tasks list is equal to the exact list
 }
 
 func TestGetTasksGroups(t *testing.T) {
@@ -75,7 +73,6 @@ func TestGetTasksGroups(t *testing.T) {
 	if len(groupedTasks) == 0 {
 		t.Error("Expected non-empty grouped tasks list")
 	}
-	// TODO assert more exact tasks groups ( regarding data in the repository_factory.go )
 }
 
 func TestGetTask_Success(t *testing.T) {
@@ -383,8 +380,6 @@ func TestUpdateTask_MultipleReceiversWithParent(t *testing.T) {
 		t.Errorf("Expected status %d (bad request) when updating task with parent and multiple receivers, got %d", http.StatusBadRequest, w.Code)
 	}
 }
-
-// TODO test case with a non existant sender or receiver
 
 func TestUpdateTask_MultipleReceiversWithChildren(t *testing.T) {
 	controller, repo := setupTestController()
