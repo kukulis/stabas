@@ -94,9 +94,10 @@ class Task {
 
     /**
      * @param taskDTO
+     * @param updateChildren {boolean} suitable for a task group only
      * @returns {Task}
      */
-    updateFromDTO(taskDTO) {
+    updateFromDTO(taskDTO, updateChildren=true) {
         this.setStatus(taskDTO.status)
         this.setSender(taskDTO.sender)
         this.setReceivers(taskDTO.receivers)
@@ -874,16 +875,20 @@ class TaskGroup extends Task {
     /**
      *
      * @param taskGroupDTO
+     * @param updateChildren
      * @returns {TaskGroup}
      */
-    updateFromDTO(taskGroupDTO) {
-        return this.groupUpdateFromDTO(taskGroupDTO)
+    updateFromDTO(taskGroupDTO, updateChildren=true) {
+        return this.groupUpdateFromDTO(taskGroupDTO, updateChildren)
     }
 
-    groupUpdateFromDTO(taskGroupDTO) {
+    groupUpdateFromDTO(taskGroupDTO, updateChildren=true) {
         // console.log('TaskGroup.updateFromDTO called for ' + this.id)
         super.updateFromDTO(taskGroupDTO);
 
+        if (!updateChildren) {
+            return
+        }
         let previousChildrenMap = new Map();
         for (let child of this.children) {
             previousChildrenMap.set(child.id, child)

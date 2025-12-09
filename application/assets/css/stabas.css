@@ -115,25 +115,25 @@
 
 
 
-.status-sent .status {
+.status-sent > .status {
     background-color: #EEE0D5;
 }
 
-.status-received .status {
+.status-received > .status {
     background-color: saddlebrown;
     color: white;
 }
 
-.status-executing .status {
+.status-executing > .status {
     background-color: lightgreen;
 }
 
-.status-finished .status {
+.status-finished > .status {
     background-color: darkgreen;
     color: white;
 }
 
-.status-closed .status {
+.status-closed > .status {
     background-color: darkslategrey;
     color: white;
 }

@@ -273,13 +273,13 @@ class TasksComponent {
 
     /**
      *
-     * @param task {Task}
+     * @param task {Task|TaskGroup}
      * @returns {Promise<void>}
      */
     async reloadSingleTask(task) {
         let taskDto = await this.apiClient.loadTask(task.id)
 
-        task.updateFromDTO(taskDto)
+        task.updateFromDTO(taskDto, false)
     }
 
     handleUpdateTask(e, task, myVersionDto) {
