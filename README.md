@@ -1,51 +1,48 @@
-# stabas
-valdymo konsolė
+# HeadQuarters
+Headquarters control system.
 
-# Projekto paleidimas
+Handling tasks in runtime.
 
-## Susigeneruoti sertifikatus 
+# Project startup
 
-Žr. sekciją "Sertifikatų generavimas" dokumentacijoje.
+## Application launch
 
-## Paleisti aplikaciją
-
-Aplanke *./application* vykdyti komandą:
+In folder *./application* run command:
 
 `go run .`
 
 
-# sertifikatų generavimas
+## Generate certificates
 
-Eiti į tls direktoriją cmdline.
+Cmd line go to tls directory and run command:
 
     openssl genrsa -out server.key 2048
     
     openssl req -new -x509 -sha256 -key server.key -out server.crt -days 3650
 
-Be prompto:
-
-Pavyzdys:
-
-(openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 3650 -nodes -subj "/C=XX/ST=StateName/L=CityName/O=CompanyName/OU=CompanySectionName/CN=CommonNameOrHostname")
+Example to run without questions prompt:
 
     openssl req -new -x509 -sha256 -key server.key -out server.crt -days 3650 -nodes -subj "/C=LT/ST=Lietuva/L=Kaunas/O=Darbelis/OU=stabas/CN=stabas"
 
 
+# Developing hints
 
-# run single test
+## Running single test
 
     go test -run TestGroupTasks
-# Naudojamos bibliotekos
 
-* github.com/gin-gonic/gin – HTTP tinklo karkasas.
-
-# build for windows
-
-    GOOS=windows GOARCH=amd64 go build
-
-# run all tests
+## run all tests
 
     cd application
 
     go test ./...
+
+## Used libraries
+
+* github.com/gin-gonic/gin – HTTP network carcass.
+
+## build for windows
+
+    GOOS=windows GOARCH=amd64 go build
+
 
