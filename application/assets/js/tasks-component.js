@@ -187,7 +187,9 @@ class TasksComponent {
     }
 
     async loadSettings() {
-        this.settings = await this.apiClient.loadSettings()
+        let settingsDTO = await this.apiClient.loadSettings()
+
+        this.settings=(new Settings(this.dispatcher)).copyFromDto(settingsDTO)
     }
 
     /**
