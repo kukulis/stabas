@@ -83,6 +83,7 @@ func main() {
 
 	// Set CheckAuthorization from environment
 	checkAuthStr := strings.ToLower(os.Getenv("CHECK_AUTHORIZATION"))
+
 	if checkAuthStr == "true" {
 		di.AuthenticationManager.CheckAuthorization = true
 		fmt.Println("Authorization checking is ENABLED")
@@ -160,7 +161,12 @@ func main() {
 	router.Static("/assets/css", "./assets/css")
 	router.Static("/assets/img", "./assets/img")
 
-	err = router.RunTLS(":8443", "./tls/server.crt", "./tls/server.key")
+	port := strings.ToLower(os.Getenv("PORT"))
+	if port == "" {
+		port = "7443"
+	}
+
+	err = router.RunTLS(":"+port, "./tls/server.crt", "./tls/server.key")
 
 	fmt.Println(err)
 }
